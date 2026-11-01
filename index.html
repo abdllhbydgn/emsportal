@@ -81068,6 +81068,7 @@ function _trecAfterLoad() {
 }
 function _trecWarnOnce(key) { try { if (sessionStorage.getItem(key)) return false; sessionStorage.setItem(key, "1"); } catch (e) {} return true; }
 function _trecLoginCheck() {
+  if (currentUserRole === "admin") return;   // yönetici zorunlu eğitimden muaf (kullanıcı kararı 01.11.2026): uyarı çıkmaz, kayıt oluşturulmaz / admin is exempt: no warning, no record
   const vids = (typeof trainingVideosDocs !== "undefined" ? trainingVideosDocs : []).filter(_trecRequired);
   if (!vids.length || !_trecUser()) return;
   const items = [];
@@ -81134,7 +81135,8 @@ function _trecBadgeHtml(doc, storeKey) {
     if (!currentUserIsNamedAccount) h += '<span class="trec-chip trec-wait">🔒 ' + escHtml(t3("Zorunlu eğitim: kayıt için giriş yapın", "Mandatory training: sign in to be recorded", "تدريب إلزامي: سجّل دخول عشان يتسجّل")) + "</span>";
     else if (_trecLoaded) {
       const m = _trecMine(_trecVKey(doc));
-      if (m) h += '<span class="trec-chip trec-ok">✅ ' + escHtml(t3("Tamamladınız", "Completed", "أكملت")) + " · " + escHtml(_trecDay(m.at)) + "</span>";
+      if (!m && adm) h += '<span class="trec-chip trec-ok">✅ ' + escHtml(t3("Tamamlandı · yönetici muaf", "Completed · admin exempt", "اكتمل · المدير معفى")) + "</span>";
+      else if (m) h += '<span class="trec-chip trec-ok">✅ ' + escHtml(t3("Tamamladınız", "Completed", "أكملت")) + " · " + escHtml(_trecDay(m.at)) + "</span>";
       else {
         const x = _trecSelfDue(doc), over = x && x.left < 0;
         h += '<span class="trec-chip ' + (over ? "trec-late" : "trec-wait") + '">' + (over ? "🔴 " : "⏳ ") + escHtml(t3("Zorunlu eğitim: henüz izlemediniz", "Mandatory training: not watched yet", "تدريب إلزامي: لسه ما شفتوش")) + "</span>";
@@ -81306,7 +81308,7 @@ function _trecFinish(st) {
 // ── Yönetici ekranı ──
 const _trecUI = { vkey: "", tab: "done", q: "", users: null, loading: false };
 function _trecActiveUsers() {
-  return (_trecUI.users || []).filter(u => u && u.email && u.disabled !== true && (u.approved === true || Array.isArray(u.departments) && u.departments.length > 0)).map(u => ({ email: String(u.email).toLowerCase(), name: u.displayName || u.email, created: u.createdAt || "", dept: Array.isArray(u.departments) ? u.departments.map(x => typeof x === "string" ? x : (x && (x.name || x.key)) || "").filter(Boolean).join(", ") : "" }));
+  return (_trecUI.users || []).filter(u => u && u.email && String(u.email).toLowerCase() !== String(ADMIN_EMAIL).toLowerCase() && u.disabled !== true && (u.approved === true || Array.isArray(u.departments) && u.departments.length > 0)).map(u => ({ email: String(u.email).toLowerCase(), name: u.displayName || u.email, created: u.createdAt || "", dept: Array.isArray(u.departments) ? u.departments.map(x => typeof x === "string" ? x : (x && (x.name || x.key)) || "").filter(Boolean).join(", ") : "" }));
 }
 function openTrainingRecords() {
   if (currentUserRole !== "admin") { try { showEmsToast(t3("Bu ekranı yalnız yönetici görür.", "Only the administrator can see this screen.", "الشاشة دي للمدير بس.")); } catch (e) {} return; }
@@ -83663,7 +83665,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 12:48";
+const EMS_BUILD = "2026-11-01 12:49";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   const fmt = b => { const m = String(b).match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? m[3] + "." + m[2] + "." + m[1] + " " + m[4] : b; };
