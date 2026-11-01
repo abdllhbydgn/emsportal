@@ -83734,6 +83734,18 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   .modal-body input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), .modal-body select { min-height: 36px; }
   [style*="font-size:8px"], [style*="font-size:8.5px"], [style*="font-size:9px"], [style*="font-size:9.5px"],
   [style*="font-size: 8px"], [style*="font-size: 8.5px"], [style*="font-size: 9px"], [style*="font-size: 9.5px"] { font-size: 10.5px !important; }
+  /* Soru/bulgu tabloları mobilde kart olur (JS: ems-card-list). Başlıklar tablonun kendi th metninden alınır. */
+  #modal-table-wrap table.ems-cardify { display: block; border: 0 !important; min-width: 0 !important; width: 100% !important; }
+  #modal-table-wrap table.ems-cardify thead { display: none; }
+  #modal-table-wrap table.ems-cardify tbody { display: block; }
+  #modal-table-wrap table.ems-cardify tr { display: block; background: #fff; border: 1px solid #dfe2e7; border-radius: 14px; margin: 0 0 12px; padding: 10px 12px; box-shadow: 0 2px 8px rgba(15,23,42,.06); }
+  #modal-table-wrap table.ems-cardify tr.ems-card-sep { background: transparent; border: 0; box-shadow: none; padding: 4px 0; }
+  #modal-table-wrap table.ems-cardify td { display: block; width: auto !important; min-width: 0 !important; max-width: none !important; border: 0 !important; padding: 6px 0 !important; white-space: normal !important; text-align: start !important; }
+  #modal-table-wrap table.ems-cardify td.ems-c-empty { display: none; }
+  #modal-table-wrap table.ems-cardify td[data-label]::before { content: attr(data-label); display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
+  #modal-table-wrap table.ems-cardify td.ems-c-id { display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 15px; }
+  #modal-table-wrap table.ems-cardify td.ems-c-mod { display: inline-block; font-size: 11px; font-weight: 800; color: #64748b; margin-inline-start: 8px; }
+  #modal-table-wrap table.ems-cardify td.ems-c-id::before, #modal-table-wrap table.ems-cardify td.ems-c-mod::before { display: none; }
 }
 </style>
 <script id="ems-a11y-pass">
@@ -83753,6 +83765,47 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   }
   setTimeout(pass, 1500);
   setInterval(pass, 3000);
+})();
+</script>
+<script id="ems-card-list">
+/* Mobil: #modal-table-wrap içindeki geniş tablo satırlarına th başlıklarından veri etiketi koyar (görünüm yalnız ≤700 px CSS ile karta döner). */
+(function () {
+  function labelOf(th) { return ((th.innerText || th.textContent || "").trim().replace(/\s+/g, " ").split(" / ")[0]).slice(0, 40); }
+  function empty(td) { return !(td.innerText || "").trim() && !td.querySelector("img,input,select,button,svg,canvas,textarea,a"); }
+  function cardify() {
+    try {
+      var wrap = document.getElementById("modal-table-wrap");
+      var t = wrap && wrap.querySelector("table");
+      if (!t) return;
+      var ths = t.querySelectorAll("thead th");
+      if (ths.length < 4) return;
+      var labels = Array.prototype.map.call(ths, labelOf);
+      t.classList.add("ems-cardify");
+      t.querySelectorAll("tbody tr").forEach(function (tr) {
+        if (tr.getAttribute("data-ec")) return;
+        tr.setAttribute("data-ec", "1");
+        var tds = tr.children;
+        if (tds.length < labels.length || Array.prototype.some.call(tds, function (td) { return td.colSpan > 1; })) { tr.classList.add("ems-card-sep"); return; }
+        Array.prototype.forEach.call(tds, function (td, i) {
+          if (labels[i]) td.setAttribute("data-label", labels[i]);
+          if (empty(td)) td.classList.add("ems-c-empty");
+        });
+        if (tds[0] && (tds[0].innerText || "").trim().length <= 8) tds[0].classList.add("ems-c-id");
+        if (tds[1] && (tds[1].innerText || "").trim().length <= 40) tds[1].classList.add("ems-c-mod");
+      });
+    } catch (e) {}
+  }
+  var pend = false;
+  function schedule() { if (pend) return; pend = true; (window.requestAnimationFrame || setTimeout)(function () { pend = false; cardify(); }); }
+  function attach() {
+    var wrap = document.getElementById("modal-table-wrap");
+    if (!wrap || wrap.__emsCard) return !!wrap;
+    wrap.__emsCard = true;
+    new MutationObserver(schedule).observe(wrap, { childList: true, subtree: true });
+    cardify();
+    return true;
+  }
+  var tries = 0, iv = setInterval(function () { if (attach() || ++tries > 40) clearInterval(iv); }, 500);
 })();
 </script>
 </body>
