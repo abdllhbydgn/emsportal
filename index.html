@@ -83665,7 +83665,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 13:57";
+const EMS_BUILD = "2026-11-01 14:06";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   const fmt = b => { const m = String(b).match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? m[3] + "." + m[2] + "." + m[1] + " " + m[4] : b; };
@@ -83742,6 +83742,8 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
 }
 </style>
 <style id="ems-mobile-polish">
+/* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Track 19 px < yay 21 px: %100'de kırmızı kenar görünmez. */
+html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) .kpi-ring-mini svg circle:not([stroke^="url"]):not([fill^="url"]) { stroke: #E11D2E !important; stroke-width: 19px !important; }
 /* Masaüstü sol menü: sayfa boyunda sabit, kendi içinde kayar; menü sayfayı uzatıp altta boşluk bırakmaz (kullanıcı isteği 01.11.2026). Gövdedeki overflow-x:hidden sticky'yi bozuyordu → clip. */
 @media (min-width: 901px) {
   body.ems-shell-on { overflow-x: clip !important; overflow-y: visible !important; }
