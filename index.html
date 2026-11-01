@@ -83635,7 +83635,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 11:48";
+const EMS_BUILD = "2026-11-01 11:54";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   const fmt = b => { const m = String(b).match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? m[3] + "." + m[2] + "." + m[1] + " " + m[4] : b; };
@@ -83746,6 +83746,10 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   #modal-table-wrap table.ems-cardify td.ems-c-id { display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 15px; }
   #modal-table-wrap table.ems-cardify td.ems-c-mod { display: inline-block; font-size: 11px; font-weight: 800; color: #64748b; margin-inline-start: 8px; }
   #modal-table-wrap table.ems-cardify td.ems-c-id::before, #modal-table-wrap table.ems-cardify td.ems-c-mod::before { display: none; }
+  /* Sertifika kartları: tarih alanları başlık üstte, kutu tam genişlik (tarih kesilmesin). */
+  .cert-date-editor > div { flex-direction: column !important; align-items: stretch !important; gap: 3px !important; }
+  .cert-date-editor > div > span { width: auto !important; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .04em; text-transform: uppercase; }
+  .cert-date-editor input[type=date] { width: 100% !important; min-height: 40px !important; font-size: 14px !important; padding: 6px 8px !important; border-radius: 8px !important; }
 }
 </style>
 <script id="ems-a11y-pass">
@@ -83760,6 +83764,7 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
       if (bg) bg.setAttribute("aria-label", L("Menü", "Menu", "القائمة"));
       var lg = document.getElementById("ems-official-logo");
       if (lg) { lg.setAttribute("alt", "EMS Eroğlu Manufacturing Studio"); lg.setAttribute("aria-label", L("Ana sayfa", "Home", "الصفحة الرئيسية")); lg.setAttribute("role", "button"); }
+      document.querySelectorAll(".cert-date-editor input[type=date]").forEach(function (i) { var sp = i.previousElementSibling; if (sp && !i.getAttribute("aria-label")) i.setAttribute("aria-label", (sp.textContent || "").trim()); });
       document.querySelectorAll("input.q-sel-cb").forEach(function (c) { c.setAttribute("aria-label", L("Soruyu seç", "Select question", "اختر السؤال")); });
     } catch (e) {}
   }
