@@ -83665,7 +83665,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 12:49";
+const EMS_BUILD = "2026-11-01 13:29";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   const fmt = b => { const m = String(b).match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? m[3] + "." + m[2] + "." + m[1] + " " + m[4] : b; };
@@ -83744,8 +83744,8 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
 <style id="ems-mobile-polish">
 /* Bölüm Bazlı Dashboard kartları: üstteki kartlarla aynı parlama (shine). Kart overflow:visible olduğundan şerit kendi sarmalayıcısında kırpılır. */
 .ring-dashboard-grid > .ring-card.sec-donut-card > .ems-shine-wrap { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; z-index: 6; }
-.ring-dashboard-grid > .ring-card.sec-donut-card > .ems-shine-wrap > i { position: absolute; top: -20%; left: 0; width: 45%; height: 140%; background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.62) 50%, transparent 100%); transform: translateX(-220%) skewX(-18deg); transition: transform .45s ease-out; will-change: transform; }
-.ring-dashboard-grid > .ring-card.sec-donut-card.ems-fx:hover > .ems-shine-wrap > i { transform: translateX(330%) skewX(-18deg); }
+.ring-dashboard-grid > .ring-card.sec-donut-card > .ems-shine-wrap > i { position: absolute; top: -20%; left: 0; width: 45%; height: 140%; background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.62) 50%, transparent 100%); transform: translateX(-220%) skewX(-18deg); transition: none; will-change: transform; }
+.ring-dashboard-grid > .ring-card.sec-donut-card.ems-fx:hover > .ems-shine-wrap > i { transform: translateX(330%) skewX(-18deg); transition: transform .45s ease-out; }
 @media (prefers-reduced-motion: reduce) { .ring-dashboard-grid > .ring-card.sec-donut-card > .ems-shine-wrap { display: none; } }
 /* Mobil iyileştirme (31.10.2026): dokunma hedefleri ≥ 36–40 px, çok küçük yazılar ≥ 10.5 px. Yalnız ≤ 700 px genişlikte; masaüstüne dokunmaz. */
 @media (max-width: 700px) {
