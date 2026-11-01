@@ -49826,6 +49826,17 @@ function postProcessData() {
     if (FIREBASE_ENABLED && fbDb) { try { _safeRestoreDefaultQuestions(fbDb.collection("ems_csr").doc("questions"), _rs, "questions").catch(() => {}); } catch (e) {} }
     _ppSeeded++;
   }
+  // FAMA 8156 (personel dosyası sorusu) silinmişti; kullanıcı kararıyla (01.11.2026) geri getirilir (Sedex 8071–8073 ile aynı yöntem) /
+  // FAMA 8156 had been deleted; restored by user decision (01.11.2026), same method as Sedex 8071–8073
+  if (currentUserRole === "admin" && _sg("restore:fama-8156", deletedDefaultQuestionIds.includes(8156) || !auditQuestions.some(q => q.id === 8156))) {
+    deletedDefaultQuestionIds = deletedDefaultQuestionIds.filter(x => x !== 8156);
+    if (!auditQuestions.some(q => q.id === 8156)) {
+      const dq = defaultAuditQuestions.find(d => d.id === 8156);
+      if (dq) { auditQuestions.push(JSON.parse(JSON.stringify(dq))); addedCount++; }
+    }
+    if (FIREBASE_ENABLED && fbDb) { try { _safeRestoreDefaultQuestions(fbDb.collection("ems_csr").doc("questions"), [ 8156 ], "questions").catch(() => {}); } catch (e) {} }
+    _ppSeeded++;
+  }
   if (_sg("cert:uscotton", !certificatesData.some(c => c.name === "U.S. Cotton"))) {
     const newCertId = certificatesData.length > 0 ? Math.max(...certificatesData.map(c => c.id)) + 1 : 128;
     certificatesData.push({
@@ -83665,7 +83676,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 14:06";
+const EMS_BUILD = "2026-11-01 15:15";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   const fmt = b => { const m = String(b).match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? m[3] + "." + m[2] + "." + m[1] + " " + m[4] : b; };
@@ -83742,8 +83753,9 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
 }
 </style>
 <style id="ems-mobile-polish">
-/* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Track 19 px < yay 21 px: %100'de kırmızı kenar görünmez. */
-html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) .kpi-ring-mini svg circle:not([stroke^="url"]):not([fill^="url"]) { stroke: #E11D2E !important; stroke-width: 19px !important; }
+/* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Kırmızı kalan kısım koyu yayla aynı kalınlıkta (21 px), yay 22 px: %100'de kırmızı kenar görünmez. */
+html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) .kpi-ring-mini svg circle:not([stroke^="url"]):not([fill^="url"]) { stroke: #E11D2E !important; stroke-width: 21px !important; }
+html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) .kpi-ring-mini svg circle[stroke^="url"] { stroke-width: 22px !important; }
 /* Masaüstü sol menü: sayfa boyunda sabit, kendi içinde kayar; menü sayfayı uzatıp altta boşluk bırakmaz (kullanıcı isteği 01.11.2026). Gövdedeki overflow-x:hidden sticky'yi bozuyordu → clip. */
 @media (min-width: 901px) {
   body.ems-shell-on { overflow-x: clip !important; overflow-y: visible !important; }
