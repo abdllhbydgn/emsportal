@@ -43,6 +43,7 @@ Site tek dosyadır: `index.html` (GitHub Pages + Firebase/Firestore). Bu kuralla
 - Geliştirme dalı: `claude/selam-pwr5q1`. Her değişiklikte commit → push → main'e PR → PR'ı birleştir.
 - **SÜRÜM (her değişiklikte ZORUNLU):** commit'ten hemen önce `index.html` sonundaki `EMS_BUILD` ve `version.json` aynı değere (İstanbul saati `YYYY-AA-GG SS:DD`) güncellenir. Komut:
   `B=$(TZ=Europe/Istanbul date +"%Y-%m-%d %H:%M"); sed -i "s/^const EMS_BUILD = \".*\";/const EMS_BUILD = \"$B\";/" index.html; printf '{"build": "%s"}\n' "$B" > version.json`
+  **Saat gösterimi (01.11.2026):** EMS_BUILD İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; site bunu izleyenin YEREL saatine çevirip gösterir (Mısır kış saatinde UTC+2 → ekranda 1 saat geri). Kullanıcıya cevapta sürüm saatini KAHİRE saatiyle yaz (kış saatinde İstanbul − 1 saat; yazın aynı) ve gerekirse "İstanbul saatiyle …" ekle.
   Site en alttaki telif satırında ("© … Designer by Abdullah Baydogan" yanında) "Sürüm / Build: GG.AA.YYYY SS:DD" gösterir; yayındaki `version.json` daha yeniyse üstte "Yeni sürüm — Yenile" şeridi çıkar. Kullanıcıya cevapta yeni sürüm saatini yaz ("en altta Sürüm / Build: … görünce yeni hâldesiniz").
 - Kullanıcıya Türkçe açıkla; 2–3 dakika sonra Ctrl+F5 yapmasını söyle.
 - Commit/PR metinlerine model adı yazma.
