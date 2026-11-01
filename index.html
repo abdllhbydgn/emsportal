@@ -49814,6 +49814,19 @@ function postProcessData() {
       _ppSeeded++;
     }
   }
+  // Sedex 8071–8073 yanlışlıkla silinmişti; kullanıcı kararıyla (01.11.2026) geri getirilir: yerelde eklenir, yönetici girişinde bulutta bir kez düzeltilir /
+  // Sedex 8071–8073 were deleted by mistake; restored by user decision (01.11.2026): added locally and fixed once in the cloud on admin login
+  if (currentUserRole === "admin" && _sg("restore:sedex-8071-8073", [ 8071, 8072, 8073 ].some(id => deletedDefaultQuestionIds.includes(id) || !auditQuestions.some(q => q.id === id)))) {
+    const _rs = [ 8071, 8072, 8073 ];
+    deletedDefaultQuestionIds = deletedDefaultQuestionIds.filter(x => !_rs.includes(x));
+    _rs.forEach(id => {
+      if (auditQuestions.some(q => q.id === id)) return;
+      const dq = defaultAuditQuestions.find(d => d.id === id);
+      if (dq) { auditQuestions.push(JSON.parse(JSON.stringify(dq))); addedCount++; }
+    });
+    if (FIREBASE_ENABLED && fbDb) { try { _safeRestoreDefaultQuestions(fbDb.collection("ems_csr").doc("questions"), _rs, "questions").catch(() => {}); } catch (e) {} }
+    _ppSeeded++;
+  }
   if (_sg("cert:uscotton", !certificatesData.some(c => c.name === "U.S. Cotton"))) {
     const newCertId = certificatesData.length > 0 ? Math.max(...certificatesData.map(c => c.id)) + 1 : 128;
     certificatesData.push({
@@ -54979,6 +54992,22 @@ function _safeDeleteDefaultQuestions(docRef, ids, notifyLabel) {
     ids.forEach(id => { if (!delIds.includes(id)) delIds.push(id); });
     tx.set(docRef, Object.assign({}, data, { auditQuestions: newArr, deletedDefaultQuestionIds: delIds }), { merge: true });
   })).catch(e => console.warn("[Toplu soru silme / Bulk question delete] " + notifyLabel, e && e.code));
+}
+// Silinmiş varsayılan soruları TEK işlemde geri getirir: silinmiş listesinden çıkarır, eksik soruyu varsayılandan ekler (durum/fotoğraf yeni başlar) /
+// Restores deleted default questions in ONE transaction: removes them from the deleted list and re-adds the missing default question (status/photos start fresh)
+function _safeRestoreDefaultQuestions(docRef, ids, notifyLabel) {
+  const set = new Set(ids.map(String));
+  return _runTransactionWithRetry(tx => tx.get(docRef).then(snap => {
+    const data = snap.exists ? snap.data() : {};
+    const arr = Array.isArray(data.auditQuestions) ? data.auditQuestions.slice() : [];
+    ids.forEach(id => {
+      if (arr.some(q => String(q.id) === String(id))) return;
+      const dq = defaultAuditQuestions.find(d => d.id === id);
+      if (dq) arr.push(JSON.parse(JSON.stringify(dq)));
+    });
+    const delIds = (Array.isArray(data.deletedDefaultQuestionIds) ? data.deletedDefaultQuestionIds : []).filter(x => !set.has(String(x)));
+    tx.set(docRef, Object.assign({}, data, { auditQuestions: arr, deletedDefaultQuestionIds: delIds }), { merge: true });
+  })).catch(e => { console.warn("[Soru geri getirme / Question restore] " + notifyLabel, e && e.code); throw e; });
 }
 function _safeDeleteDefaultQuestion(docRef, id, notifyLabel) {
   _runTransactionWithRetry(tx => tx.get(docRef).then(snap => {
@@ -83635,7 +83664,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 11:56";
+const EMS_BUILD = "2026-11-01 12:08";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   const fmt = b => { const m = String(b).match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? m[3] + "." + m[2] + "." + m[1] + " " + m[4] : b; };
