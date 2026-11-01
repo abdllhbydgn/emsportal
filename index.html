@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; script-src 'self' 'unsafe-inline' https://www.youtube.com https://s.ytimg.com https://www.gstatic.com https://apis.google.com https://www.google.com https://cdn.sheetjs.com; worker-src 'self' blob:">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2662,13 +2662,12 @@ tr.fx-row-flash > td { animation:fxRowFlash 3s ease; }
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <link rel="dns-prefetch" href="https://securetoken.googleapis.com">
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
 <script>
 (function() {
-  var LIBS = [ "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js", "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js", [ "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js", "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" ] ];
+  var LIBS = [ "lib/html2canvas.min.js", "lib/jspdf.umd.min.js", "lib/pdf.min.js", [ "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js", "lib/xlsx.full.min.js" ] ];
   // Dizi verilen kütüphanede adresler sırayla denenir: güncel sürüm yüklenemezse eski sürüme düşülür. /
   // For a library given as a list, addresses are tried in order: if the current version fails, the older one is used.
   function loadWithFallback(src) {
@@ -2698,7 +2697,7 @@ tr.fx-row-flash > td { animation:fxRowFlash 3s ease; }
     if (!started) {
       started = Promise.all(LIBS.map(loadWithFallback)).then(function() {
         try {
-          if (typeof pdfjsLib !== "undefined") pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+          if (typeof pdfjsLib !== "undefined") pdfjsLib.GlobalWorkerOptions.workerSrc = "lib/pdf.worker.min.js";
         } catch (e) {}
       });
     }
@@ -2709,7 +2708,7 @@ tr.fx-row-flash > td { animation:fxRowFlash 3s ease; }
   }); else window._ensureLibs();
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<script src="lib/chart.umd.min.js"></script>
 <style>
 #doc-viewer-modal, #cert-photo-lightbox, #office-file-preview-modal { z-index: 20500 !important; }
 #office-file-preview-modal { z-index: 100100 !important; } /* QMS önizleme penceresinin (100050) üstünde açılır / opens above the QMS preview window */
@@ -7480,7 +7479,7 @@ window.addEventListener("error", function(event) {
   }, 50);
 });
 if (typeof pdfjsLib !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "lib/pdf.worker.min.js";
 }
 let currentLang = "tr";
 function debounce(fn, wait) {
@@ -63086,7 +63085,7 @@ function _ensureOfficeLibs() {
     s.onerror = () => res(false);
     document.head.appendChild(s);
   });
-  _officeLibsP = Promise.resolve(typeof _ensureLibs === "function" ? _ensureLibs() : null).then(() => typeof JSZip !== "undefined" ? true : load("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js")).then(() => window.docx && window.docx.renderAsync ? true : load("https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js"));
+  _officeLibsP = Promise.resolve(typeof _ensureLibs === "function" ? _ensureLibs() : null).then(() => typeof JSZip !== "undefined" ? true : load("lib/jszip.min.js")).then(() => window.docx && window.docx.renderAsync ? true : load("lib/docx-preview.min.js"));
   return _officeLibsP;
 }
 function _dataUrlToBytes(u) {
@@ -78658,7 +78657,7 @@ function _finDrawCharts(m, cur) {
 // Excel çıktısı indirilir; yani dışa aktarma hiçbir durumda çalışmaz hale gelmez. /
 // ExcelJS is loaded only when the "Excel" button is pressed. If it cannot be loaded or anything fails, the previous
 // plain Excel export is downloaded instead, so exporting never stops working.
-const _FIN_EXCELJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+const _FIN_EXCELJS_URL = "lib/exceljs.min.js";
 let _finExcelJsPromise = null;
 function _finLoadExcelJs() {
   if (window.ExcelJS) return Promise.resolve(true);
@@ -82901,7 +82900,7 @@ function mtListFilter() {
 // ── Not metnini okuma (Word, PDF, metin) ──
 function _mtZip() {
   if (typeof JSZip !== "undefined") return Promise.resolve(true);
-  return new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; sc.async = true; sc.onload = () => res(true); sc.onerror = () => rej(new Error(t3("Word bileşeni yüklenemedi. Bağlantınızı kontrol edin.", "The Word component failed to load. Check your connection.", "معرفناش نحمّل مكوّن Word. اتأكد من الاتصال."))); document.head.appendChild(sc); });
+  return new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = "lib/jszip.min.js"; sc.async = true; sc.onload = () => res(true); sc.onerror = () => rej(new Error(t3("Word bileşeni yüklenemedi. Bağlantınızı kontrol edin.", "The Word component failed to load. Check your connection.", "معرفناش نحمّل مكوّن Word. اتأكد من الاتصال."))); document.head.appendChild(sc); });
 }
 async function _mtDocxText(file) {
   await _mtZip();
