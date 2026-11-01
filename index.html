@@ -69846,7 +69846,7 @@ async function exportOrganicReportPDF() {
     try {
       await waitForImagesReady(wrap);
       const canvas = await _h2c(wrap, { scale: _pdfCanvasScale(), backgroundColor: "#ffffff", useCORS: true });
-      pdf = _pdfStampPages(_pdfAddCanvasA4(null, jsPDFLib, canvas, wrap, { scale: _pdfCanvasScale(), orientation: "portrait" }));
+      pdf = _pdfStampPages(_pdfAddCanvasA4(null, jsPDFLib, canvas, wrap, { scale: _pdfCanvasScale(), orientation: "landscape" }));   // yatay: yazılar daha büyük okunur (kullanıcı isteği 01.11.2026) / landscape for larger, readable text
       try { _pdfAddSignature(pdf); } catch (e) { console.warn("[imza]", e); }
     } finally { document.body.removeChild(wrap); }
     if (pdf) pdf.save("EMS_Organik_Denetim_Raporu_" + _localISODate() + ".pdf");
@@ -83665,7 +83665,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 13:29";
+const EMS_BUILD = "2026-11-01 13:45";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   const fmt = b => { const m = String(b).match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? m[3] + "." + m[2] + "." + m[1] + " " + m[4] : b; };
