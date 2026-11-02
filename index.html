@@ -49195,6 +49195,7 @@ function deleteDeptItemPhoto(itemId) {
   delete item.officeExt;
   delete item.officeFileName;
   delete item.mediaType;
+  _qsClearLinkedQuestionOfItem(item);
   if (FIREBASE_ENABLED && fbDb) {
     const _dref = fbDb.collection("ems_csr").doc("productionChecklist");
     const cleanItem = _sanitizeForFirestore(item);
@@ -68168,6 +68169,36 @@ function handleQuestionPhotoFileChange(event) {
     });
   }, () => alert(t3("Dosya işlenemedi. Lütfen tekrar deneyin.", "The file could not be processed. Please try again.", "مقدرناش نعالج الملف.")));
 }
+// Soru ↔ bölüm kontrol maddesi kanıtı İKİ YÖNLÜ senkrondur (_qsSyncEvidence): bir tarafta kalan dosya diğerine geri kopyalanır.
+// Bu yüzden silme de iki yönlü yapılır; yoksa silinen fotoğraf "geri gelir" (kullanıcı şikâyeti, 02.11.2026) /
+// Question ↔ department checklist-item evidence is synced both ways: a file left on one side is copied back. Deletion must therefore go both ways, or the deleted photo "comes back".
+function _qsClearItemEvidence(item) {
+  if (item.hasPhoto) _deleteDocFileData("deptitem", item.id, "thumb");
+  delete item.hasPhoto;
+  if (item.hasFullPdf) _deleteDocFileData("deptitem", item.id, "pdf");
+  delete item.hasFullPdf;
+  if (item.mediaType === "office") _deleteDocFileData("deptitem", item.id, "officefile");
+  delete item.officeExt;
+  delete item.officeFileName;
+  delete item.mediaType;
+}
+function _qsClearLinkedItemsOfQuestion(q) {
+  if (!q || _qPhotoFilledCount(q) > 0) return;
+  const items = (productionChecklist || []).filter(it => it.linkedQId !== undefined && String(it.linkedQId) === String(q.id) && (it.hasPhoto || it.mediaType === "office"));
+  if (!items.length) return;
+  items.forEach(_qsClearItemEvidence);
+  _saveProductionChecklistOnly();
+}
+function _qsClearLinkedQuestionOfItem(item) {
+  if (!item || item.linkedQId === undefined) return;
+  const q = (auditQuestions || []).find(x => String(x.id) === String(item.linkedQId));
+  if (!q || !(q.hasPhoto || q.mediaType === "office")) return;
+  if (q.hasPhoto) _deleteDocFileData("question", q.id, "photo");
+  delete q.hasPhoto;
+  if (q.mediaType === "office") _deleteDocFileData("question", q.id, "officefile");
+  delete q.mediaType; delete q.officeExt; delete q.officeFileName;
+  _saveQuestionsOnly();
+}
 function deleteQuestionPhoto(questionId, slot) {
   _delCtx("deleteQuestionPhoto", [ questionId, slot ]);
   slot = slot || 1;
@@ -68186,6 +68217,7 @@ function deleteQuestionPhoto(questionId, slot) {
   delete q[k.mediaTypeField];
   delete q[k.officeExtField];
   delete q[k.officeFileNameField];
+  _qsClearLinkedItemsOfQuestion(q);
   if (FIREBASE_ENABLED && fbDb) {
     const cleanQ = _sanitizeForFirestore(q);
     _qDocsOf(q).forEach(dd => {
@@ -83766,7 +83798,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 16:56";
+const EMS_BUILD = "2026-11-02 16:58";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /

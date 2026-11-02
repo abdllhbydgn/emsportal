@@ -685,3 +685,7 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 - Kullanıcının "SİVİL SAVUNMA GEREKSİNİMLERİ" Word'ündeki 14 madde sitede ZATEN vardı (1006–1019). Yeni kayıt açılmadı; imperatif cümleler (ör. "kurun") soru haline çevrildi (TR / EN / AR), `_cdImpText` migrasyonu (yalnız metin hâlâ eski cümleyse değişir; elle düzenlenen korunur).
 - Benzer soru birleştirme: 8202 (genel sprinkler) → 52 + 1018 grubuna eklendi. Diğer maddeler farklı yer/konu olduğu için ayrı bırakıldı (yanlış "Tamamlandı" yayılmasın diye).
 - Word'deki yanıt/termin/sorumlu notları (Salih, Caner, Hened, Taner…) siteye YAZILMADI (kullanıcı istemedi; isterse `q.owner` olarak atanır). Word'de "Ameliyathane" geçen madde sitede "Operasyon salonu" (1009) — kullanıcıya soruldu. Dayanak atıfları (Çevre Yasası 4/1994, İş Kanunu 14/2025, Birleşik Bina Yasası 119/2008) soru metinlerine konmadı. Sürüm 2026-11-02 16:56 (İstanbul).
+
+## 02.11.2026 — Silinen fotoğraf geri geliyordu (soru ↔ kontrol maddesi)
+- Sebep: `_qsSyncEvidence` soru ile bölüm kontrol maddesi (`productionChecklist.linkedQId`) arasında kanıtı İKİ YÖNLÜ kopyalıyor; soru fotoğrafı silinince bağlı maddede kalan dosya geri kopyalanıyordu (ör. Sivil Savunma 62 "Boyahane Düzeni").
+- Çözüm: `deleteQuestionPhoto` soruda hiç dosya kalmazsa bağlı maddelerin kanıtını da siler (`_qsClearLinkedItemsOfQuestion`); `deleteDeptItemPhoto` bağlı sorunun 1. yuva dosyasını da siler (`_qsClearLinkedQuestionOfItem`). Sürüm 2026-11-02 16:58 (İstanbul).
