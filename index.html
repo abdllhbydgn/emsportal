@@ -81073,7 +81073,7 @@ function _trecAdminStats() {
 function _trecAfterLoad() {
   try {
     if (!currentUserIsNamedAccount) return;
-    if (currentUserRole === "admin") { _trecLoadUsers(() => { const a = _trecAdminStats(); _trecStat0 = { over: a.over.length, part: a.part.length, need: a.need.length }; try { _fxRenderAlertStrip(true); } catch (e) {} _trecAdminPopup(a); try { _trecRefreshUI(); } catch (e) {} }); }
+    if (currentUserRole === "admin") { _trecLoadUsers(() => { const a = _trecAdminStats(); _trecStat0 = { over: a.over.length, part: a.part.length, need: a.need.length }; try { _fxRenderAlertStrip(true); } catch (e) {} /* Yönetici girişinde açılan "Zorunlu eğitim bilgilendirmesi" penceresi kaldırıldı (kullanıcı kararı 02.11.2026); bilgi uyarı şeridinde ve Eğitim Kayıtları'nda durur / the admin sign-in popup was removed */ try { _trecRefreshUI(); } catch (e) {} }); }
     else _trecLoginCheck();
   } catch (e) { console.warn("[trec]", e); }
 }
@@ -83676,7 +83676,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-01 15:18";
+const EMS_BUILD = "2026-11-02 14:09";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
