@@ -54980,12 +54980,12 @@ function _safeArrayRemoveById(docRef, fieldName, idField, idValue, notifyLabel) 
   if (_pk) {
     const _list = (() => { try { return _REC_POLICY[_pk] && Array.isArray(_cloudBaselines[_pk]) ? _cloudBaselines[_pk] : []; } catch (e) { return []; } })();
     const _old = _list.find(x => String(x[idField]) === String(idValue));
-    if (!_userHasScope(_recItemScope(_pk, _old))) { _recNotice("denied"); return; }
+    if (!_userHasScope(_recItemScope(_pk, _old))) { _recNotice("denied"); return Promise.resolve(false); }
     _requestRecordChange(_pk, "delete", idValue, null);
-    return;
+    return Promise.resolve(false);
   }
   // Okuma + yazma tek işlemde: arada eklenen kayıt kaybolmaz / read + write in one transaction: a record added meanwhile is not lost
-  _runTransactionWithRetry(tx => tx.get(docRef).then(snap => {
+  return _runTransactionWithRetry(tx => tx.get(docRef).then(snap => {
     const data = snap.exists ? snap.data() : {};
     const arr = Array.isArray(data[fieldName]) ? data[fieldName] : [];
     const newArr = arr.filter(x => String(x[idField]) !== String(idValue));
@@ -54994,7 +54994,7 @@ function _safeArrayRemoveById(docRef, fieldName, idField, idValue, notifyLabel) 
     }, {
       merge: true
     });
-  })).catch(e => _notifySaveWriteFailure(notifyLabel, e));
+  })).then(() => true).catch(e => { _notifySaveWriteFailure(notifyLabel, e); return false; });
 }
 // Birden çok varsayılan soruyu TEK işlemde siler (yüzlerce eşzamanlı işlem "failed-precondition" hatası verir) /
 // Deletes several default questions in ONE transaction (hundreds of concurrent transactions cause "failed-precondition")
@@ -55026,7 +55026,7 @@ function _safeRestoreDefaultQuestions(docRef, ids, notifyLabel) {
   })).catch(e => { console.warn("[Soru geri getirme / Question restore] " + notifyLabel, e && e.code); throw e; });
 }
 function _safeDeleteDefaultQuestion(docRef, id, notifyLabel) {
-  _runTransactionWithRetry(tx => tx.get(docRef).then(snap => {
+  return _runTransactionWithRetry(tx => tx.get(docRef).then(snap => {
     const data = snap.exists ? snap.data() : {};
     const arr = Array.isArray(data.auditQuestions) ? data.auditQuestions : [];
     const newArr = arr.filter(q => String(q.id) !== String(id));
@@ -55038,7 +55038,7 @@ function _safeDeleteDefaultQuestion(docRef, id, notifyLabel) {
     }), {
       merge: true
     });
-  })).catch(e => _notifySaveWriteFailure(notifyLabel, e));
+  })).then(() => true).catch(e => { _notifySaveWriteFailure(notifyLabel, e); return false; });
 }
 function _safeDeleteDefaultProductionChecklistItem(docRef, id, notifyLabel) {
   _runTransactionWithRetry(tx => tx.get(docRef).then(snap => {
@@ -64200,26 +64200,35 @@ function deleteModalItem(id, type) {
   if (!deleteGuard(_delLabel, _delPhotoRef)) return;
   // Birleşik soru: diğer bölümlerdeki kopyalar da silinir, yoksa listede kopyası "geri gelir" /
   // Merged question: copies in other modules are deleted too, otherwise a copy "comes back" in the list
+  // Kullanıcı kuralı (02.11.2026): silme YALNIZ bu bölümdeki soruyu siler; birleşik sorunun diğer bölümlerdeki kopyaları kalır /
+  // User rule: deletion removes ONLY the question in this section; the merged question's copies in other sections stay
   const _delGroup = type === "q" && _delSrc ? _qGroup(id) : null;
-  const _delIds = _delGroup ? _delGroup.members.map(m => m.id) : [ id ];
+  const _delIds = [ id ];
   const _delMods = [];
-  if (_delGroup) _delGroup.members.forEach(m => { const n = String(getCustomerCatName(normCat(m.category))).replace(/&amp;/g, "&"); if (!_delMods.includes(n)) _delMods.push(n); });
-  const _delMsg = _delIds.length > 1 ? t3("Bu soru birleşik; şu bölümlerde ortak: ", "This question is merged; it is shared by: ", "السؤال ده مدموج؛ مشترك في: ") + _delMods.join(", ") + "\n\n" + t3("Tüm bölümlerden (" + _delIds.length + " kayıt) kalıcı olarak silinecek. Bağlı bulgular ve fotoğraflar silinmez. Emin misiniz?", "It will be permanently deleted from all modules (" + _delIds.length + " records). Linked findings and photos are kept. Are you sure?", "هيتمسح نهائي من كل الأقسام (" + _delIds.length + " سجلات). الملاحظات والصور المرتبطة مش بتتمسح. متأكد؟") : t3("Bu kaydı silmek istediğinizden emin misiniz?", "Are you sure you want to delete this record?", "متأكد إنك عايز تمسح السجل ده؟");
+  if (_delGroup) _delGroup.members.forEach(m => { if (m.id === id) return; const n = String(getCustomerCatName(normCat(m.category))).replace(/&amp;/g, "&"); if (!_delMods.includes(n)) _delMods.push(n); });
+  const _delMsg = _delMods.length ? t3("Bu soru yalnızca bu bölümden silinecek ve geri gelmeyecek. Şu bölümlerde kalmaya devam eder: ", "This question will be deleted from this section only and will not come back. It stays in: ", "السؤال ده هيتمسح من القسم ده بس ومش هيرجع. هيفضل موجود في: ") + _delMods.join(", ") + "\n\n" + t3("Bağlı bulgular ve fotoğraflar silinmez. Emin misiniz?", "Linked findings and photos are kept. Are you sure?", "الملاحظات والصور المرتبطة مش بتتمسح. متأكد؟") : t3("Bu kaydı silmek istediğinizden emin misiniz?", "Are you sure you want to delete this record?", "متأكد إنك عايز تمسح السجل ده؟");
   if (confirm(_delMsg)) {
     if (_delSrc && FIREBASE_ENABLED && fbDb) {
       const _docName = type === "q" ? "questions" : "certificates";
       const _fieldName = type === "q" ? "auditQuestions" : "certificatesData";
+      const _delJobs = [];
       _delIds.forEach(did => {
         const _dq = type === "q" ? auditQuestions.find(x => x.id === did) : null;
         if (type === "q" && defaultAuditQuestions.some(dq => dq.id === did)) {
           if (!deletedDefaultQuestionIds.includes(did)) deletedDefaultQuestionIds.push(did);
-          _safeDeleteDefaultQuestion(fbDb.collection("ems_csr").doc("questions"), did, "questions");
-          if (_dq && _isCustQ(_dq)) _safeArrayRemoveById(fbDb.collection("ems_csr").doc("customerQuestions"), "customerQuestions", "id", did, "customerQuestions");
+          _delJobs.push(_safeDeleteDefaultQuestion(fbDb.collection("ems_csr").doc("questions"), did, "questions"));
+          if (_dq && _isCustQ(_dq)) _delJobs.push(_safeArrayRemoveById(fbDb.collection("ems_csr").doc("customerQuestions"), "customerQuestions", "id", did, "customerQuestions"));
         } else {
-          _safeArrayRemoveById(fbDb.collection("ems_csr").doc(_docName), _fieldName, "id", did, _docName);
-          if (_dq && _isCustQ(_dq)) _safeArrayRemoveById(fbDb.collection("ems_csr").doc("customerQuestions"), "customerQuestions", "id", did, "customerQuestions");
+          _delJobs.push(_safeArrayRemoveById(fbDb.collection("ems_csr").doc(_docName), _fieldName, "id", did, _docName));
+          if (_dq && _isCustQ(_dq)) _delJobs.push(_safeArrayRemoveById(fbDb.collection("ems_csr").doc("customerQuestions"), "customerQuestions", "id", did, "customerQuestions"));
         }
       });
+      // Silindi uyarısı: yalnız bulut yazımı gerçekten başarılıysa gösterilir / "Deleted" notice: shown only if the cloud write really succeeded
+      Promise.all(_delJobs).then(rs => {
+        if (rs.every(Boolean)) showEmsToast(type === "q" ? t3("🗑️ Soru silindi (yalnız bu bölümden).", "🗑️ Question deleted (this section only).", "🗑️ السؤال اتمسح (من القسم ده بس).") : t3("🗑️ Kayıt silindi.", "🗑️ Record deleted.", "🗑️ السجل اتمسح."), 4000, "var(--success, #16A34A)");
+      });
+    } else if (_delSrc) {
+      showEmsToast(t3("🗑️ Soru silindi.", "🗑️ Question deleted.", "🗑️ السؤال اتمسح."), 4000, "var(--success, #16A34A)");
     }
     if (type === "q") {
       const _delSet = new Set(_delIds);
@@ -83686,7 +83695,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 16:34";
+const EMS_BUILD = "2026-11-02 16:35";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
