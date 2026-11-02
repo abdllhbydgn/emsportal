@@ -671,3 +671,6 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 ## 02.11.2026 — Her yerde "Silindi" uyarısı + silinen geri gelmesin
 - `window.confirm` sarıldı: "sil/delete/kaldır/مسح/حذف" içeren onay kabul edilirse `_delIntentMark`; buluta yazılan belgede kayıt gerçekten eksilirse (`_transactionalMergeSave` → `_delToast`) ya da 4,5 sn sonra (yazma hatası yoksa, yalnız admin) yeşil "Silindi" uyarısı. Personelin silmesi onaya gittiği için personele "silindi" denmez.
 - Geri gelmesin: yazmalar tek sıra + failed-precondition yeniden denenir; bu oturumda silinen varsayılan sorular (`_pendDelQ`) bulut güncellemesiyle listeden düşüp geri eklenmez. Soru silme yalnız o bölümden. Sürüm 2026-11-02 16:39 (İstanbul).
+
+## 02.11.2026 — Soru silme: aynı bölümdeki kopyalar birlikte silinir
+- Sivil Savunma gibi bölümlerde aynı soru birden çok kez kayıtlı (örn. 267 ve 1016, ikisi `cd`, birleşik grup). Silince yalnız tıklanan gidiyor, kopya kalıyordu ("3 kere sildim"). Artık `deleteModalItem` grubun AYNI kategorideki tüm üyelerini siler; başka bölümlerdekiler kalır. Sürüm 2026-11-02 16:45 (İstanbul).
