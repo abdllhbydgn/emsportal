@@ -732,3 +732,7 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 
 ## 02.11.2026 — Arapça (RTL) başlık şeridi
 - Arapçada (`html[dir=rtl]`) başlık+alt yazı SAĞA yaslı, saatler SOLDA; sade tema `.dept-heading`/`.dept-banner` için `text-align:left !important` zorluyordu, RTL için aynı :not() zincirli override eklendi. Saatlerin mutlak yerleşimi artık yalnız >=1200 px (altında başlığın altında düz satır, `display:flex`: LTR solda, RTL sağda); 1100–1200 px'te Türkçede başlığa değme düzeltildi. Altı genişlikte (1920–390) AR/TR çakışma ve yan kayma ölçüldü: yok. Sürüm 2026-11-02 18:39 (İstanbul).
+
+## 02.11.2026 — Başlık boyutu (JS ile sığdırma) + ziyaretçi ekranı Arapça ayna düzeni
+- `_deptFit()` (`<script id="dept-clocks-js">`): başlık (.dept-heading) fontu, banner genişliği − saat genişliği − dolgu ölçülerek 24–50 px (Arapça 62 px) arasında sığdırılır; resize, dil değişimi ve her saniye çalışır; <1200 px'te serbest bırakılır. Ziyaretçi modunun `!important` font kuralını satır içi `!important` ezer. EN başlık en uzunu (TR'den ~%17 geniş); CSS clamp tahmini EN'de saatlere değiyordu, bu yüzden ölçüme geçildi.
+- Ziyaretçi modu (`body.visitor-mode`) + Arapça (`html[dir=rtl]`): köşe logosu SAĞA (`.ems-corner-logo`), banner `padding-right`, saatler solda = yönetici ekranının aynası (önce saatler solda logonun üstüne biniyordu). 1920–390 px × TR/EN/AR ölçüldü: çakışma ve yan kayma yok. Sürüm 2026-11-02 18:46 (İstanbul).
