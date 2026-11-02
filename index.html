@@ -4597,8 +4597,8 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
       <div class="dept-heading" data-i18n="dept_heading">KALİTE GÜVENCE MÜDÜRLÜĞÜ</div>
       <div class="dept-sub" data-i18n="dept_sub">Sürdürülebilirlik, Çevre, Kimyasal ve İş Güvenliği Yönetimi</div>
       <div class="dept-clocks" id="dept-clocks" aria-label="Türkiye ve Mısır saati">
-        <div class="dc" data-tz="Europe/Istanbul" data-name="tr"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span><b class="dc-time">--:--</b></div></div>
-        <div class="dc" data-tz="Africa/Cairo" data-name="eg"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span><b class="dc-time">--:--</b></div></div>
+        <div class="dc" data-tz="Europe/Istanbul" data-name="tr"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span></div></div>
+        <div class="dc" data-tz="Africa/Cairo" data-name="eg"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span></div></div>
       </div>
     </div>
     <div id="fx-alert-strip" style="display:none;"></div>
@@ -83901,7 +83901,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 18:07";
+const EMS_BUILD = "2026-11-02 18:12";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84015,9 +84015,8 @@ html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { po
 .dc { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .dc-svg, .dc-svg svg { width: 100px; height: 100px; display: block; }
 .dc-svg svg { filter: drop-shadow(0 2px 4px rgba(15,23,42,.22)); }
-.dc-lab { display: flex; align-items: baseline; gap: 6px; line-height: 1; white-space: nowrap; }
-.dc-name { font-size: 10.5px; font-weight: 800; letter-spacing: .09em; color: #1A3660; text-transform: uppercase; }
-.dc-time { font-size: 13px; font-weight: 800; color: #1A3660; font-variant-numeric: tabular-nums; }
+.dc-lab { display: flex; justify-content: center; width: 100%; line-height: 1; white-space: nowrap; text-align: center; }
+.dc-name { font-size: 12px; font-weight: 800; letter-spacing: .12em; color: #1A3660; text-transform: uppercase; text-align: center; }
 @media (max-width: 1400px) { .dc-svg, .dc-svg svg { width: 90px; height: 90px; } html .dept-banner > .dept-clocks { gap: 14px; right: 14px; } }
 @media (min-width: 1101px) { .dept-banner { min-height: 126px; } }
 @media (max-width: 1100px) { html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { position: static; transform: none; display: inline-flex; margin-top: 10px; gap: 18px; } .dc-svg, .dc-svg svg { width: 84px; height: 84px; } }
@@ -84113,6 +84112,8 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
       t += '<text x="' + x.toFixed(1) + '" y="' + (y + 8).toFixed(1) + '" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="23" font-weight="800" fill="#1A3660">' + i + '</text>';
     }
     return '<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="97" fill="#1A3660"/><circle cx="100" cy="100" r="92" fill="#fff"/>' + t +
+      '<text x="100" y="77" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="20" font-weight="800" letter-spacing="2" fill="#D5202F">EMS</text>' +
+      '<text x="100" y="91" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="3.2" fill="#1A3660">PORTAL</text>' +
       '<line class="dc-h" x1="100" y1="108" x2="100" y2="58" stroke="#1A3660" stroke-width="8" stroke-linecap="round"/>' +
       '<line class="dc-m" x1="100" y1="112" x2="100" y2="34" stroke="#1A3660" stroke-width="5.5" stroke-linecap="round"/>' +
       '<line class="dc-s" x1="100" y1="118" x2="100" y2="22" stroke="#D5202F" stroke-width="2.4" stroke-linecap="round"/>' +
@@ -84128,9 +84129,7 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
     return o;
   }
   function nm(k) {
-    var L = (typeof currentLang === "string" ? currentLang : "tr");
-    var T = { tr: { tr: "TÜRKİYE", eg: "MISIR" }, en: { tr: "TURKEY", eg: "EGYPT" }, ar: { tr: "تركيا", eg: "مصر" } };
-    return (T[L] || T.tr)[k];
+    return k === "eg" ? "EGYPT" : "TÜRKİYE";
   }
   function tick() {
     if (document.hidden) return;
@@ -84140,7 +84139,6 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
         el.querySelector(".dc-h").setAttribute("transform", "rotate(" + ((h + t.minute / 60) * 30) + " 100 100)");
         el.querySelector(".dc-m").setAttribute("transform", "rotate(" + ((t.minute + t.second / 60) * 6) + " 100 100)");
         el.querySelector(".dc-s").setAttribute("transform", "rotate(" + (t.second * 6) + " 100 100)");
-        el.querySelector(".dc-time").textContent = ("0" + t.hour).slice(-2) + ":" + ("0" + t.minute).slice(-2);
         el.querySelector(".dc-name").textContent = nm(el.getAttribute("data-name"));
       } catch (e) {}
     });
