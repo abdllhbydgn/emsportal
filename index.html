@@ -68001,6 +68001,9 @@ function _findingPhotoCellHtml(auditId, findingNo, linkedQ, linkedQHasPhoto) {
 function _questionPhotoCellHtml(questionId, forceCust) {
   const q = auditQuestions.find(x => x.id === questionId);
   if (!q) return '<span style="color:var(--muted); font-size:11px;">—</span>';
+  // Sivil Savunma: soru başına 2 fotoğraf (kullanıcı kararı 02.11.2026): ilk dosya eklenince ikinci "+" kutusu çıkar; diğer bölümlerde 1 yer (değişmedi) /
+  // Civil Defense: 2 photos per question: the second "+" box appears once the first file is added; other sections keep 1 place (unchanged)
+  const _cd2 = q.category === "cd", _s1 = !!(q.hasPhoto || q.mediaType === "office"), _s2 = !!(q.hasPhoto2 || q.mediaType2 === "office");
   let html = '<div style="display:flex; align-items:flex-start; gap:8px; padding-inline-end:6px;">';
   for (let slot = 1; slot <= QUESTION_PHOTO_MAX_SLOTS; slot++) {
     const k = _qPhotoSlotKeys(slot), _st = html.length, _cust = !!forceCust || q.category === "custq" || [ "inditex", "ms" ].includes(q.category);
@@ -68010,7 +68013,7 @@ function _questionPhotoCellHtml(questionId, forceCust) {
       html += `\n        <div style="position:relative; flex-shrink:0;">\n          <img loading="lazy" decoding="async" id="q-thumb-${questionId}-${slot}" onclick="openQuestionPhotoLightbox(${questionId}, ${slot})" title="${t3("Büyütmek için tıklayın", "Click to enlarge", "اضغط للتكبير")}" onerror="this.style.visibility='hidden'" style="width:60px; height:60px; object-fit:cover; border-radius:6px; border:1.5px solid var(--border-h); cursor:pointer; background:#eef0f4; visibility:hidden;" alt="">\n          <button onclick="event.stopPropagation(); deleteQuestionPhoto(${questionId}, ${slot})" title="${t3("Sil", "Delete", "حذف")}" style="position:absolute; top:-5px; right:-5px; width:14px; height:14px; border-radius:50%; background:var(--danger); color:#fff; border:1.5px solid #fff; font-size:8px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;">✕</button>\n        </div>`;
     } else if (q[k.hasPendingPhotoField]) {
       html += `\n        <span title="${t3("Yeni fotoğraf/dosya yönetici onayı bekliyor", "New photo/file awaiting admin approval", "صورة/ملف جديد مستني موافقة المسؤول")}" style="display:inline-flex; align-items:center; justify-content:center; width:60px; height:60px; flex-shrink:0; background:var(--warning-bg, #fff7e6); color:var(--warning, #b45309); border:1.5px solid var(--warning, #b45309); border-radius:6px; font-size:13px; ${currentUserRole === "admin" ? "cursor:pointer;" : ""}" ${currentUserRole === "admin" ? `onclick="handlePendingBadgeClick('question_photo', ${questionId})"` : ""}>⏳</span>`;
-    } else if ((slot === 1 && (_cust || _qPhotoFilledCount(q) === 0)) || slot === 2 && _cust) {
+    } else if ((slot === 1 && (_cust || _qPhotoFilledCount(q) === 0 || _cd2 && _s2)) || slot === 2 && (_cust || _cd2 && _s1)) {
       // Müşteri dışı sorularda başka yuvada fotoğraf varsa boş "+" gösterilmez (tek fotoğraf görünür) /
       // For non-customer questions an empty "+" is not shown when the photo sits in another slot (one photo is displayed)
       // Müşteri sorularında 2 yer: Bulgu + Düzeltme; diğer modüllerde tek yer. Eski 3. fotoğraflar silinmez /
@@ -83825,7 +83828,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 17:13";
+const EMS_BUILD = "2026-11-02 17:30";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -83909,6 +83912,14 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   .findings-table th:nth-child(4), .findings-table td:nth-child(4) { width: 26% !important; }
   .findings-table .status-sel { width: auto !important; min-width: 0 !important; max-width: none !important; flex-basis: auto !important; }
 }
+</style>
+<style id="q-hide-related">
+/* Soru listesinde "İlgili Müşteriler" sütunu ekranda gizlenir; fotoğraf/dosya eklemeye yer kalsın (kullanıcı isteği, 02.11.2026). PDF/Excel'e yansımaz: sütun tabloda durur. */
+#global-filter-modal #modal-table-wrap table > thead > tr > th:nth-child(5),
+#global-filter-modal #modal-table-wrap table > tbody > tr > td:nth-child(5):not([colspan]) { display: none !important; }
+/* Fotoğraf sütunu: en az iki dosya kutusu yan yana sığar, durum düğmesinin üstüne taşmaz */
+#global-filter-modal #modal-table-wrap table > thead > tr > th:nth-child(6),
+#global-filter-modal #modal-table-wrap table > tbody > tr > td:nth-child(6):not([colspan]) { min-width: 150px; }
 </style>
 <style id="ems-mobile-polish">
 /* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Kırmızı kalan kısım koyu yayla aynı kalınlıkta (21 px), yay 22 px: %100'de kırmızı kenar görünmez. */

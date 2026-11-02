@@ -693,3 +693,9 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 ## 02.11.2026 — "İlk silişte geri geliyor" + Duman Tahliye sadeleştirme
 - Geri gelme sebebi: buluttan gelen ESKİ `questions` kaydı (silme buluta yazılmadan önce) `_qCombineCloud` ile yerel listeyi eziyordu. Çözüm: `_qPendingDel` (silinen soru bulutta yok olana ya da 2 dk geçene kadar listeden süzülür; `deleteModalItem` kaydeder). Toplu silme düğmesi denendi ama kullanıcı istemedi, eklenmedi.
 - Sivil Savunma "Duman Tahliye Sistemi": yalnız 523 kaldı; 524–562 (39 soru) her açılışta listeden çıkar, yönetici girişinde bulutta bir kez silinir (`cleanup:cd-smoke-keep-one`, `deletedDefaultQuestionIds`'e eklenir). Müşteri sorularına (custq) dokunulmadı. Sürüm 2026-11-02 17:13 (İstanbul).
+
+## 02.11.2026 — "İlgili Müşteriler" sütunu gizleme (ONAY BEKLİYOR, main'e alınmadı)
+- Soru listesi tablosunda 5. sütun (`#q-hide-related` CSS) ekranda gizlendi, fotoğraf sütunu en az 150 px; PDF/rapor etkilenmez. Önce–sonra görseli kullanıcıya gönderildi; "uygula" gelince PR + birleştir. Ayrıca fotoğraf yeri sayısı (1 → 2/3) sorusu açık.
+
+## 02.11.2026 — Sivil Savunma: soru başına 2 fotoğraf + İlgili Müşteriler sütunu ekranda gizli (YAYINDA)
+- Seçenek A (kullanıcı kararı): yalnız `cd` (Sivil Savunma) sorularında 2 fotoğraf yeri: 1. dosya eklenince 2. "+" çıkar (`_cd2/_s1/_s2`, `_questionPhotoCellHtml`); diğer bölümler 1 yer (değişmedi). İlgili Müşteriler sütunu tüm soru listelerinde ekranda gizli (CSS `#q-hide-related`), PDF/rapor etkilenmez; fotoğraf sütunu en az 150 px. Sürüm 2026-11-02 17:30 (İstanbul).
