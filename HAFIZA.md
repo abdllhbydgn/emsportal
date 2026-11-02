@@ -712,3 +712,6 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 
 ## 02.11.2026 — WhatsApp önizleme görseli v3
 - v2'de yazılar WhatsApp'ın ~100 px'lik küçük kutusunda okunmuyordu. `og-image-v3.png`: beyaz zemin, ortada BÜYÜK EMS Eroğlu logosu, alt kırmızı şerit; küçük yazı YOK (başlık/açıklamayı WhatsApp zaten metin olarak yazar). Meta etiketleri v3'e çevrildi. Yeni görsel için link sonundaki `?v=` değişmeli (önbellek). Sürüm 2026-11-02 17:56 (İstanbul).
+
+## 02.11.2026 — Kullanıcı Yönetimi: "🔑 Şifre sıfırla" (yalnız yönetici)
+- `resetUserPassword(uid, email)`: onay sorar, `fbAuth.sendPasswordResetEmail` ile kullanıcının e-postasına Firebase bağlantısı gönderir (dil TR/EN/AR `languageCode`); yönetici şifreyi GÖRMEZ, eski şifre bağlantı kullanılana dek geçerli. Aynı kullanıcıya 60 sn içinde 2. gönderim engellenir; hata mesajları (hesap yok, çok deneme, geçersiz e-posta) 3 dilde. Düğme kullanıcı detay başlığında ("Pasif yap" ile "Kullanıcıyı Sil" arasında). Belirli bir şifreyi başkası için atama YOK (sunucu kodu/Blaze gerekir). Sürüm 2026-11-02 17:58 (İstanbul).

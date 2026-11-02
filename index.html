@@ -47067,6 +47067,7 @@ function _umDetailHtml(u) {
     <div style="min-width:0;"><div style="font-size:16px;font-weight:800;">${escHtml(u.displayName || u.email || u.uid)}</div><small style="color:#64748b;">${escHtml(u.email || "")}${created ? " · " + t3("Kayıt", "Registered", "التسجيل") + ": " + created : ""}</small>${jobLine}</div>
     <span style="margin-left:auto;font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;background:${pend ? "var(--warning-bg)" : "var(--success-bg)"};color:${pend ? "var(--warning)" : "var(--success)"};">${pend ? "⏳ " + t3("Onay Bekliyor", "Awaiting Approval", "مستني الموافقة") : "✅ " + t3("Onaylı", "Approved", "اتوافق عليه")}</span>
     <button type="button" class="um-q" style="padding:6px 11px;font-size:12px;" onclick="_umSetOff(['${u.uid}'],${_umIsOff(u) ? "false" : "true"})">${_umIsOff(u) ? "▶ " + t3("Aktif et", "Activate", "تفعيل") : "⏸ " + t3("Pasif yap", "Deactivate", "إيقاف")}</button>
+    <button type="button" class="um-q" style="padding:6px 11px;font-size:12px;" onclick="resetUserPassword('${u.uid}', '${(u.email || "").replace(/'/g, "\\'")}')" title="${escHtml(t3("Kullanıcının e-postasına şifre sıfırlama bağlantısı gönderir; yeni şifreyi kullanıcı kendisi belirler", "Sends a password reset link to the user's e-mail; the user sets the new password", "بيبعت رابط إعادة تعيين كلمة المرور على بريد المستخدم؛ المستخدم بيختار الكلمة الجديدة"))}">🔑 ${t3("Şifre sıfırla", "Reset password", "إعادة تعيين كلمة المرور")}</button>
     <button type="button" onclick="deleteUserAccount('${u.uid}', '${(u.email || "").replace(/'/g, "\\'")}')" style="font-size:12px;font-weight:700;background:none;border:1.5px solid var(--danger);color:var(--danger);border-radius:8px;padding:6px 11px;cursor:pointer;">${t3("Kullanıcıyı Sil", "Delete User", "مسح المستخدم")}</button></div>
   <div class="um-bd" data-uid="${u.uid}">
     ${_umOffNoteHtml(u)}${_umQuickBarHtml(u)}${_umHistoryHtml(u)}
@@ -47124,6 +47125,33 @@ function deleteAllUserAccounts() {
     console.error("Toplu kullanıcı silme hatası / Bulk user delete error:", e);
     alert(t3("Silme sırasında bir hata oluştu.", "An error occurred while deleting.", "حصل خطأ أثناء المسح."));
   });
+}
+// Şifre sıfırlama (yalnız yönetici): Firebase kullanıcının e-postasına bağlantı gönderir; yeni şifreyi kullanıcı kendisi koyar, yönetici şifreyi GÖRMEZ.
+// Bağlantıya basılana kadar eski şifre geçerli kalır. Aynı kullanıcıya 60 sn içinde ikinci gönderim engellenir. /
+// Password reset (admin only): Firebase e-mails the user a link; the user sets the new password, the admin never sees it. The old password stays valid until the link is used.
+const _pwResetLast = {};
+function resetUserPassword(uid, email) {
+  if (currentUserRole !== "admin") { alert(t3("Bu işlem sadece yönetici tarafından yapılabilir.", "This action can only be performed by an admin.", "الإجراء ده المسؤول بس هو اللي يقدر ينفذه.")); return; }
+  email = String(email || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert(t3("Bu kullanıcının geçerli bir e-posta adresi yok.", "This user has no valid e-mail address.", "المستخدم ده ملوش بريد إلكتروني صالح.")); return; }
+  if (!fbAuth) { alert(t3("Giriş sistemi hazır değil. Sayfayı yenileyip tekrar deneyin.", "Sign-in system is not ready. Refresh the page and try again.", "نظام الدخول مش جاهز. حدّث الصفحة وجرّب تاني.")); return; }
+  if (_pwResetLast[uid] && Date.now() - _pwResetLast[uid] < 60000) { showEmsToast(t3("⏳ Bu kullanıcıya az önce gönderildi; 1 dakika sonra tekrar deneyin.", "⏳ Just sent to this user; try again in 1 minute.", "⏳ لسه مبعوت للمستخدم ده؛ جرّب بعد دقيقة."), 5000); return; }
+  if (!confirm(t3(`"${email}" adresine şifre sıfırlama e-postası gönderilsin mi?\n\nKullanıcı e-postadaki bağlantıdan yeni şifresini kendisi belirler. Siz şifreyi görmezsiniz. Bağlantıya basılana kadar eski şifre geçerli kalır.`, `Send a password reset e-mail to "${email}"?\n\nThe user sets the new password from the link in the e-mail. You will not see the password. The old password stays valid until the link is used.`, `تبعت إيميل إعادة تعيين كلمة المرور إلى "${email}"؟\n\nالمستخدم هيختار كلمة المرور الجديدة من الرابط في الإيميل. إنت مش هتشوف كلمة المرور. الكلمة القديمة هتفضل شغالة لحد ما يستخدم الرابط.`))) return;
+  _pwResetLast[uid] = Date.now();
+  const _lc0 = fbAuth.languageCode;
+  try { fbAuth.languageCode = currentLang === "ar" ? "ar" : currentLang === "en" ? "en" : "tr"; } catch (e) {}
+  fbAuth.sendPasswordResetEmail(email).then(() => {
+    showEmsToast(t3("📧 Şifre sıfırlama e-postası gönderildi: ", "📧 Password reset e-mail sent: ", "📧 إيميل إعادة تعيين كلمة المرور اتبعت: ") + email, 7000, "var(--success, #16A34A)");
+  }).catch(e => {
+    delete _pwResetLast[uid];
+    console.error("Şifre sıfırlama hatası / Password reset error:", e);
+    const c = e && e.code;
+    const msg = c === "auth/user-not-found" ? t3("Bu e-posta için giriş hesabı bulunamadı.", "No sign-in account found for this e-mail.", "مفيش حساب دخول للإيميل ده.")
+      : c === "auth/too-many-requests" ? t3("Çok fazla deneme yapıldı. Biraz bekleyip tekrar deneyin.", "Too many attempts. Wait a while and try again.", "محاولات كتير. استنى شوية وجرّب تاني.")
+      : c === "auth/invalid-email" ? t3("E-posta adresi geçersiz.", "The e-mail address is invalid.", "عنوان الإيميل غير صالح.")
+      : t3("E-posta gönderilemedi. Bağlantıyı kontrol edip tekrar deneyin.", "The e-mail could not be sent. Check your connection and try again.", "الإيميل ماتبعتش. اتأكد من الاتصال وجرّب تاني.");
+    showEmsToast("⚠️ " + msg, 7000, "var(--danger, #DC2626)");
+  }).finally(() => { try { fbAuth.languageCode = _lc0; } catch (e) {} });
 }
 function deleteUserAccount(uid, email) {
   if (!roleGuard()) return;
@@ -83832,7 +83860,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 17:56";
+const EMS_BUILD = "2026-11-02 17:58";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
