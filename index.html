@@ -64249,9 +64249,12 @@ function deleteModalItem(id, type) {
   // Kullanıcı kuralı (02.11.2026): silme YALNIZ bu bölümdeki soruyu siler; birleşik sorunun diğer bölümlerdeki kopyaları kalır /
   // User rule: deletion removes ONLY the question in this section; the merged question's copies in other sections stay
   const _delGroup = type === "q" && _delSrc ? _qGroup(id) : null;
-  const _delIds = [ id ];
+  // Aynı bölümde aynı sorunun kopyaları (aynı kategori) da birlikte silinir; başka bölümlerdekiler kalır /
+  // Copies of the same question inside the SAME section (same category) are deleted together; those in other sections stay
+  const _delCat = _delSrc ? normCat(_delSrc.category) : null;
+  const _delIds = _delGroup && type === "q" ? _delGroup.members.filter(m => m.id === id || normCat(m.category) === _delCat).map(m => m.id) : [ id ];
   const _delMods = [];
-  if (_delGroup) _delGroup.members.forEach(m => { if (m.id === id) return; const n = String(getCustomerCatName(normCat(m.category))).replace(/&amp;/g, "&"); if (!_delMods.includes(n)) _delMods.push(n); });
+  if (_delGroup) _delGroup.members.forEach(m => { if (_delIds.includes(m.id)) return; const n = String(getCustomerCatName(normCat(m.category))).replace(/&amp;/g, "&"); if (!_delMods.includes(n)) _delMods.push(n); });
   const _delMsg = _delMods.length ? t3("Bu soru yalnızca bu bölümden silinecek ve geri gelmeyecek. Şu bölümlerde kalmaya devam eder: ", "This question will be deleted from this section only and will not come back. It stays in: ", "السؤال ده هيتمسح من القسم ده بس ومش هيرجع. هيفضل موجود في: ") + _delMods.join(", ") + "\n\n" + t3("Bağlı bulgular ve fotoğraflar silinmez. Emin misiniz?", "Linked findings and photos are kept. Are you sure?", "الملاحظات والصور المرتبطة مش بتتمسح. متأكد؟") : t3("Bu kaydı silmek istediğinizden emin misiniz?", "Are you sure you want to delete this record?", "متأكد إنك عايز تمسح السجل ده؟");
   if (confirm(_delMsg)) {
     if (_delSrc && FIREBASE_ENABLED && fbDb) {
@@ -83742,7 +83745,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 16:39";
+const EMS_BUILD = "2026-11-02 16:45";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
