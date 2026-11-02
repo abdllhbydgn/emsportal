@@ -83901,7 +83901,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 18:12";
+const EMS_BUILD = "2026-11-02 18:13";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84108,8 +84108,8 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
       t += '<line x1="' + (c + r1 * Math.sin(a)).toFixed(1) + '" y1="' + (c - r1 * Math.cos(a)).toFixed(1) + '" x2="' + (c + r2 * Math.sin(a)).toFixed(1) + '" y2="' + (c - r2 * Math.cos(a)).toFixed(1) + '" stroke="' + (i % 5 === 0 ? "#1A3660" : "#8A95A8") + '" stroke-width="' + (i % 5 === 0 ? 3 : 1.2) + '" stroke-linecap="round"/>';
     }
     for (i = 1; i <= 12; i++) {
-      a = i * 30 * Math.PI / 180; x = c + 62 * Math.sin(a); y = c - 62 * Math.cos(a);
-      t += '<text x="' + x.toFixed(1) + '" y="' + (y + 8).toFixed(1) + '" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="23" font-weight="800" fill="#1A3660">' + i + '</text>';
+      a = i * 30 * Math.PI / 180; x = c + 63 * Math.sin(a); y = c - 63 * Math.cos(a);
+      t += '<text x="' + x.toFixed(1) + '" y="' + (y + 6.3).toFixed(1) + '" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#1A3660">' + i + '</text>';
     }
     return '<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="97" fill="#1A3660"/><circle cx="100" cy="100" r="92" fill="#fff"/>' + t +
       '<text x="100" y="77" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="20" font-weight="800" letter-spacing="2" fill="#D5202F">EMS</text>' +
