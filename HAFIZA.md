@@ -725,3 +725,7 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 
 ## 02.11.2026 — YAYINDA: saatler (ızgara yok, başlıkla aynı hizada) + WhatsApp kartı v5
 - og:title/twitter:title = 'EMS PORTAL - KALİTE GÜVENCE MÜDÜRLÜĞÜ'; og:image/twitter:image = og-image-v5.png (logo kareyi doldurur). WhatsApp domain satırı (abdllhbydgn.github.io) kaldırılamaz. Uzun link sorunu: adres çubuğundaki `?v=` (Yenile şeridi, ~satır 83930) ve `#v=...` (saveLastView) — kullanıcı 'böyle kalsın' dedi, DEĞİŞTİRİLMEDİ; öneri: ?v= adres çubuğundan silinsin + 'Linki kopyala' düğmesi. Sürüm 2026-11-02 18:25 (İstanbul).
+
+## 02.11.2026 — Saat adları Arapçada karışıyordu
+- Sitenin otomatik çeviri sistemi DOM metnindeki 'TÜRKİYE'yi Arapçaya çeviriyor, 'EGYPT'i çevirmiyordu. Ad artık DOM metni değil CSS `::before { content: attr(data-n) }` ile yazılıyor + `translate="no"`; her dilde 'TÜRKİYE' ve 'EGYPT'. Bu çeviri sistemi DOM metnini değiştirdiği için sabit kalması gereken yazıları (marka, kod) CSS content veya data-attr ile yaz. Sürüm 2026-11-02 18:32 (İstanbul).
+- (02.11.2026 2026-11-02 18:33) Sol alttaki 'Online: N' yazısı dil değişince yenilenmiyor, eski dilde (Arapça 'متصل') kalıyordu: `setLanguage` sonunda `_onlineRender()` çağrılıyor. Dil değişince yeniden çizilmesi gereken, JS ile üretilen başka etiketler varsa aynı çözüm.
