@@ -83825,7 +83825,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 17:13";
+const EMS_BUILD = "2026-11-02 17:29";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -83909,6 +83909,14 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   .findings-table th:nth-child(4), .findings-table td:nth-child(4) { width: 26% !important; }
   .findings-table .status-sel { width: auto !important; min-width: 0 !important; max-width: none !important; flex-basis: auto !important; }
 }
+</style>
+<style id="q-hide-related">
+/* Soru listesinde "İlgili Müşteriler" sütunu ekranda gizlenir; fotoğraf/dosya eklemeye yer kalsın (kullanıcı isteği, 02.11.2026). PDF/Excel'e yansımaz: sütun tabloda durur. */
+#global-filter-modal #modal-table-wrap table > thead > tr > th:nth-child(5),
+#global-filter-modal #modal-table-wrap table > tbody > tr > td:nth-child(5):not([colspan]) { display: none !important; }
+/* Fotoğraf sütunu: en az iki dosya kutusu yan yana sığar, durum düğmesinin üstüne taşmaz */
+#global-filter-modal #modal-table-wrap table > thead > tr > th:nth-child(6),
+#global-filter-modal #modal-table-wrap table > tbody > tr > td:nth-child(6):not([colspan]) { min-width: 150px; }
 </style>
 <style id="ems-mobile-polish">
 /* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Kırmızı kalan kısım koyu yayla aynı kalınlıkta (21 px), yay 22 px: %100'de kırmızı kenar görünmez. */
