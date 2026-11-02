@@ -667,3 +667,7 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 ## 02.11.2026 — Soru silme: yalnız bu bölümden + "Soru silindi" uyarısı
 - Kullanıcı kuralı: bir soruyu silince YALNIZ o bölümdeki soru silinir ve geri gelmez (`deletedDefaultQuestionIds`); birleşik sorunun diğer bölümlerdeki kopyaları kalır (`deleteModalItem` artık grubu silmez, onay metni "şu bölümlerde kalır" der).
 - Bulut yazımı gerçekten başarılıysa yeşil "Soru silindi" uyarısı çıkar (`_safeDeleteDefaultQuestion` / `_safeArrayRemoveById` artık true/false döner). Sürüm 2026-11-02 16:35 (İstanbul).
+
+## 02.11.2026 — Her yerde "Silindi" uyarısı + silinen geri gelmesin
+- `window.confirm` sarıldı: "sil/delete/kaldır/مسح/حذف" içeren onay kabul edilirse `_delIntentMark`; buluta yazılan belgede kayıt gerçekten eksilirse (`_transactionalMergeSave` → `_delToast`) ya da 4,5 sn sonra (yazma hatası yoksa, yalnız admin) yeşil "Silindi" uyarısı. Personelin silmesi onaya gittiği için personele "silindi" denmez.
+- Geri gelmesin: yazmalar tek sıra + failed-precondition yeniden denenir; bu oturumda silinen varsayılan sorular (`_pendDelQ`) bulut güncellemesiyle listeden düşüp geri eklenmez. Soru silme yalnız o bölümden. Sürüm 2026-11-02 16:39 (İstanbul).
