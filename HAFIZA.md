@@ -721,3 +721,4 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 - Giriş kartı: "Şifremi unuttum / şifremi sıfırla" (`handleForgotPassword`): e-posta yazılınca Firebase sıfırlama e-postası; hesap var/yok aynı mesaj; aynı adrese 60 sn'de 1; yeşil başarı mesajı (`.login-error.ok`). Sürüm 2026-11-02 18:07 (İstanbul).
 - (02.11.2026 2026-11-02 18:12) Saatler: dijital saat KALDIRILDI; altta ortalı "TÜRKİYE" ve "EGYPT" (dile göre çevrilmez); kadran içinde kırmızı "EMS" + altında küçük "PORTAL". Hâlâ onay bekliyor.
 - (02.11.2026 2026-11-02 18:13) Saat rakamları küçültüldü (font 23 → 18). Hâlâ onay bekliyor.
+- (02.11.2026 2026-11-02 18:21) Saatler: sağ ızgara deseni kaldırıldı, saatler başlıkla aynı hizada (top 6 px), metin seçilemez. ONAY BEKLİYOR. Ayrıca WhatsApp: og-image-v5.png + başlık 'EMS PORTAL - KALİTE GÜVENCE MÜDÜRLÜĞÜ' henüz bağlanmadı (onay bekliyor).

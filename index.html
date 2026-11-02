@@ -83901,7 +83901,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 18:13";
+const EMS_BUILD = "2026-11-02 18:21";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84011,7 +84011,9 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
 </style>
 <style id="dept-clocks-css">
 /* Ana sayfa başlık şeridinin sağında Türkiye ve Mısır analog saatleri: şerit yüksekliğinde, 1-12 rakamlı, arka plansız (kullanıcı isteği, 02.11.2026) */
-html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { position: absolute; right: 22px; left: auto; top: 50%; transform: translateY(-50%); display: flex; gap: 22px; z-index: 3; padding: 0; background: none; border: 0; box-shadow: none; }
+html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { position: absolute; right: 22px; left: auto; top: 6px; transform: none; display: flex; gap: 22px; user-select: none; -webkit-user-select: none; z-index: 3; padding: 0; background: none; border: 0; box-shadow: none; }
+/* Başlık şeridindeki sağ taraftaki ızgara (baklava) deseni kaldırıldı (kullanıcı isteği, 02.11.2026) */
+html .dept-banner::after, html.ems-sade .dept-banner::after { display: none !important; content: none !important; }
 .dc { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .dc-svg, .dc-svg svg { width: 100px; height: 100px; display: block; }
 .dc-svg svg { filter: drop-shadow(0 2px 4px rgba(15,23,42,.22)); }
