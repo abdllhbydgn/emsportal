@@ -663,3 +663,7 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 ## 02.11.2026 — Soru silme "failed-precondition" hatası
 - Sebep: soru silerken aynı belgeye (`questions`) aynı anda 3–4 Firestore işlemi gidiyordu (silme + kaydet + birleşik üyeler); çakışıp "stored version does not match base version" veriyordu, bu hata da yeniden denenmiyordu.
 - Çözüm: `_runTransactionWithRetry` artık TÜM bulut yazmalarını tek sıradan geçirir (`_txChain`, takılan işlem en çok 25 sn bekletir) ve `failed-precondition` hatasını yeniden dener. Sürüm 2026-11-02 16:34 (İstanbul).
+
+## 02.11.2026 — Soru silme: yalnız bu bölümden + "Soru silindi" uyarısı
+- Kullanıcı kuralı: bir soruyu silince YALNIZ o bölümdeki soru silinir ve geri gelmez (`deletedDefaultQuestionIds`); birleşik sorunun diğer bölümlerdeki kopyaları kalır (`deleteModalItem` artık grubu silmez, onay metni "şu bölümlerde kalır" der).
+- Bulut yazımı gerçekten başarılıysa yeşil "Soru silindi" uyarısı çıkar (`_safeDeleteDefaultQuestion` / `_safeArrayRemoveById` artık true/false döner). Sürüm 2026-11-02 16:35 (İstanbul).
