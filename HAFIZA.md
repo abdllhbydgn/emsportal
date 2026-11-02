@@ -680,3 +680,8 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 - Yeni 5 soru `CD_EG_QUESTIONS` (8201 Mısır Yangın Kodu, 8202 sprinkler, 8203 yangın/duman kapıları, 8204 depoda sigara-kaynak-kesme-açık alev yasağı, 8205 atık yakma yasağı → env 379 + OEKO-TEX 6046 ile birleşik), AR metinleri eklendi.
 - Ruhsat sorusu 49 metni "güncel onay/ruhsat var mı ve süresi geçerli mi?" yapıldı (yalnız eski metin aynıysa, `_cdOldText`); 35/809/49/463 tek grupta birleştirildi (grup durumu en ilerideki üyeye hizalanır).
 - Resmî kod metni (madde no, söndürücü sayısı) doğrulanmadı; soru metinlerinde madde/karar numarası YOK. Sürüm 2026-11-02 16:49 (İstanbul).
+
+## 02.11.2026 — Sivil Savunma gereklilikleri Word'ü (14 madde) soru haline çevrildi
+- Kullanıcının "SİVİL SAVUNMA GEREKSİNİMLERİ" Word'ündeki 14 madde sitede ZATEN vardı (1006–1019). Yeni kayıt açılmadı; imperatif cümleler (ör. "kurun") soru haline çevrildi (TR / EN / AR), `_cdImpText` migrasyonu (yalnız metin hâlâ eski cümleyse değişir; elle düzenlenen korunur).
+- Benzer soru birleştirme: 8202 (genel sprinkler) → 52 + 1018 grubuna eklendi. Diğer maddeler farklı yer/konu olduğu için ayrı bırakıldı (yanlış "Tamamlandı" yayılmasın diye).
+- Word'deki yanıt/termin/sorumlu notları (Salih, Caner, Hened, Taner…) siteye YAZILMADI (kullanıcı istemedi; isterse `q.owner` olarak atanır). Word'de "Ameliyathane" geçen madde sitede "Operasyon salonu" (1009) — kullanıcıya soruldu. Dayanak atıfları (Çevre Yasası 4/1994, İş Kanunu 14/2025, Birleşik Bina Yasası 119/2008) soru metinlerine konmadı. Sürüm 2026-11-02 16:56 (İstanbul).
