@@ -51036,17 +51036,23 @@ function _mergeObjectByKey(cloudObj, localObj, baselineObj) {
   });
   return result;
 }
+// Tüm bulut yazmaları TEK sıradan geçer: aynı belgeye aynı anda giden işlemler birbirini bozup "failed-precondition" veriyordu (örn. soru silme) /
+// All cloud writes go through ONE queue: simultaneous transactions on the same document clashed and gave "failed-precondition" (e.g. deleting a question)
+let _txChain = Promise.resolve();
 function _runTransactionWithRetry(updateFn, maxAttempts) {
   maxAttempts = maxAttempts || 6;
   const attempt = n => fbDb.runTransaction(updateFn).catch(e => {
     const code = e && e.code;
-    const retryable = code === "aborted" || code === "already-exists" || code === "deadline-exceeded" || code === "unavailable" || code === "cancelled" || /contention|conflict/i.test(e && e.message || "");
+    const retryable = code === "aborted" || code === "already-exists" || code === "failed-precondition" || code === "deadline-exceeded" || code === "unavailable" || code === "cancelled" || /contention|conflict|does not match the required base version/i.test(e && e.message || "");
     if (n >= maxAttempts || !retryable) throw e;
     const delay = Math.min(350 * Math.pow(1.6, n), 4e3) + Math.random() * 400;
     console.warn("[Çakışma Yeniden Deneme / Contention Retry] deneme/attempt " + (n + 1) + "/" + maxAttempts + ", " + Math.round(delay) + "ms sonra tekrar / retrying in " + Math.round(delay) + "ms —", e);
     return new Promise(resolve => setTimeout(resolve, delay)).then(() => attempt(n + 1));
   });
-  return attempt(0);
+  const run = _txChain.then(() => attempt(0));
+  // Sıra, bu işlem bitince (en çok 25 sn) ilerler; takılan işlem sırayı kilitlemez / the queue advances when this one settles (max 25 s); a stuck one cannot block it
+  _txChain = Promise.race([ run.catch(() => {}), new Promise(r => setTimeout(r, 25e3)) ]);
+  return run;
 }
 const _saveRetryQ = new Map();
 let _saveRetryTimer = null;
@@ -83680,7 +83686,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 16:12";
+const EMS_BUILD = "2026-11-02 16:34";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
