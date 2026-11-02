@@ -83903,7 +83903,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 18:33";
+const EMS_BUILD = "2026-11-02 18:39";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84023,8 +84023,14 @@ html .dept-banner::after, html.ems-sade .dept-banner::after { display: none !imp
 .dc-name::before { content: attr(data-n); }
 .dc-name { font-size: 12px; font-weight: 800; letter-spacing: .12em; color: #1A3660; text-transform: uppercase; text-align: center; }
 @media (max-width: 1400px) { .dc-svg, .dc-svg svg { width: 90px; height: 90px; } html .dept-banner > .dept-clocks { gap: 14px; right: 14px; } }
-@media (min-width: 1101px) { .dept-banner { min-height: 126px; } }
-@media (max-width: 1100px) { html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { position: static; transform: none; display: inline-flex; margin-top: 10px; gap: 18px; } .dc-svg, .dc-svg svg { width: 84px; height: 84px; } }
+@media (min-width: 1200px) { .dept-banner { min-height: 126px; } }
+/* Arapça (sağdan sola): başlık ve alt yazı sağa yaslı, saatler solda (kullanıcı isteği, 02.11.2026) */
+html[dir="rtl"].ems-sade .dept-banner:not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *), html[dir="rtl"].ems-sade .dept-heading:not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) { text-align: right !important; }
+@media (min-width: 1200px) {
+  html[dir="rtl"] .dept-banner > .dept-clocks, html[dir="rtl"].ems-sade .dept-banner > .dept-clocks { left: 22px; right: auto; }
+}
+@media (min-width: 1200px) and (max-width: 1400px) { html[dir="rtl"] .dept-banner > .dept-clocks, html[dir="rtl"].ems-sade .dept-banner > .dept-clocks { left: 14px; right: auto; } }
+@media (max-width: 1199px) { html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { position: static; transform: none; display: flex; margin-top: 10px; gap: 18px; } .dc-svg, .dc-svg svg { width: 84px; height: 84px; } }
 @media (max-width: 480px) { .dept-clocks { width: 100%; box-sizing: border-box; justify-content: center; gap: 22px; } }
 </style>
 <style id="ems-mobile-polish">

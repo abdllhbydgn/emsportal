@@ -729,3 +729,6 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 ## 02.11.2026 — Saat adları Arapçada karışıyordu
 - Sitenin otomatik çeviri sistemi DOM metnindeki 'TÜRKİYE'yi Arapçaya çeviriyor, 'EGYPT'i çevirmiyordu. Ad artık DOM metni değil CSS `::before { content: attr(data-n) }` ile yazılıyor + `translate="no"`; her dilde 'TÜRKİYE' ve 'EGYPT'. Bu çeviri sistemi DOM metnini değiştirdiği için sabit kalması gereken yazıları (marka, kod) CSS content veya data-attr ile yaz. Sürüm 2026-11-02 18:32 (İstanbul).
 - (02.11.2026 2026-11-02 18:33) Sol alttaki 'Online: N' yazısı dil değişince yenilenmiyor, eski dilde (Arapça 'متصل') kalıyordu: `setLanguage` sonunda `_onlineRender()` çağrılıyor. Dil değişince yeniden çizilmesi gereken, JS ile üretilen başka etiketler varsa aynı çözüm.
+
+## 02.11.2026 — Arapça (RTL) başlık şeridi
+- Arapçada (`html[dir=rtl]`) başlık+alt yazı SAĞA yaslı, saatler SOLDA; sade tema `.dept-heading`/`.dept-banner` için `text-align:left !important` zorluyordu, RTL için aynı :not() zincirli override eklendi. Saatlerin mutlak yerleşimi artık yalnız >=1200 px (altında başlığın altında düz satır, `display:flex`: LTR solda, RTL sağda); 1100–1200 px'te Türkçede başlığa değme düzeltildi. Altı genişlikte (1920–390) AR/TR çakışma ve yan kayma ölçüldü: yok. Sürüm 2026-11-02 18:39 (İstanbul).
