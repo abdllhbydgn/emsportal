@@ -8571,7 +8571,7 @@ const UI_TRANSLATIONS = {
   nav_prod_baski: { tr: "Baskı Raporları", en: "Printing Reports", ar: "تقارير الطباعة" },
   nav_prod_nakis: { tr: "Nakış Raporları", en: "Embroidery Reports", ar: "تقارير التطريز" },
   nav_aud_internal: { tr: "İç Denetimler", en: "Internal Audits", ar: "التدقيقات الداخلية" },
-  nav_aud_csr: { tr: "CSR & Compliance", en: "CSR & Compliance", ar: "CSR & Compliance" },
+  nav_aud_csr: { tr: "CSR & Compliance", en: "CSR & Compliance", ar: "المسؤولية الاجتماعية والامتثال (CSR)" },
   nav_aud_hse: { tr: "İSG Denetimi", en: "HSE Audit", ar: "تدقيق الصحة والسلامة المهنية" },
   nav_aud_env_f: { tr: "Çevre ve Kimyasal Yönetimi", en: "Environment & Chemical Management", ar: "البيئة وإدارة المواد الكيميائية" },
   nav_aud_env: { tr: "Çevre ve Kimyasal Yönetimi Denetimi", en: "Environment & Chemical Audit", ar: "تدقيق البيئة والمواد الكيميائية" },
@@ -12966,7 +12966,7 @@ const defaultAuditQuestions = [ {
 }, {
   id: 257,
   category: "cd",
-  text: "Mekanik / Tesisat Projesi / Mechanical & Plumbing Drawings",
+  text: "Mekanik ve Tesisat Projesi / Mechanical & Plumbing Drawings",
   scope: "Su, atık su, basınçlı hava sistemleri dahil / Including water, wastewater, compressed air systems",
   status: "critical"
 }, {
@@ -13026,7 +13026,7 @@ const defaultAuditQuestions = [ {
 }, {
   id: 267,
   category: "cd",
-  text: "Güvenlik Bilgi Formaları (SDS / MSDS) / Safety Data Sheets (SDS/MSDS)",
+  text: "Güvenlik Bilgi Formaları (SDS ve MSDS) / Safety Data Sheets (SDS and MSDS)",
   scope: "Tüm kimyasallar için — Arapça versiyonu mevcut olmalı / For all chemicals — Arabic version must be available",
   status: "critical"
 }, {
@@ -13056,7 +13056,7 @@ const defaultAuditQuestions = [ {
 }, {
   id: 272,
   category: "cd",
-  text: "İşyeri Hekimi Sözleşmesi / Belgesi / Occupational Physician Contract/Certificate",
+  text: "İşyeri Hekimi Sözleşmesi ve Belgesi / Occupational Physician Contract and Certificate",
   scope: "İşçi sayısına göre tam zamanlı veya sözleşmeli / Full-time or contracted depending on workforce size",
   status: "critical"
 }, {
@@ -46477,7 +46477,7 @@ function _uaInit() {
   .ua-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:20px 20px 18px;box-shadow:0 6px 20px rgba(15,23,42,.08)}
   .ua-t{font-size:18px;font-weight:800;margin-bottom:4px}.ua-st{display:flex;align-items:center;gap:10px;margin:16px 0 10px;font-weight:800;font-size:14px}
   .ua-st b{width:26px;height:26px;border-radius:50%;background:var(--primary,#E11D2E);color:#fff;display:grid;place-items:center;font-size:13px;flex:none}
-  .ua-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ua-in input{padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;min-width:0}
+  .ua-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.ua-in input{padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;min-width:0;width:100%;box-sizing:border-box}
   .ua-pw{display:flex;gap:8px;grid-column:1/-1}.ua-pw input{flex:1}.ua-pw button{border:1.5px solid #0f2a5c;background:#fff;color:#0f2a5c;border-radius:10px;padding:0 14px;font-weight:800;font-size:12.5px;cursor:pointer;font-family:inherit;white-space:nowrap}
   .ua-pre{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.ua-p{text-align:left;border:2px solid var(--border);border-radius:13px;padding:12px 14px;background:#fff;cursor:pointer;font-family:inherit;color:inherit}
   .ua-p b{display:block;font-size:14px}.ua-p span{font-size:11.5px;color:#64748b;line-height:1.4}.ua-p.on{border-color:#E11D2E;background:#FEF2F2}.ua-p.on b{color:#B91C1C}
@@ -46488,7 +46488,7 @@ function _uaInit() {
   .ua-chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px 12px;padding:10px 12px}
   .ua-cta{margin-top:16px;width:100%;background:#E11D2E;color:#fff;border:0;border-radius:13px;padding:15px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(225,29,46,.3);font-family:inherit}
   #add-single-result .ua-ok{background:#DCFCE7;color:#166534;border-radius:11px;padding:11px 13px;font-weight:700}
-  @media(max-width:560px){.ua-in{grid-template-columns:1fr}.ua-pre{grid-template-columns:1fr}.ua-card{padding:16px 14px}}`; document.head.appendChild(st); }
+  @media(max-width:560px){.ua-in{grid-template-columns:minmax(0,1fr)}.ua-pw{min-width:0}.ua-pw input{min-width:0;width:auto}.ua-pre{grid-template-columns:1fr}.ua-card{padding:16px 14px}}`; document.head.appendChild(st); }
   const pre = (k, ic, ttl, sub) => '<button type="button" class="ua-p" data-k="' + k + '" onclick="_uaPreset(\'' + k + "','add-single-dept-cb')\"><b>" + ic + " " + escHtml(ttl) + "</b><span>" + escHtml(sub) + "</span></button>";
   host.innerHTML = '<div class="ua-card"><div class="ua-t">➕ ' + escHtml(t3("Kullanıcı Ekle", "Add User", "إضافة مستخدم")) + '</div><div class="ua-st"><b>1</b>' + escHtml(t3("Kişi bilgileri", "Person details", "بيانات الشخص")) + '</div><div class="ua-in"><input type="email" id="add-single-email" placeholder="' + escHtml(t3("E-posta", "E-mail", "الإيميل")) + '" autocomplete="off"><input type="text" id="add-single-name" placeholder="' + escHtml(t3("Ad Soyad (isteğe bağlı)", "Full name (optional)", "الاسم (اختياري)")) + '"><div class="ua-pw"><input type="text" id="add-single-password" placeholder="' + escHtml(t3("Şifre (boş = otomatik)", "Password (empty = automatic)", "كلمة المرور (فاضي = تلقائي)")) + '"><button type="button" onclick="_uaGenPw()">🎲 ' + escHtml(t3("Şifre üret", "Generate", "ولّد")) + '</button></div></div>' +
     '<div class="ua-st"><b>2</b>' + escHtml(t3("Yetki seç", "Choose access", "اختار الصلاحية")) + ' <span style="font-weight:600;color:#64748b;font-size:12px">' + escHtml(t3("(tek tıkla)", "(one click)", "(بضغطة واحدة)")) + '</span></div><div class="ua-pre">' +
@@ -49866,6 +49866,13 @@ function postProcessData() {
   Object.keys(_cdImpText).forEach(id => {
     const ex = _ixById.get(+id), dq = defaultAuditQuestions.find(d => d.id === +id);
     if (ex && dq && ex.text === _cdImpText[id]) { ex.text = dq.text; addedCount++; }
+  });
+  // Üç belge sorusunun başlığında " / " vardı; Türkçe ve İngilizce ayırıcısıyla karışıp başlık yanlış kesiliyordu (257, 267, 272). Yalnız metin hâlâ eski varsayılansa değişir /
+  // Three document-question titles contained " / " and got cut at the wrong place (257, 267, 272). Changed only if the text is still the old default
+  const _slashFix = {"257": "Mekanik / Tesisat Projesi / Mechanical & Plumbing Drawings", "267": "Güvenlik Bilgi Formaları (SDS / MSDS) / Safety Data Sheets (SDS/MSDS)", "272": "İşyeri Hekimi Sözleşmesi / Belgesi / Occupational Physician Contract/Certificate"};
+  Object.keys(_slashFix).forEach(id => {
+    const ex = _ixById.get(+id), dq = defaultAuditQuestions.find(d => d.id === +id);
+    if (ex && dq && ex.text === _slashFix[id]) { ex.text = dq.text; addedCount++; }
   });
   Object.keys(_cdOldText).forEach(id => {
     const ex = _ixById.get(+id), dq = defaultAuditQuestions.find(d => d.id === +id);
@@ -69887,7 +69894,10 @@ function exportGenericTablePDF(opts) {
   chain.then(() => {
     document.body.removeChild(holder);
     removeToast();
-    const safeName = titleText.replace(/[^\p{L}\p{N}]+/gu, "_").slice(0, 60);
+    // Dosya adı yalnız ASCII: Türkçe harfler sadeleştirilir, Arapça gibi çevrilemeyenlerde "Kriter_Raporu" kullanılır (Unicode adlar bazı tarayıcı ve sistemlerde adsız "download" iniyordu) /
+    // File name is ASCII only: Turkish letters are transliterated; scripts that cannot be (Arabic) fall back to "Kriter_Raporu" (Unicode names came out as an unnamed "download" in some browsers and systems)
+    const _asc = String(titleText).replace(/ı/g, "i").replace(/İ/g, "I").replace(/ğ/g, "g").replace(/Ğ/g, "G").replace(/ş/g, "s").replace(/Ş/g, "S").replace(/ö/g, "o").replace(/Ö/g, "O").replace(/ü/g, "u").replace(/Ü/g, "U").replace(/ç/g, "c").replace(/Ç/g, "C").normalize("NFKD").replace(/[^A-Za-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60);
+    const safeName = /[A-Za-z]{3}/.test(_asc) ? _asc : "Kriter_Raporu" + (_asc ? "_" + _asc : "");
     doc.save(`EMS_${safeName}_${_localISODate()}.pdf`);
   }).catch(e => {
     console.error("PDF oluşturma hatası / PDF generation error:", e);
@@ -72940,7 +72950,7 @@ async function downloadChemicalDeptReportPDF() {
     });
     await chain;
     document.body.removeChild(holder);
-    doc.save(`EMS_Kimyasal_Tuketim_Raporu_${deptLabel.replace(/[^a-zA-Z0-9]/g, "_")}_${_localISODate()}.pdf`);
+    doc.save(`EMS_Kimyasal_Tuketim_Raporu_${(String(deptLabel).replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "").match(/[A-Za-z]{2}/) ? String(deptLabel).replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "") : "Genel")}_${_localISODate()}.pdf`);
     hidePdfProgress();
     _setReportGenerationInProgress(false);
   } catch (e) {
@@ -83734,7 +83744,10 @@ function _mtDashHtml(d, mode) {
   const e = escHtml, pdf = mode === "pdf";
   const c = d.cur, p = d.prev;
   const m0 = c.meets[0] || {};
-  const sub = [ m0.subject || MT_DEF.subject, m0.place || MT_DEF.place, t3("Başkan", "Chair", "الرئيس") + ": " + (m0.chair || MT_DEF.chair) ].join(" · ");
+  // Varsayılan konu ve yer metinleri 3 dilde gösterilir; kullanıcı kendi yazdığını değiştirirse olduğu gibi kalır /
+  // The default subject and place texts are shown in 3 languages; text the user typed is shown unchanged
+  const _mtL = v => v === MT_DEF.subject ? t3(v, "Weekly Review Meeting", "اجتماع التقييم الأسبوعي") : v === MT_DEF.place ? t3(v, "Fatih Bey's Room", "غرفة السيد فاتح") : v;
+  const sub = [ _mtL(m0.subject || MT_DEF.subject), _mtL(m0.place || MT_DEF.place), t3("Başkan", "Chair", "الرئيس") + ": " + (m0.chair || MT_DEF.chair) ].join(" · ");
   const dl = (cur, prv, good, unit, none) => {
     if (none) return `<span class="mtd-d">${e(t3("geçen hafta veri yok", "no data last week", "مفيش بيانات الأسبوع الماضي"))}</span>`;
     const diff = cur - prv, lw = t3("geçen", "last", "الماضي");
@@ -83904,7 +83917,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 18:46";
+const EMS_BUILD = "2026-11-02 19:25";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
