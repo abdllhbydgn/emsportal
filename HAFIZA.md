@@ -699,3 +699,7 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 
 ## 02.11.2026 — Sivil Savunma: soru başına 2 fotoğraf + İlgili Müşteriler sütunu ekranda gizli (YAYINDA)
 - Seçenek A (kullanıcı kararı): yalnız `cd` (Sivil Savunma) sorularında 2 fotoğraf yeri: 1. dosya eklenince 2. "+" çıkar (`_cd2/_s1/_s2`, `_questionPhotoCellHtml`); diğer bölümler 1 yer (değişmedi). İlgili Müşteriler sütunu tüm soru listelerinde ekranda gizli (CSS `#q-hide-related`), PDF/rapor etkilenmez; fotoğraf sütunu en az 150 px. Sürüm 2026-11-02 17:30 (İstanbul).
+
+## 02.11.2026 — Sivil Savunma 2 fotoğraf düzeltmesi: iki boş kutu baştan görünür
+- Hata: ikinci "+" ancak birinci dosya eklenince çıkıyordu; ayrıca fotoğraf birleşik sorunun başka bölümdeki kopyasındaysa (`_odmPhotoQ`) kutu kategorisi `cd` olmadığı için ikinci "+" hiç çıkmıyordu.
+- Çözüm: `_questionPhotoCellHtml(id, forceCust, twoSlots)`; satırın GÖRÜNDÜĞÜ bölüm `cd` ise iki kutu da baştan görünür (`twoSlots`). Diğer bölümler 1 yer. Sürüm 2026-11-02 17:32 (İstanbul).
