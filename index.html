@@ -10689,6 +10689,7 @@ function setLanguage(lang) {
     _langRerendering = false;
     // Dil değişince "Online: N" yazısı yeniden çizilir (yoksa eski dilde kalıyordu) / re-draw the "Online: N" chip on language change (it used to keep the old language)
     try { _onlineRender(); } catch (e) {}
+    try { if (window._deptFit) setTimeout(_deptFit, 60); } catch (e) {}
     if (snap) {
       const restore = () => {
         try {
@@ -83903,7 +83904,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 18:39";
+const EMS_BUILD = "2026-11-02 18:46";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84023,7 +84024,13 @@ html .dept-banner::after, html.ems-sade .dept-banner::after { display: none !imp
 .dc-name::before { content: attr(data-n); }
 .dc-name { font-size: 12px; font-weight: 800; letter-spacing: .12em; color: #1A3660; text-transform: uppercase; text-align: center; }
 @media (max-width: 1400px) { .dc-svg, .dc-svg svg { width: 90px; height: 90px; } html .dept-banner > .dept-clocks { gap: 14px; right: 14px; } }
-@media (min-width: 1200px) { .dept-banner { min-height: 126px; } }
+@media (min-width: 1200px) { .dept-banner { min-height: 132px; } }
+/* Ziyaretçi ekranı Arapçada yönetici ekranının AYNASI: köşe logosu sağda, başlık logonun yanında, saatler solda (kullanıcı isteği, 02.11.2026) */
+html[dir="rtl"] body.visitor-mode .ems-corner-logo { left: auto; right: 16px; }
+@media (max-width: 768px) { html[dir="rtl"] body.visitor-mode .ems-corner-logo { left: auto; right: 10px; } }
+@media (min-width: 769px) { html[dir="rtl"] body.visitor-mode .dept-banner { padding-left: 0; padding-right: calc(var(--cl-h) * 1.3 + 36px); } }
+/* Başlık yazısı şeride göre büyütülür: JS (_deptFit) boş genişliği ölçüp 24 px ile 50 px (Arapça 62 px) arasında sığdırır; saatlere ve logoya değmez (kullanıcı isteği, 02.11.2026) */
+
 /* Arapça (sağdan sola): başlık ve alt yazı sağa yaslı, saatler solda (kullanıcı isteği, 02.11.2026) */
 html[dir="rtl"].ems-sade .dept-banner:not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *), html[dir="rtl"].ems-sade .dept-heading:not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) { text-align: right !important; }
 @media (min-width: 1200px) {
@@ -84153,8 +84160,24 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
       } catch (e) {}
     });
   }
+  window._deptFit = function () {
+    try {
+      var h = document.querySelector(".dept-banner .dept-heading"), ban = document.querySelector(".dept-banner");
+      if (!h || !ban || !ban.offsetParent) return;
+      if (window.innerWidth < 1200) { h.style.removeProperty("font-size"); return; }
+      var rtl = document.documentElement.dir === "rtl", max = rtl ? 62 : 50, min = 24;
+      h.style.setProperty("font-size", "100px", "important");
+      var rg = document.createRange(); rg.selectNodeContents(h);
+      var w100 = rg.getBoundingClientRect().width, cs = getComputedStyle(ban);
+      var avail = ban.getBoundingClientRect().width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - box.getBoundingClientRect().width - 56;
+      var size = Math.max(min, Math.min(max, w100 > 0 ? avail / w100 * 100 : max));
+      h.style.setProperty("font-size", size.toFixed(1) + "px", "important");
+    } catch (e) {}
+  };
   tick();
-  setInterval(tick, 1000);
+  _deptFit();
+  setInterval(function () { tick(); _deptFit(); }, 1000);
+  window.addEventListener("resize", _deptFit);
   document.addEventListener("visibilitychange", tick);
 })();
 </script>
