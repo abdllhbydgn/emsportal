@@ -715,3 +715,9 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 
 ## 02.11.2026 — Kullanıcı Yönetimi: "🔑 Şifre sıfırla" (yalnız yönetici)
 - `resetUserPassword(uid, email)`: onay sorar, `fbAuth.sendPasswordResetEmail` ile kullanıcının e-postasına Firebase bağlantısı gönderir (dil TR/EN/AR `languageCode`); yönetici şifreyi GÖRMEZ, eski şifre bağlantı kullanılana dek geçerli. Aynı kullanıcıya 60 sn içinde 2. gönderim engellenir; hata mesajları (hesap yok, çok deneme, geçersiz e-posta) 3 dilde. Düğme kullanıcı detay başlığında ("Pasif yap" ile "Kullanıcıyı Sil" arasında). Belirli bir şifreyi başkası için atama YOK (sunucu kodu/Blaze gerekir). Sürüm 2026-11-02 17:58 (İstanbul).
+
+## 02.11.2026 — Türkiye/Mısır analog saatleri + giriş sayfası "Şifremi unuttum" (ONAY BEKLİYOR, main'e alınmadı)
+- Ana sayfa başlık şeridinin sağında (`.dept-banner > .dept-clocks`, `<script id="dept-clocks-js">`, `<style id="dept-clocks-css">`): 2 analog saat, 1–12 rakamlı, 60 dakika çizgili, kırmızı saniye ibresi, arka plansız; Europe/Istanbul ve Africa/Cairo (Mısır yaz/kış saatini Intl kendisi yapar); ad TR/EN/AR. Şerit ≥1101 px'te min-height 126 px; telefonda başlığın altında satır. Her dilde fiziksel SAĞDA (Arapçada sade tema başlığı sola yaslar).
+- Giriş kartı: "Şifremi unuttum / şifremi sıfırla" (`handleForgotPassword`): e-posta yazılınca Firebase sıfırlama e-postası; hesap var/yok aynı mesaj; aynı adrese 60 sn'de 1; yeşil başarı mesajı (`.login-error.ok`). Sürüm 2026-11-02 18:07 (İstanbul).
+- (02.11.2026 2026-11-02 18:12) Saatler: dijital saat KALDIRILDI; altta ortalı "TÜRKİYE" ve "EGYPT" (dile göre çevrilmez); kadran içinde kırmızı "EMS" + altında küçük "PORTAL". Hâlâ onay bekliyor.
+- (02.11.2026 2026-11-02 18:13) Saat rakamları küçültüldü (font 23 → 18). Hâlâ onay bekliyor.

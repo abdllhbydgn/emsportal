@@ -166,6 +166,10 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .login-remember-wrap { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.82); cursor: pointer; user-select: none; }
 .login-remember-wrap input { width: 15px; height: 15px; accent-color: var(--red); cursor: pointer; }
 .login-error { font-size: 12px; font-weight: 700; color: #ff8a8a; text-align: center; min-height: 16px; }
+html body .login-error.ok, html body #view-welcome .login-error.ok, html body #login-card .login-error.ok { color: #86efac !important; }
+.login-forgot { align-self: flex-start; background: none; border: 0; padding: 2px 0; margin: -2px 0 0; font: inherit; font-size: 12.5px; font-weight: 700; color: rgba(255,255,255,.88); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: start; }
+.login-forgot:hover { color: #fff; }
+#view-welcome .login-forgot { font-size: 14px; }
 .signup-switch-row { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.65); text-align: center; margin-top: 2px; }
 .signup-switch-row a { color: #E0C374; font-weight: 800; text-decoration: none; border-bottom: 1.5px dashed #E0C374; padding-bottom: 1px; cursor: pointer; }
 .signup-switch-row a:hover { color: #f0d68f; border-color: #f0d68f; }
@@ -4257,6 +4261,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
           </button>
         </div>
         <label class="login-remember-wrap"><input type="checkbox" id="login-remember" checked> <span data-i18n="login_remember">Beni hatırla</span></label>
+        <button type="button" id="login-forgot-btn" class="login-forgot" onclick="handleForgotPassword()" data-i18n="login_forgot">Şifremi unuttum / şifremi sıfırla</button>
         <div id="login-error" class="login-error"></div>
         <button type="button" id="login-submit-btn" class="btn-admin-login-submit" onclick="handleLogin()" data-i18n="login_submit">Giriş Yap</button>
         <div class="signup-switch-row"><span data-i18n="ent_noacc">Hesabınız yok mu?</span> <a href="javascript:void(0)" onclick="showSignupForm()" data-i18n="ent_signup">Yeni Hesap Talebi</a></div>
@@ -4591,6 +4596,10 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
     <div class="dept-banner">
       <div class="dept-heading" data-i18n="dept_heading">KALİTE GÜVENCE MÜDÜRLÜĞÜ</div>
       <div class="dept-sub" data-i18n="dept_sub">Sürdürülebilirlik, Çevre, Kimyasal ve İş Güvenliği Yönetimi</div>
+      <div class="dept-clocks" id="dept-clocks" aria-label="Türkiye ve Mısır saati">
+        <div class="dc" data-tz="Europe/Istanbul" data-name="tr"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span></div></div>
+        <div class="dc" data-tz="Africa/Cairo" data-name="eg"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span></div></div>
+      </div>
     </div>
     <div id="fx-alert-strip" style="display:none;"></div>
     <div class="topbar">
@@ -9116,6 +9125,11 @@ const UI_TRANSLATIONS = {
     tr: "Şifreyi Göster/Gizle",
     en: "Show/Hide Password",
     ar: "إظهار/إخفاء كلمة المرور"
+  },
+  login_forgot: {
+    tr: "Şifremi unuttum / şifremi sıfırla",
+    en: "Forgot password / reset password",
+    ar: "نسيت كلمة المرور / إعادة تعيين كلمة المرور"
   },
   login_remember: {
     tr: "Beni hatırla",
@@ -55268,7 +55282,34 @@ function togglePasswordVisibility() {
   }
   pEl.focus();
 }
+// Şifremi unuttum: kullanıcı e-postasını yazar, Firebase sıfırlama bağlantısı gönderir; yeni şifreyi kullanıcı kendisi koyar.
+// Hesabın olup olmadığı açığa vurulmaz (aynı mesaj). Aynı adrese 60 sn içinde ikinci gönderim engellenir. /
+// Forgot password: the user types their e-mail and Firebase sends a reset link; the user sets the new password. Whether an account exists is not revealed. One send per address per 60 s.
+const _forgotLast = {};
+function handleForgotPassword() {
+  const uEl = document.getElementById("login-username"), errEl = document.getElementById("login-error");
+  if (!uEl || !errEl) return;
+  const show = (m, ok) => { errEl.classList.toggle("ok", !!ok); errEl.innerText = m; };
+  const email = String(uEl.value || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { show(t3("Önce yukarıya e-posta adresinizi yazın, sonra tekrar basın.", "First type your e-mail address above, then press again.", "اكتب بريدك الإلكتروني فوق الأول، وبعدين اضغط تاني.")); uEl.focus(); return; }
+  if (!fbAuth) { show(t3("Sistem hazır değil. Sayfayı yenileyip tekrar deneyin.", "The system is not ready. Refresh the page and try again.", "النظام مش جاهز. حدّث الصفحة وجرّب تاني.")); return; }
+  if (_forgotLast[email] && Date.now() - _forgotLast[email] < 60000) { show(t3("Az önce gönderildi. 1 dakika sonra tekrar deneyin.", "Just sent. Try again in 1 minute.", "لسه مبعوت. جرّب بعد دقيقة."), true); return; }
+  _forgotLast[email] = Date.now();
+  const lc0 = fbAuth.languageCode;
+  try { fbAuth.languageCode = currentLang === "ar" ? "ar" : currentLang === "en" ? "en" : "tr"; } catch (e) {}
+  const okMsg = t3("Bu adrese kayıtlı bir hesap varsa şifre sıfırlama bağlantısı gönderildi. Gelen kutunuzu ve gereksiz (spam) klasörünü kontrol edin.", "If an account exists for this address, a password reset link has been sent. Check your inbox and spam folder.", "لو فيه حساب بالعنوان ده، اتبعت رابط إعادة تعيين كلمة المرور. شوف الوارد والسبام.");
+  fbAuth.sendPasswordResetEmail(email).then(() => show(okMsg, true)).catch(e => {
+    const c = e && e.code;
+    if (c === "auth/user-not-found") { show(okMsg, true); return; }
+    delete _forgotLast[email];
+    show(c === "auth/too-many-requests" ? t3("Çok fazla deneme yapıldı. Biraz bekleyip tekrar deneyin.", "Too many attempts. Wait a while and try again.", "محاولات كتير. استنى شوية وجرّب تاني.")
+      : c === "auth/invalid-email" ? t3("E-posta adresi geçersiz.", "The e-mail address is invalid.", "عنوان الإيميل غير صالح.")
+      : c === "auth/network-request-failed" ? t3("Ağ bağlantısı hatası. İnternetinizi kontrol edin.", "Network error. Check your internet connection.", "مشكلة في الشبكة. اتأكد من النت.")
+      : t3("Gönderilemedi. Biraz sonra tekrar deneyin.", "Could not send. Try again shortly.", "ماتبعتش. جرّب بعد شوية."));
+  }).finally(() => { try { fbAuth.languageCode = lc0; } catch (e) {} });
+}
 function handleLogin() {
+  try { const _le = document.getElementById("login-error"); if (_le) _le.classList.remove("ok"); } catch (e) {}
   const submitBtn = document.getElementById("login-submit-btn");
   const originalBtnText = submitBtn ? submitBtn.innerText : "";
   if (submitBtn) {
@@ -83860,7 +83901,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 17:58";
+const EMS_BUILD = "2026-11-02 18:13";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -83968,6 +84009,19 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
 #global-filter-modal #modal-table-wrap table > thead > tr > th:nth-child(6),
 #global-filter-modal #modal-table-wrap table > tbody > tr > td:nth-child(6):not([colspan]) { min-width: 150px; }
 </style>
+<style id="dept-clocks-css">
+/* Ana sayfa başlık şeridinin sağında Türkiye ve Mısır analog saatleri: şerit yüksekliğinde, 1-12 rakamlı, arka plansız (kullanıcı isteği, 02.11.2026) */
+html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { position: absolute; right: 22px; left: auto; top: 50%; transform: translateY(-50%); display: flex; gap: 22px; z-index: 3; padding: 0; background: none; border: 0; box-shadow: none; }
+.dc { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dc-svg, .dc-svg svg { width: 100px; height: 100px; display: block; }
+.dc-svg svg { filter: drop-shadow(0 2px 4px rgba(15,23,42,.22)); }
+.dc-lab { display: flex; justify-content: center; width: 100%; line-height: 1; white-space: nowrap; text-align: center; }
+.dc-name { font-size: 12px; font-weight: 800; letter-spacing: .12em; color: #1A3660; text-transform: uppercase; text-align: center; }
+@media (max-width: 1400px) { .dc-svg, .dc-svg svg { width: 90px; height: 90px; } html .dept-banner > .dept-clocks { gap: 14px; right: 14px; } }
+@media (min-width: 1101px) { .dept-banner { min-height: 126px; } }
+@media (max-width: 1100px) { html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks { position: static; transform: none; display: inline-flex; margin-top: 10px; gap: 18px; } .dc-svg, .dc-svg svg { width: 84px; height: 84px; } }
+@media (max-width: 480px) { .dept-clocks { width: 100%; box-sizing: border-box; justify-content: center; gap: 22px; } }
+</style>
 <style id="ems-mobile-polish">
 /* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Kırmızı kalan kısım koyu yayla aynı kalınlıkta (21 px), yay 22 px: %100'de kırmızı kenar görünmez. */
 html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) .kpi-ring-mini svg circle:not([stroke^="url"]):not([fill^="url"]) { stroke: #E11D2E !important; stroke-width: 21px !important; }
@@ -84040,6 +84094,58 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
   }
   setTimeout(pass, 1500);
   setInterval(pass, 3000);
+})();
+</script>
+<script id="dept-clocks-js">
+(function () {
+  var box = document.getElementById("dept-clocks");
+  if (!box) return;
+  // Kadran: lacivert çerçeve, beyaz yüz, 60 dakika çizgisi, 1-12 rakamlar, saat/dakika/kırmızı saniye ibresi
+  function faceSvg() {
+    var t = "", i, a, r1, r2, x, y, c = 100;
+    for (i = 0; i < 60; i++) {
+      a = i * 6 * Math.PI / 180; r1 = i % 5 === 0 ? 80 : 86; r2 = 91;
+      t += '<line x1="' + (c + r1 * Math.sin(a)).toFixed(1) + '" y1="' + (c - r1 * Math.cos(a)).toFixed(1) + '" x2="' + (c + r2 * Math.sin(a)).toFixed(1) + '" y2="' + (c - r2 * Math.cos(a)).toFixed(1) + '" stroke="' + (i % 5 === 0 ? "#1A3660" : "#8A95A8") + '" stroke-width="' + (i % 5 === 0 ? 3 : 1.2) + '" stroke-linecap="round"/>';
+    }
+    for (i = 1; i <= 12; i++) {
+      a = i * 30 * Math.PI / 180; x = c + 63 * Math.sin(a); y = c - 63 * Math.cos(a);
+      t += '<text x="' + x.toFixed(1) + '" y="' + (y + 6.3).toFixed(1) + '" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#1A3660">' + i + '</text>';
+    }
+    return '<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="97" fill="#1A3660"/><circle cx="100" cy="100" r="92" fill="#fff"/>' + t +
+      '<text x="100" y="77" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="20" font-weight="800" letter-spacing="2" fill="#D5202F">EMS</text>' +
+      '<text x="100" y="91" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="3.2" fill="#1A3660">PORTAL</text>' +
+      '<line class="dc-h" x1="100" y1="108" x2="100" y2="58" stroke="#1A3660" stroke-width="8" stroke-linecap="round"/>' +
+      '<line class="dc-m" x1="100" y1="112" x2="100" y2="34" stroke="#1A3660" stroke-width="5.5" stroke-linecap="round"/>' +
+      '<line class="dc-s" x1="100" y1="118" x2="100" y2="22" stroke="#D5202F" stroke-width="2.4" stroke-linecap="round"/>' +
+      '<circle cx="100" cy="100" r="7" fill="#D5202F"/><circle cx="100" cy="100" r="2.6" fill="#fff"/></svg>';
+  }
+  box.querySelectorAll(".dc-svg").forEach(function (el) { el.innerHTML = faceSvg(); });
+  var fmt = {};
+  function parts(tz) {
+    if (!fmt[tz]) fmt[tz] = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+    var o = {};
+    fmt[tz].formatToParts(new Date()).forEach(function (p) { o[p.type] = parseInt(p.value, 10); });
+    if (o.hour === 24) o.hour = 0;
+    return o;
+  }
+  function nm(k) {
+    return k === "eg" ? "EGYPT" : "TÜRKİYE";
+  }
+  function tick() {
+    if (document.hidden) return;
+    box.querySelectorAll(".dc").forEach(function (el) {
+      try {
+        var t = parts(el.getAttribute("data-tz")), h = t.hour % 12;
+        el.querySelector(".dc-h").setAttribute("transform", "rotate(" + ((h + t.minute / 60) * 30) + " 100 100)");
+        el.querySelector(".dc-m").setAttribute("transform", "rotate(" + ((t.minute + t.second / 60) * 6) + " 100 100)");
+        el.querySelector(".dc-s").setAttribute("transform", "rotate(" + (t.second * 6) + " 100 100)");
+        el.querySelector(".dc-name").textContent = nm(el.getAttribute("data-name"));
+      } catch (e) {}
+    });
+  }
+  tick();
+  setInterval(tick, 1000);
+  document.addEventListener("visibilitychange", tick);
 })();
 </script>
 <script id="ems-card-list">
