@@ -703,3 +703,6 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 ## 02.11.2026 — Sivil Savunma 2 fotoğraf düzeltmesi: iki boş kutu baştan görünür
 - Hata: ikinci "+" ancak birinci dosya eklenince çıkıyordu; ayrıca fotoğraf birleşik sorunun başka bölümdeki kopyasındaysa (`_odmPhotoQ`) kutu kategorisi `cd` olmadığı için ikinci "+" hiç çıkmıyordu.
 - Çözüm: `_questionPhotoCellHtml(id, forceCust, twoSlots)`; satırın GÖRÜNDÜĞÜ bölüm `cd` ise iki kutu da baştan görünür (`twoSlots`). Diğer bölümler 1 yer. Sürüm 2026-11-02 17:32 (İstanbul).
+
+## 02.11.2026 — Soru listesi sütunları daraltıldı (geniş ekran)
+- `#q-hide-related` CSS'ine `@media (min-width:1000px)`: No 62 px, Modül 84 px, Detaylar 150 px, Fotoğraf 190 px (sağ boşluk 22 px, kutular durum düğmesine yapışmaz), Durum 290 px; soru metni kalan genişliği alır. Telefondaki kart düzenine dokunulmaz. Sürüm 2026-11-02 17:39 (İstanbul).
