@@ -23213,6 +23213,9 @@ function _fixQuestionCategories(arr) {
   return changed;
 }
 let deletedDefaultQuestionIds = [];
+// Bu oturumda silinip buluta henüz yazıldığı doğrulanmamış varsayılan sorular: araya giren bulut güncellemesi silineni geri getirmesin /
+// Default questions deleted this session whose cloud write is not yet confirmed: an interleaved cloud update must not bring them back
+const _pendDelQ = new Set();
 // Bir kez eklenen hazır kayıtların (müşteri, denetim, sertifika) işaretleri; silinen hazır kayıt tekrar eklenmez /
 // Markers of built-in records (customer, audit, certificate) added once; a deleted built-in record is not added again
 let appliedSeedKeys = [];
@@ -51074,7 +51077,9 @@ function _saveRetryArm() {
 }
 window.addEventListener("beforeunload", e => { if (_saveRetryQ.size) { e.preventDefault(); e.returnValue = ""; } });
 function _transactionalMergeSave(docId, buildPayload, onFail) {
+  let _removedN = 0;
   return _runTransactionWithRetry(tx => {
+    _removedN = 0;
     const ref = fbDb.collection("ems_csr").doc(docId);
     return tx.get(ref).then(snap => {
       const cloudData = snap.exists ? snap.data() : {};
@@ -51085,11 +51090,21 @@ function _transactionalMergeSave(docId, buildPayload, onFail) {
         try { for (const k of Object.keys(payload)) { if (k === "updatedAt" || k === "updatedBy") continue; if (JSON.stringify(payload[k]) !== JSON.stringify(cloudData[k])) { same = false; break; } } } catch (e) { same = false; }
         if (same) return;
       }
+      // Bu yazma buluttaki kayıtlardan bazılarını kaldırıyor mu? (silindi uyarısı için) / does this write remove cloud records? (for the deleted notice)
+      try {
+        if (snap.exists && payload && typeof payload === "object") for (const k of Object.keys(payload)) {
+          const a = cloudData[k], b = payload[k];
+          if (Array.isArray(a) && Array.isArray(b) && b.length < a.length) {
+            const keep = new Set(b.map(x => x && x.id));
+            _removedN += a.filter(x => x && x.id !== undefined && !keep.has(x.id)).length;
+          }
+        }
+      } catch (e) {}
       tx.set(ref, payload, {
         merge: true
       });
     });
-  }).then(() => { _saveRetryQ.delete(docId); return true; }).catch(e => {
+  }).then(() => { _saveRetryQ.delete(docId); if (_removedN > 0 && _delIntentAt && Date.now() - _delIntentAt < 120000) _delToast(t3("🗑️ Silindi (" + _removedN + " kayıt).", "🗑️ Deleted (" + _removedN + " record" + (_removedN > 1 ? "s" : "") + ").", "🗑️ اتمسح (" + _removedN + " سجل).")); return true; }).catch(e => {
     console.error("Transaction hatası / Transaction error (" + docId + "):", e);
     // Kota dolu / bağlantı yok: değişiklik kaybolmasın, sayfa açık kaldıkça birkaç dakikada bir yeniden yazılır /
     // Quota exhausted / offline: keep the change and retry every few minutes while the page stays open
@@ -51127,6 +51142,7 @@ function initCloudData(onReady) {
       _qDocArr = snap.data().auditQuestions;
       _qCombineCloud("q");
       deletedDefaultQuestionIds = Array.isArray(snap.data().deletedDefaultQuestionIds) ? snap.data().deletedDefaultQuestionIds : deletedDefaultQuestionIds;
+      _pendDelQ.forEach(id => { if (deletedDefaultQuestionIds.includes(id)) _pendDelQ.delete(id); else deletedDefaultQuestionIds = deletedDefaultQuestionIds.concat([ id ]); });
       if (Array.isArray(snap.data().appliedSeedKeys)) appliedSeedKeys = Array.from(new Set(appliedSeedKeys.concat(snap.data().appliedSeedKeys)));
       _lastKnownCompliantCount = auditQuestions.filter(q => q.status === "compliant").length;
       // Genel belgenin temel çizgisi yalnız genel sorulardır (eski müşteri kopyaları onay/silme katmanını tetiklemesin) /
@@ -54964,6 +54980,35 @@ function showEmsToast(message, durationMs, bgColor) {
     }, durationMs || 5e3);
   }
 }
+// ═══ SİLİNDİ UYARISI (kullanıcı kuralı, 02.11.2026): sitenin HER yerinde bir şey silinince yeşil "Silindi" uyarısı çıkar ═══
+// Yöntem: silme onayı (confirm) kabul edilince "niyet" işaretlenir; buluta yazılan belgede gerçekten kayıt eksilirse (_transactionalMergeSave)
+// ya da en geç 4,5 sn sonra (yazma hatası yoksa) uyarı gösterilir. Personelin silmesi yönetici onayına gittiği için personele "silindi" denmez.
+// ═══ DELETED NOTICE: after an accepted delete confirm, a green notice appears when the cloud write really removed records, or after 4.5 s if no write error ═══
+let _delIntentAt = 0, _delToastAt = 0, _delFallbackTimer = null, _lastSaveFailAt = 0;
+function _delToast(msg) {
+  if (Date.now() - _delToastAt < 2500) return;
+  _delToastAt = Date.now();
+  _delIntentAt = 0;
+  if (_delFallbackTimer) { clearTimeout(_delFallbackTimer); _delFallbackTimer = null; }
+  try { showEmsToast(msg || t3("🗑️ Silindi.", "🗑️ Deleted.", "🗑️ اتمسح."), 4000, "var(--success, #16A34A)"); } catch (e) {}
+}
+function _delIntentMark() {
+  _delIntentAt = Date.now();
+  if (_delFallbackTimer) clearTimeout(_delFallbackTimer);
+  if (currentUserRole !== "admin") return;
+  _delFallbackTimer = setTimeout(() => {
+    _delFallbackTimer = null;
+    if (_delIntentAt && Date.now() - _lastSaveFailAt > 6000) _delToast();
+  }, 4500);
+}
+(function() {
+  const _oc = window.confirm.bind(window);
+  window.confirm = function(msg) {
+    const ok = _oc(msg);
+    try { if (ok && /(^|[\s(])sil|delet|remov|kald[ıi]r|مسح|حذف/i.test(String(msg))) _delIntentMark(); } catch (e) {}
+    return ok;
+  };
+})();
 let _pendingSaveFailureDocs = [];
 let _saveFailureToastTimer = null;
 function _sanitizeForFirestore(obj) {
@@ -55113,6 +55158,7 @@ function _safeArrayMutateMany(docRef, fieldName, items, mode, notifyLabel) {
   }
 }
 function _notifySaveWriteFailure(docLabel, err) {
+  _lastSaveFailAt = Date.now();
   console.error("Firestore yazma hatası (" + docLabel + "):", err);
   const _code = err && (err.code || (err.message || "").slice(0, 40));
   const _why = err && err.message && err.message !== err.code ? " — " + String(err.message).replace(/\s+/g, " ").slice(0, 160) : "";
@@ -64216,6 +64262,7 @@ function deleteModalItem(id, type) {
         const _dq = type === "q" ? auditQuestions.find(x => x.id === did) : null;
         if (type === "q" && defaultAuditQuestions.some(dq => dq.id === did)) {
           if (!deletedDefaultQuestionIds.includes(did)) deletedDefaultQuestionIds.push(did);
+          _pendDelQ.add(did);
           _delJobs.push(_safeDeleteDefaultQuestion(fbDb.collection("ems_csr").doc("questions"), did, "questions"));
           if (_dq && _isCustQ(_dq)) _delJobs.push(_safeArrayRemoveById(fbDb.collection("ems_csr").doc("customerQuestions"), "customerQuestions", "id", did, "customerQuestions"));
         } else {
@@ -64225,10 +64272,10 @@ function deleteModalItem(id, type) {
       });
       // Silindi uyarısı: yalnız bulut yazımı gerçekten başarılıysa gösterilir / "Deleted" notice: shown only if the cloud write really succeeded
       Promise.all(_delJobs).then(rs => {
-        if (rs.every(Boolean)) showEmsToast(type === "q" ? t3("🗑️ Soru silindi (yalnız bu bölümden).", "🗑️ Question deleted (this section only).", "🗑️ السؤال اتمسح (من القسم ده بس).") : t3("🗑️ Kayıt silindi.", "🗑️ Record deleted.", "🗑️ السجل اتمسح."), 4000, "var(--success, #16A34A)");
+        if (rs.every(Boolean)) { _delToast(type === "q" ? t3("🗑️ Soru silindi (yalnız bu bölümden).", "🗑️ Question deleted (this section only).", "🗑️ السؤال اتمسح (من القسم ده بس).") : t3("🗑️ Kayıt silindi.", "🗑️ Record deleted.", "🗑️ السجل اتمسح.")); }
       });
     } else if (_delSrc) {
-      showEmsToast(t3("🗑️ Soru silindi.", "🗑️ Question deleted.", "🗑️ السؤال اتمسح."), 4000, "var(--success, #16A34A)");
+      _delToast(t3("🗑️ Soru silindi.", "🗑️ Question deleted.", "🗑️ السؤال اتمسح."));
     }
     if (type === "q") {
       const _delSet = new Set(_delIds);
@@ -83695,7 +83742,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 16:35";
+const EMS_BUILD = "2026-11-02 16:39";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
