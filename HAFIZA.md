@@ -674,3 +674,9 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 
 ## 02.11.2026 — Soru silme: aynı bölümdeki kopyalar birlikte silinir
 - Sivil Savunma gibi bölümlerde aynı soru birden çok kez kayıtlı (örn. 267 ve 1016, ikisi `cd`, birleşik grup). Silince yalnız tıklanan gidiyor, kopya kalıyordu ("3 kere sildim"). Artık `deleteModalItem` grubun AYNI kategorideki tüm üyelerini siler; başka bölümlerdekiler kalır. Sürüm 2026-11-02 16:45 (İstanbul).
+
+## 02.11.2026 — Sivil Savunma: Mısır yönetmeliklerinden sorular
+- Kullanıcının 9 sorusu mevcut sorularla karşılaştırıldı. Zaten var olanlar yeniden açılmadı: söndürücü (64/150/199/260…), alarm (50/814), kaçış yolları (71/153/154/198/213/232/859), ruhsat (35/809, 49/463).
+- Yeni 5 soru `CD_EG_QUESTIONS` (8201 Mısır Yangın Kodu, 8202 sprinkler, 8203 yangın/duman kapıları, 8204 depoda sigara-kaynak-kesme-açık alev yasağı, 8205 atık yakma yasağı → env 379 + OEKO-TEX 6046 ile birleşik), AR metinleri eklendi.
+- Ruhsat sorusu 49 metni "güncel onay/ruhsat var mı ve süresi geçerli mi?" yapıldı (yalnız eski metin aynıysa, `_cdOldText`); 35/809/49/463 tek grupta birleştirildi (grup durumu en ilerideki üyeye hizalanır).
+- Resmî kod metni (madde no, söndürücü sayısı) doğrulanmadı; soru metinlerinde madde/karar numarası YOK. Sürüm 2026-11-02 16:49 (İstanbul).
