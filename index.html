@@ -4597,8 +4597,8 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
       <div class="dept-heading" data-i18n="dept_heading">KALİTE GÜVENCE MÜDÜRLÜĞÜ</div>
       <div class="dept-sub" data-i18n="dept_sub">Sürdürülebilirlik, Çevre, Kimyasal ve İş Güvenliği Yönetimi</div>
       <div class="dept-clocks" id="dept-clocks" aria-label="Türkiye ve Mısır saati">
-        <div class="dc" data-tz="Europe/Istanbul" data-name="tr"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span></div></div>
-        <div class="dc" data-tz="Africa/Cairo" data-name="eg"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name"></span></div></div>
+        <div class="dc" data-tz="Europe/Istanbul" data-name="tr" translate="no" aria-label="TÜRKİYE"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name" data-n="TÜRKİYE"></span></div></div>
+        <div class="dc" data-tz="Africa/Cairo" data-name="eg" translate="no" aria-label="EGYPT"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name" data-n="EGYPT"></span></div></div>
       </div>
     </div>
     <div id="fx-alert-strip" style="display:none;"></div>
@@ -83901,7 +83901,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 18:25";
+const EMS_BUILD = "2026-11-02 18:32";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84018,6 +84018,7 @@ html .dept-banner::after, html.ems-sade .dept-banner::after { display: none !imp
 .dc-svg, .dc-svg svg { width: 100px; height: 100px; display: block; }
 .dc-svg svg { filter: drop-shadow(0 2px 4px rgba(15,23,42,.22)); }
 .dc-lab { display: flex; justify-content: center; width: 100%; line-height: 1; white-space: nowrap; text-align: center; }
+.dc-name::before { content: attr(data-n); }
 .dc-name { font-size: 12px; font-weight: 800; letter-spacing: .12em; color: #1A3660; text-transform: uppercase; text-align: center; }
 @media (max-width: 1400px) { .dc-svg, .dc-svg svg { width: 90px; height: 90px; } html .dept-banner > .dept-clocks { gap: 14px; right: 14px; } }
 @media (min-width: 1101px) { .dept-banner { min-height: 126px; } }
@@ -84141,7 +84142,6 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
         el.querySelector(".dc-h").setAttribute("transform", "rotate(" + ((h + t.minute / 60) * 30) + " 100 100)");
         el.querySelector(".dc-m").setAttribute("transform", "rotate(" + ((t.minute + t.second / 60) * 6) + " 100 100)");
         el.querySelector(".dc-s").setAttribute("transform", "rotate(" + (t.second * 6) + " 100 100)");
-        el.querySelector(".dc-name").textContent = nm(el.getAttribute("data-name"));
       } catch (e) {}
     });
   }
