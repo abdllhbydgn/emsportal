@@ -689,3 +689,7 @@ Kısa tut: en fazla ~60 satır. Eski kayıtları tek satırlık özete indir.
 ## 02.11.2026 — Silinen fotoğraf geri geliyordu (soru ↔ kontrol maddesi)
 - Sebep: `_qsSyncEvidence` soru ile bölüm kontrol maddesi (`productionChecklist.linkedQId`) arasında kanıtı İKİ YÖNLÜ kopyalıyor; soru fotoğrafı silinince bağlı maddede kalan dosya geri kopyalanıyordu (ör. Sivil Savunma 62 "Boyahane Düzeni").
 - Çözüm: `deleteQuestionPhoto` soruda hiç dosya kalmazsa bağlı maddelerin kanıtını da siler (`_qsClearLinkedItemsOfQuestion`); `deleteDeptItemPhoto` bağlı sorunun 1. yuva dosyasını da siler (`_qsClearLinkedQuestionOfItem`). Sürüm 2026-11-02 16:58 (İstanbul).
+
+## 02.11.2026 — "İlk silişte geri geliyor" + Duman Tahliye sadeleştirme
+- Geri gelme sebebi: buluttan gelen ESKİ `questions` kaydı (silme buluta yazılmadan önce) `_qCombineCloud` ile yerel listeyi eziyordu. Çözüm: `_qPendingDel` (silinen soru bulutta yok olana ya da 2 dk geçene kadar listeden süzülür; `deleteModalItem` kaydeder). Toplu silme düğmesi denendi ama kullanıcı istemedi, eklenmedi.
+- Sivil Savunma "Duman Tahliye Sistemi": yalnız 523 kaldı; 524–562 (39 soru) her açılışta listeden çıkar, yönetici girişinde bulutta bir kez silinir (`cleanup:cd-smoke-keep-one`, `deletedDefaultQuestionIds`'e eklenir). Müşteri sorularına (custq) dokunulmadı. Sürüm 2026-11-02 17:13 (İstanbul).

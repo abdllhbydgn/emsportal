@@ -34132,7 +34132,20 @@ function _canSaveNow() {
 let _qDocArr = null, _cqDocArr = null, _qSeen = false, _cqSeen = false;
 // Bir belgeden anlık görüntü gelince yalnız o belgenin payı yenilenir, diğer pay (yerel, henüz kaydedilmemiş değişiklikler dahil) korunur /
 // When a snapshot arrives from one document only that document's share is refreshed; the other share (including local unsaved changes) is kept
+// Silinip buluta yazımı henüz doğrulanmamış sorular: buluttan gelen ESKİ kayıt yerel listeyi ezip silineni geri getirmesin
+// ("ilk silişte geri geliyor, ikinci silişte gidiyor" şikâyeti, 02.11.2026). Bulut belgesinde artık yoksa ya da 2 dk geçince listeden çıkar. /
+// Questions deleted locally whose cloud write is not yet confirmed: an OLD cloud snapshot must not overwrite the local list and bring them back.
+const _qPendingDel = new Map();
+function _qPendDel(ids) { const t = Date.now(); (ids || []).forEach(id => _qPendingDel.set(id, t)); }
 function _qCombineCloud(which) {
+  if (_qPendingDel.size) {
+    const now = Date.now(), present = new Set([].concat(_qDocArr || [], _cqDocArr || []).map(q => q && q.id));
+    _qPendingDel.forEach((t, id) => { if (now - t > 12e4 || !present.has(id)) _qPendingDel.delete(id); });
+  }
+  _qCombineCloudRaw(which);
+  if (_qPendingDel.size) auditQuestions = auditQuestions.filter(q => !(q && _qPendingDel.has(q.id)));
+}
+function _qCombineCloudRaw(which) {
   const legacy = (_qDocArr || []).filter(_isCustQ);
   if (which === "q") {
     _qSeen = true;
@@ -49836,6 +49849,19 @@ function postProcessData() {
       _ppSeeded++;
     }
   }
+  // Sivil Savunma: Duman Tahliye Sistemi sorularından yalnız 523 ("Tesiste duman tahliye sistemi kurulmuş mudur?") kalır; 524–562 silinir (kullanıcı kararı 02.11.2026).
+  // Her açılışta listeden çıkarılır, yönetici girişinde bulutta bir kez silinir (müşteri soruları ve diğer bölümlere dokunulmaz, fotoğraf dosyalarına dokunulmaz) /
+  // Civil Defense: of the Smoke Extraction questions only 523 stays; 524–562 are dropped on every load and deleted in the cloud once on admin login (customer questions and other sections untouched)
+  const _smOld = q => q && q.category === "cd" && q.id >= 524 && q.id <= 562;
+  if (auditQuestions.some(_smOld)) {
+    const _smGone = auditQuestions.filter(_smOld).map(q => q.id);
+    auditQuestions = auditQuestions.filter(q => !_smOld(q));
+    _smGone.forEach(id => { if (!deletedDefaultQuestionIds.includes(id)) deletedDefaultQuestionIds.push(id); });
+    if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:cd-smoke-keep-one", true)) {
+      try { _safeDeleteDefaultQuestions(fbDb.collection("ems_csr").doc("questions"), _smGone, "questions"); } catch (e) {}
+      _ppSeeded++;
+    }
+  }
   // Sedex 8071–8073 yanlışlıkla silinmişti; kullanıcı kararıyla (01.11.2026) geri getirilir: yerelde eklenir, yönetici girişinde bulutta bir kez düzeltilir /
   // Sedex 8071–8073 were deleted by mistake; restored by user decision (01.11.2026): added locally and fixed once in the cloud on admin login
   if (currentUserRole === "admin" && _sg("restore:sedex-8071-8073", [ 8071, 8072, 8073 ].some(id => deletedDefaultQuestionIds.includes(id) || !auditQuestions.some(q => q.id === id)))) {
@@ -64301,6 +64327,7 @@ function deleteModalItem(id, type) {
       _delToast(t3("🗑️ Soru silindi.", "🗑️ Question deleted.", "🗑️ السؤال اتمسح."));
     }
     if (type === "q") {
+      _qPendDel(_delIds);
       const _delSet = new Set(_delIds);
       _delIds.forEach(did => { if (defaultAuditQuestions.some(dq => dq.id === did) && !deletedDefaultQuestionIds.includes(did)) deletedDefaultQuestionIds.push(did); });
       auditQuestions = auditQuestions.filter(q => !_delSet.has(q.id));
@@ -83798,7 +83825,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 16:58";
+const EMS_BUILD = "2026-11-02 17:13";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
