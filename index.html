@@ -67626,6 +67626,9 @@ function renderAuditFindingsTable() {
   };
 })();
 function _findingFollowUpsHtml(f) {
+  // "Takip 20.07.2026: Askıda…" etiketleri bulgu satırlarında artık GÖSTERİLMEZ (kullanıcı isteği, 03.11.2026); veri (f.followUps) silinmez, yalnız görünüm kapalı. /
+  // The "Follow-up 20.07.2026: …" chips are no longer SHOWN on finding rows (user request); the data (f.followUps) is kept, only the display is off.
+  return "";
   if (!f || !Array.isArray(f.followUps) || !f.followUps.length) return "";
   return f.followUps.map(u => {
     const col = u.st === "closed" ? "#047857" : u.st === "in_progress" ? "#B45309" : "#B91C1C";
@@ -84035,7 +84038,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 22:05";
+const EMS_BUILD = "2026-11-03 22:15";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
