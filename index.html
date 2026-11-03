@@ -29653,6 +29653,8 @@ function _installPdfSignatureHook() {
         return r;
       };
       if (typeof oSave === "function") doc.save = function () {
+        // Rapor indirme yalnız yöneticiye açık: yönetici değilse hiçbir PDF kaydedilmez (kullanıcı kuralı, 04.11.2026) / PDF downloads are admin-only
+        if (typeof currentUserRole !== "undefined" && currentUserRole !== "admin") return;
         try { _pdfAddSignature(doc); } catch (e) {}
         return oSave.apply(doc, arguments);
       };
@@ -84177,7 +84179,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-04 00:04";
+const EMS_BUILD = "2026-11-04 00:17";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84346,6 +84348,99 @@ body.visitor-mode.ems-page-open .ems-corner-logo { pointer-events: auto !importa
 /* Siyah alt şerit (telif + Sürüm / Build) yönetici ve kullanıcı sayfalarında da ziyaretçi sayfası gibi sayfanın en altında 16 px boşlukla biter; -16 px negatif alt boşluk kaldırıldı (şerit kaybolmuyor). (kullanıcı isteği, 03.11.2026) */
 body.ems-shell-on:not(.visitor-mode) .app-shell { margin-bottom: 0; }
 </style>
+<style id="report-download-gate">
+/* Rapor indirme yalnız YÖNETİCİYE açık: yönetici dışındaki herkeste (kayıtlı kullanıcı ve ziyaretçi) TÜM rapor indirme düğmeleri gizli, işlevleri engelli; ayrıca her PDF kaydı (EmsPDF save) yönetici değilse sessizce atlanır (kullanıcı kuralı, 04.11.2026). */
+body.viewer-mode [onclick*="downloadAllDepartmentsReport("],
+body.viewer-mode [onclick*="downloadCategoryReportPDF("],
+body.viewer-mode [onclick*="downloadChemAuditDaily("],
+body.viewer-mode [onclick*="downloadChemAuditMonthly("],
+body.viewer-mode [onclick*="downloadChemAuditPackage("],
+body.viewer-mode [onclick*="downloadChemicalDeptReportPDF("],
+body.viewer-mode [onclick*="downloadChemicalReportDirectly("],
+body.viewer-mode [onclick*="downloadCriteriaReportDirectly("],
+body.viewer-mode [onclick*="downloadCustomerPDF("],
+body.viewer-mode [onclick*="downloadCustomerScreenshot("],
+body.viewer-mode [onclick*="downloadDailyAuditDeptReportPDF("],
+body.viewer-mode [onclick*="downloadDailyAuditHubJPG("],
+body.viewer-mode [onclick*="downloadDailyAuditMonthlyDirectly("],
+body.viewer-mode [onclick*="downloadDailyAuditMonthlyPDF("],
+body.viewer-mode [onclick*="downloadDailyAuditRecordPDF("],
+body.viewer-mode [onclick*="downloadDailyAuditReportsJPG("],
+body.viewer-mode [onclick*="downloadDailyAuditWeeklyPDF("],
+body.viewer-mode [onclick*="downloadDepartmentReport("],
+body.viewer-mode [onclick*="downloadDepartmentsHubReport("],
+body.viewer-mode [onclick*="downloadDepartmentsHubScreenshot("],
+body.viewer-mode [onclick*="downloadDepartmentsReportsJPG("],
+body.viewer-mode [onclick*="downloadDeptAuditImageJPG("],
+body.viewer-mode [onclick*="downloadDeptAuditPDF("],
+body.viewer-mode [onclick*="downloadDeptAuditRecordPDF("],
+body.viewer-mode [onclick*="downloadDeptChecklistKPIJPG("],
+body.viewer-mode [onclick*="downloadDeptMonthReport("],
+body.viewer-mode [onclick*="downloadMainDepartmentReport("],
+body.viewer-mode [onclick*="downloadMgmtSummaryReport("],
+body.viewer-mode [onclick*="downloadProductionReportsDirectly("],
+body.viewer-mode [onclick*="exportAuditFindingsPDF("],
+body.viewer-mode [onclick*="exportChemAuditExcel("],
+body.viewer-mode [onclick*="exportChemicalDeptReportExcel("],
+body.viewer-mode [onclick*="exportGenericTablePDF("],
+body.viewer-mode [onclick*="exportModalCriteriaPDF("],
+body.viewer-mode [onclick*="exportOrganicReportPDF("],
+body.viewer-mode [onclick*="exportProductionDailyPDF("],
+body.viewer-mode [onclick*="exportReportPDF("],
+body.viewer-mode [onclick*="openSectionReportPicker("],
+body.viewer-mode [onclick*="_trecPdf("],
+body.viewer-mode [onclick*="_teamExportKpiOkrPdf("],
+body.viewer-mode [onclick*="_trecCsv("],
+body.viewer-mode [onclick*="vzDownloadPDF("],
+body.viewer-mode [onclick*="vzDownloadXlsx("],
+body.viewer-mode [onclick*="mtWeekPdf("],
+body.viewer-mode [onclick*="mtWeekXlsx("],
+body.viewer-mode [onclick*="urgeDownloadPDF("],
+body.viewer-mode [onclick*="urgeDownloadXlsx("] { display: none !important; }
+body.viewer-mode #side-nav .side-nav-section-label[data-i18n="nav_section_reports"] { display: none !important; }
+</style>
+<script id="report-download-gate-js">
+(function () {
+  var NAMES = ["downloadAllDepartmentsReport", "downloadCategoryReportPDF", "downloadChemAuditDaily", "downloadChemAuditMonthly", "downloadChemAuditPackage", "downloadChemicalDeptReportPDF", "downloadChemicalReportDirectly", "downloadCriteriaReportDirectly", "downloadCustomerPDF", "downloadCustomerScreenshot", "downloadDailyAuditDeptReportPDF", "downloadDailyAuditHubJPG", "downloadDailyAuditMonthlyDirectly", "downloadDailyAuditMonthlyPDF", "downloadDailyAuditRecordPDF", "downloadDailyAuditReportsJPG", "downloadDailyAuditWeeklyPDF", "downloadDepartmentReport", "downloadDepartmentsHubReport", "downloadDepartmentsHubScreenshot", "downloadDepartmentsReportsJPG", "downloadDeptAuditImageJPG", "downloadDeptAuditPDF", "downloadDeptAuditRecordPDF", "downloadDeptChecklistKPIJPG", "downloadDeptMonthReport", "downloadMainDepartmentReport", "downloadMgmtSummaryReport", "downloadProductionReportsDirectly", "exportAuditFindingsPDF", "exportChemAuditExcel", "exportChemicalDeptReportExcel", "exportGenericTablePDF", "exportModalCriteriaPDF", "exportOrganicReportPDF", "exportProductionDailyPDF", "exportReportPDF", "openSectionReportPicker", "_trecPdf", "_teamExportKpiOkrPdf", "_trecCsv", "vzDownloadPDF", "vzDownloadXlsx", "mtWeekPdf", "mtWeekXlsx", "urgeDownloadPDF", "urgeDownloadXlsx"];
+  var RE = new RegExp("(?:" + NAMES.join("|") + ")\\s*\\(");
+  function isAdmin() { return typeof currentUserRole !== "undefined" && currentUserRole === "admin"; }
+  // 1) İşlev engeli: yönetici değilse rapor üretilmez / function guard: non-admins cannot generate reports
+  var denyMsg = function () {
+    try { alert(typeof t3 === "function" ? t3("Rapor indirme yalnızca yöneticiye açıktır.", "Downloading reports is available to the administrator only.", "تنزيل التقارير متاح للمسؤول فقط.") : "Rapor indirme yalnızca yöneticiye açıktır."); } catch (e) {}
+  };
+  NAMES.forEach(function (n) {
+    var f = window[n];
+    if (typeof f !== "function" || f.__dlGate) return;
+    var w = function () { if (!isAdmin()) { denyMsg(); return; } return f.apply(this, arguments); };
+    w.__dlGate = true;
+    window[n] = w;
+  });
+  // 2) Düğme gizleme: yönetici değilse rapor indirme düğmeleri (ve boş kalan liste satırı) gizlenir; yönetici olunca geri gelir /
+  // hide the report download buttons (and their now-empty list row) for non-admins; restored for the admin
+  function pass() {
+    try {
+      var admin = isAdmin();
+      if (admin) {
+        document.querySelectorAll("[data-dlgate]").forEach(function (el) { el.style.removeProperty("display"); el.removeAttribute("data-dlgate"); });
+        return;
+      }
+      document.querySelectorAll("[onclick]").forEach(function (el) {
+        if (el.getAttribute("data-dlgate")) return;
+        if (!RE.test(el.getAttribute("onclick") || "")) return;
+        el.setAttribute("data-dlgate", "1");
+        el.style.setProperty("display", "none", "important");
+        var li = el.parentElement;
+        if (li && li.tagName === "LI" && li.children.length === 1) { li.setAttribute("data-dlgate", "1"); li.style.setProperty("display", "none", "important"); }
+      });
+    } catch (e) {}
+  }
+  var t = null;
+  function sched() { if (t) return; t = setTimeout(function () { t = null; pass(); }, 250); }
+  try { new MutationObserver(sched).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  setInterval(pass, 2500);
+  pass();
+})();
+</script>
 <style id="ems-mobile-polish">
 /* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Kırmızı kalan kısım koyu yayla aynı kalınlıkta (21 px), yay 22 px: %100'de kırmızı kenar görünmez. */
 html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) .kpi-ring-mini svg circle:not([stroke^="url"]):not([fill^="url"]) { stroke: #E11D2E !important; stroke-width: 21px !important; }
