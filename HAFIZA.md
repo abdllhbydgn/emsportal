@@ -752,3 +752,4 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Sol menü alt kullanıcı bloğu sabit değil (YAYINDA)
 - `<style id="side-footer-flow">` (yalnız >=901 px): #side-nav kendisi kayar, .side-nav-list kaymaz, kullanıcı bloğu menünün en sonunda. Telefondaki çekmece aynı. Sürüm 2026-11-03 22:25 (İstanbul).
+- (03.11.2026 2026-11-03 22:34) Sürüm / Build satırı sol menü kullanıcı bloğuna da eklendi (`.ems-build-foot.side-user-ver`; sayfa sonundaki siyah şerit kullanıcının ekranında görünmüyordu, sandbox'ta 5 pencere boyutunda tam görünüyor → sebep yeniden üretilemedi). Sürüm 2026-11-03 22:34 (İstanbul).
