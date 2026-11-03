@@ -756,3 +756,6 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Müşteri soru tablosu: fotoğraf sütunu genişler
 - Sebep: `.cust-photo-box` yuvaları 76 px, sütun 158 px sabitti; 3 yuva (Bulgu, Düzeltme, Ek) ~89 px, 2 yuva ~5 px durum menüsünün üstüne biniyordu. `<style id="cust-photo-col">` (≥1000 px): tabloda 2 yuvalı satır varsa sütun 190 px, 3 yuvalı satır varsa 276 px (`:has()`). 1000–1920 px × 2 ve 3 yuva ölçüldü: taşma yok. Sürüm 2026-11-03 22:39 (İstanbul).
+
+## 03.11.2026 — Telif ve Sürüm / Build çubuğu ekranın altında SABİT
+- `<style id="footer-bar-fixed">` (≥901 px): `.site-footer-bottom` position:fixed bottom:0, left = menü genişliği (316; menü daralınca 84; ziyaretçide 0); `.site-footer` +52 px alt boşluk (içerik çubuğun altında kalmasın). Telefon/tablet (<901) aynı. Sandbox'ta 1440/1100/daraltılmış/ziyaretçi ölçüldü: her kaydırma konumunda görünür. Sürüm 2026-11-03 22:41 (İstanbul).
