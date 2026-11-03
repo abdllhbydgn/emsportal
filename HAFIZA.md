@@ -753,3 +753,6 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 ## 03.11.2026 — Sol menü alt kullanıcı bloğu sabit değil (YAYINDA)
 - `<style id="side-footer-flow">` (yalnız >=901 px): #side-nav kendisi kayar, .side-nav-list kaymaz, kullanıcı bloğu menünün en sonunda. Telefondaki çekmece aynı. Sürüm 2026-11-03 22:25 (İstanbul).
 - (03.11.2026 2026-11-03 22:34) Sürüm / Build satırı sol menü kullanıcı bloğuna da eklendi (`.ems-build-foot.side-user-ver`; sayfa sonundaki siyah şerit kullanıcının ekranında görünmüyordu, sandbox'ta 5 pencere boyutunda tam görünüyor → sebep yeniden üretilemedi). Sürüm 2026-11-03 22:34 (İstanbul).
+
+## 03.11.2026 — Müşteri soru tablosu: fotoğraf sütunu genişler
+- Sebep: `.cust-photo-box` yuvaları 76 px, sütun 158 px sabitti; 3 yuva (Bulgu, Düzeltme, Ek) ~89 px, 2 yuva ~5 px durum menüsünün üstüne biniyordu. `<style id="cust-photo-col">` (≥1000 px): tabloda 2 yuvalı satır varsa sütun 190 px, 3 yuvalı satır varsa 276 px (`:has()`). 1000–1920 px × 2 ve 3 yuva ölçüldü: taşma yok. Sürüm 2026-11-03 22:39 (İstanbul).
