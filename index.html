@@ -29401,6 +29401,22 @@ function _pdfFitChunks(chunks, wrap, build, maxH) {
 // PDF sayfa görüntüsü kalitesi: 0.72 okunaklı kalır ama dosya ~4 kat küçülür (eskiden 0.92 ile bir rapor 30 MB üstüne çıkıyordu) /
 // PDF page image quality: 0.72 stays readable but the file is ~4x smaller (a report used to exceed 30 MB at 0.92)
 const _PDF_JPEG_Q = .56;
+// Rapor sayfası görüntüsündeki öğelerin PDF sayfasındaki konumu (mm). _pdfAddCanvasA4 fit:true düzeniyle aynı hesap /
+// Position (mm) of elements of a report page image on the PDF page; same maths as _pdfAddCanvasA4 with fit:true
+function _pdfRectsMm(wrap, canvas, selector) {
+  const out = [];
+  try {
+    const PW = 210, PH = 297, M = 8, FOOT = 7, W = PW - 2 * M, H = PH - 2 * M - FOOT;
+    let w = W, h = canvas.height * W / canvas.width;
+    if (h > H) { h = H; w = canvas.width * H / canvas.height; }
+    const x0 = M + (W - w) / 2, y0 = M, wr = wrap.getBoundingClientRect(), k = w / wr.width;
+    wrap.querySelectorAll(selector).forEach(el => {
+      const r = el.getBoundingClientRect();
+      out.push({ row: el.getAttribute("data-phrow"), x: x0 + (r.left - wr.left) * k, y: y0 + (r.top - wr.top) * k, w: r.width * k, h: r.height * k });
+    });
+  } catch (e) {}
+  return out;
+}
 function _pdfAddCanvasA4(pdf, jsPDFLib, canvas, el, opts) {
   opts = opts || {};
   const scale = opts.scale || 2;
@@ -68965,9 +68981,16 @@ async function downloadCustomerPDF(opts) {
     // Row layout mirrors the site's customer page: No · question/finding text · Finding · Correction (· Extra) photos · status
     const anyEk = Object.values(qPh).concat(Object.values(fPh)).some(a => a && a[2]);
     const PW = anyEk ? 80 : 92;
-    const photoCols = arr => (anyEk ? [ 0, 1, 2 ] : [ 0, 1 ]).map(i => `<div style="width:${PW}px; flex:none; text-align:center;">${arr && arr[i] ? `<img src="${arr[i]}" style="width:${PW}px; height:${PW}px; object-fit:cover; border-radius:8px; border:1px solid #E5E8ED; display:block;" alt="">` : `<div style="width:${PW}px; height:${PW}px; border-radius:8px; border:1.5px dashed #CBD5E1; background:#F8FAFC; display:flex; align-items:center; justify-content:center; color:#CBD5E1; font-size:24px;">＋</div>`}<div style="font-size:9px; font-weight:800; margin-top:3px; text-transform:uppercase; color:${i === 1 ? "#15803D" : i === 2 ? "#475569" : "#B91C1C"};">${SLOT_LBL[i]}</div></div>`).join("");
+    const photoCols = (arr, rk) => (anyEk ? [ 0, 1, 2 ] : [ 0, 1 ]).map(i => `<div style="width:${PW}px; flex:none; text-align:center;">${arr && arr[i] ? `<img ${rk != null ? `data-phrow="${rk}" ` : ""}src="${arr[i]}" style="width:${PW}px; height:${PW}px; object-fit:cover; border-radius:8px; border:1px solid #E5E8ED; display:block;" alt="">` : `<div style="width:${PW}px; height:${PW}px; border-radius:8px; border:1.5px dashed #CBD5E1; background:#F8FAFC; display:flex; align-items:center; justify-content:center; color:#CBD5E1; font-size:24px;">＋</div>`}<div style="font-size:9px; font-weight:800; margin-top:3px; text-transform:uppercase; color:${i === 1 ? "#15803D" : i === 2 ? "#475569" : "#B91C1C"};">${SLOT_LBL[i]}</div></div>`).join("");
     const chip = m => `<div style="background:${m.color}; color:#fff; font-size:9.5px; font-weight:800; padding:5px 7px; border-radius:99px; white-space:nowrap; display:inline-block; max-width:100%; box-sizing:border-box;">${m.icon} ${m.label}</div>`;
-    const rowCard = (num, topLine, text, extra, photos, m) => `<div style="display:flex; align-items:center; gap:12px; border:1.5px solid ${m.color}33; background:${m.bg}; border-radius:10px; padding:10px 14px; margin-bottom:8px; page-break-inside:avoid;"><div style="width:26px; height:26px; flex:none; border-radius:50%; background:#1A3660; color:#fff; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center;">${num}</div><div style="flex:1; min-width:0;"><div style="font-size:9.5px; font-weight:800; text-transform:uppercase; color:#64748B; letter-spacing:.05em;">${topLine}</div><div style="font-size:12.5px; font-weight:700; color:#1E293B; margin-top:2px;">${text}</div>${extra}</div>${photoCols(photos)}<div style="width:108px; flex:none; text-align:center;">${chip(m)}</div></div>`;
+    // Fotoğraf Ekleri (deneme: yalnız NEXT, 03.11.2026): fotoğraflı her satır için raporun sonuna tam boy bir ek sayfa eklenir; küçük fotoğraf o sayfaya bağlanır /
+    // Photo Annex (trial: NEXT only): every row with photos gets a full-size annex page at the end; the small photo links to it
+    const ANNEX = String(key).toLowerCase() === "next", annexRows = [];
+    const rowCard = (num, topLine, text, extra, photos, m) => {
+      const hasP = ANNEX && photos && [ 0, 1, 2 ].some(i => photos[i]);
+      if (hasP) annexRows.push({ num: num, topLine: topLine, text: text, extra: extra, photos: photos, m: m });
+      return `<div style="display:flex; align-items:center; gap:12px; border:1.5px solid ${m.color}33; background:${m.bg}; border-radius:10px; padding:10px 14px; margin-bottom:8px; page-break-inside:avoid;"><div style="width:26px; height:26px; flex:none; border-radius:50%; background:#1A3660; color:#fff; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center;">${num}</div><div style="flex:1; min-width:0;"><div style="font-size:9.5px; font-weight:800; text-transform:uppercase; color:#64748B; letter-spacing:.05em;">${topLine}</div><div style="font-size:12.5px; font-weight:700; color:#1E293B; margin-top:2px;">${text}</div>${extra}</div>${photoCols(photos, hasP ? num : null)}<div style="width:108px; flex:none; text-align:center;">${chip(m)}</div></div>`;
+    };
     const capSt = st => st === "closed" ? t3("Kapandı", "Closed", "مغلق") : st === "in_progress" ? t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : t3("Açık", "Open", "مفتوح");
     const ftext = f => currentLang === "tr" ? f.findingTr || f.findingEn || "" : currentLang === "ar" ? _dyn(f.findingEn || f.findingTr || "") : f.findingEn || f.findingTr || "";
     const fca = f => currentLang === "tr" ? f.caTr || "" : currentLang === "ar" ? _dyn(f.caEn || f.caTr || "") : f.caEn || f.caTr || "";
@@ -69018,7 +69041,7 @@ async function downloadCustomerPDF(opts) {
     const dashHtml = _custDashCardsHtml(total, comp, min, crit, !!aud);
     const banner = `<div style="display:flex; align-items:center; gap:14px; margin:0 0 16px;"><div style="width:54px; height:54px; border-radius:50%; background:${c.color || "#1A3660"}; color:#fff; font-weight:900; font-size:19px; display:flex; align-items:center; justify-content:center; flex:none;">${escHtml(c.init || c.name.slice(0, 2).toUpperCase())}</div><div><div style="font-size:22px; font-weight:900; color:#0F172A; line-height:1.15;">${escHtml(c.name)}</div><div style="font-size:12px; font-weight:700; color:#64748B;">Corrective Action Plan · ${total} ${t3("soru", "questions", "سؤال")} · ${items0.length} ${t3("bulgu", "findings", "نتيجة")}</div></div></div>`;
     const footerHtml = () => `<div style="margin-top:20px; padding-top:12px; border-top:1px solid #E2E8F0; font-size:9.5px; color:#94A3B8; text-align:center;">EMS — Eroğlu Knitting · ${t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was automatically generated by the system", "التقرير ده اتعمل تلقائيًا بواسطة النظام")} · ${new Date().toLocaleString(locale)}</div>`;
-    const firstBlock = () => dashHtml + kpiHtml + breakdownHtml + audHtml + `<div style="font-size:13px; font-weight:900; color:#1E293B; margin-bottom:10px; text-transform:uppercase; letter-spacing:.04em;">🔍 ${aud ? t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق") : t3("Denetim Soruları ve Bulgular", "Audit Questions and Findings", "أسئلة التدقيق والنتائج")}</div>`;
+    const firstBlock = () => dashHtml + kpiHtml + breakdownHtml + audHtml + `<div style="font-size:13px; font-weight:900; color:#1E293B; margin-bottom:10px; text-transform:uppercase; letter-spacing:.04em;">🔍 ${aud ? t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق") : t3("Denetim Soruları ve Bulgular", "Audit Questions and Findings", "أسئلة التدقيق والنتائج")}</div>${annexRows.length ? `<div style="font-size:10px; color:#64748B; margin:-4px 0 8px; font-weight:600;">📷 ${t3("Fotoğrafa tıklayınca tam boy hâli raporun sonundaki Fotoğraf Ekleri sayfasında açılır.", "Click a photo to open its full-size version on the Photo Annex pages at the end of the report.", "اضغط على الصورة لفتحها بالحجم الكامل في صفحات ملحق الصور في آخر التقرير.")}</div>` : ""}`;
     const contBlock = () => `<div style="height:14px;"></div>`;
     const chunks = [];
     for (let i = 0; i < itemHtmls.length; i += 8) chunks.push(itemHtmls.slice(i, i + 8));
@@ -69030,12 +69053,40 @@ async function downloadCustomerPDF(opts) {
     try {
       await waitForImagesReady(wrap);
       _pdfFitChunks(chunks, wrap, (arr, first) => pageHeaderHtml(1, 1) + (first ? firstBlock() : contBlock()) + arr.join("") + footerHtml());
+      const totalPages = chunks.length + annexRows.length, contentRects = [];
       for (let pi = 0; pi < chunks.length; pi++) {
-        wrap.innerHTML = pageHeaderHtml(pi + 1, chunks.length) + (pi === 0 ? firstBlock() : contBlock()) + (chunks[pi].join("") || `<div style="text-align:center; color:#94A3B8; padding:30px;">${t3("Bu müşteri için henüz soru veya bulgu yok.", "No questions or findings for this customer yet.", "مفيش أسئلة أو نتائج للعميل ده لسه.")}</div>`) + footerHtml();
+        wrap.innerHTML = pageHeaderHtml(pi + 1, totalPages) + (pi === 0 ? firstBlock() : contBlock()) + (chunks[pi].join("") || `<div style="text-align:center; color:#94A3B8; padding:30px;">${t3("Bu müşteri için henüz soru veya bulgu yok.", "No questions or findings for this customer yet.", "مفيش أسئلة أو نتائج للعميل ده لسه.")}</div>`) + footerHtml();
         await waitForImagesReady(wrap);
         const canvas = await _h2c(wrap, { scale: _pdfCanvasScale(), backgroundColor: "#ffffff", useCORS: true });
         pdf = _pdfAddCanvasA4(pdf, jsPDFLib, canvas, wrap, { fit: true, orientation: "portrait" });
-        updatePdfProgress(pi + 1, chunks.length);
+        if (annexRows.length) _pdfRectsMm(wrap, canvas, "img[data-phrow]").forEach(r => contentRects.push(Object.assign({ pg: pi + 1 }, r)));
+        updatePdfProgress(pi + 1, totalPages);
+      }
+      // Fotoğraf Ek sayfaları: her fotoğraflı satır için tam boy sayfa; ileri-geri bağlantılar / annex pages with forward and back links
+      if (annexRows.length) {
+        const annexPg = {}, backRects = [];
+        const backTxt = t3("↩ Rapora dön", "↩ Back to report", "↩ رجوع للتقرير");
+        for (let k = 0; k < annexRows.length; k++) {
+          const r = annexRows[k], pgNo = chunks.length + k + 1, ph = [ 0, 1, 2 ].filter(i => r.photos[i]), n = ph.length;
+          const hgt = n === 1 ? 800 : n === 2 ? 560 : 400;
+          const cell = i => `<div style="flex:${n === 1 ? "0 0 100%" : "0 0 calc(50% - 8px)"}; min-width:0;"><div style="font-size:10px; font-weight:800; text-transform:uppercase; color:${i === 1 ? "#15803D" : i === 2 ? "#475569" : "#B91C1C"}; margin-bottom:5px;">${SLOT_LBL[i]}</div><div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:6px; display:flex; align-items:center; justify-content:center; height:${hgt}px; box-sizing:border-box;"><img src="${r.photos[i]}" style="max-width:100%; max-height:100%; object-fit:contain; display:block;" alt=""></div></div>`;
+          wrap.innerHTML = pageHeaderHtml(pgNo, totalPages)
+            + `<div style="display:flex; justify-content:space-between; align-items:center; margin:2px 0 12px;"><div style="font-size:13px; font-weight:900; color:#1E293B; text-transform:uppercase; letter-spacing:.04em;">📷 ${t3("Fotoğraf Eki", "Photo Annex", "ملحق الصور")} · ${t3("No", "No", "رقم")} ${r.num}</div><div data-backlink="1" style="background:#1A3660; color:#fff; font-size:11px; font-weight:800; padding:7px 14px; border-radius:99px;">${backTxt}</div></div>`
+            + `<div style="display:flex; align-items:center; gap:12px; border:1.5px solid ${r.m.color}33; background:${r.m.bg}; border-radius:10px; padding:10px 14px; margin-bottom:14px;"><div style="width:26px; height:26px; flex:none; border-radius:50%; background:#1A3660; color:#fff; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center;">${r.num}</div><div style="flex:1; min-width:0;"><div style="font-size:9.5px; font-weight:800; text-transform:uppercase; color:#64748B; letter-spacing:.05em;">${r.topLine}</div><div style="font-size:12.5px; font-weight:700; color:#1E293B; margin-top:2px;">${r.text}</div>${r.extra}</div><div style="width:108px; flex:none; text-align:center;">${chip(r.m)}</div></div>`
+            + `<div style="display:flex; flex-wrap:wrap; gap:16px;">${ph.map(cell).join("")}</div>` + footerHtml();
+          await waitForImagesReady(wrap);
+          const cv = await _h2c(wrap, { scale: _pdfCanvasScale(), backgroundColor: "#ffffff", useCORS: true });
+          pdf = _pdfAddCanvasA4(pdf, jsPDFLib, cv, wrap, { fit: true, orientation: "portrait" });
+          annexPg[r.num] = pgNo;
+          _pdfRectsMm(wrap, cv, "[data-backlink]").forEach(b => backRects.push(Object.assign({}, b, { pg: pgNo, row: r.num })));
+          updatePdfProgress(chunks.length + k + 1, totalPages);
+        }
+        // Bağlantılar: rapordaki küçük fotoğraf → ek sayfa; ek sayfadaki düğme → raporda o satırın sayfası / links: small photo → annex page; annex button → that row's report page
+        const rowPg = {};
+        contentRects.forEach(r => { if (rowPg[r.row] == null) rowPg[r.row] = r.pg; });
+        contentRects.forEach(r => { try { pdf.setPage(r.pg); pdf.link(r.x, r.y, r.w, r.h, { pageNumber: annexPg[r.row] }); } catch (e) {} });
+        backRects.forEach(r => { try { if (rowPg[r.row]) { pdf.setPage(r.pg); pdf.link(r.x, r.y, r.w, r.h, { pageNumber: rowPg[r.row] }); } } catch (e) {} });
+        try { pdf.setPage(pdf.getNumberOfPages()); } catch (e) {}
       }
       const fileSafe = String(c.name).replace(/ğ/g, "g").replace(/Ğ/g, "G").replace(/ı/g, "i").replace(/İ/g, "I").replace(/ş/g, "s").replace(/Ş/g, "S").replace(/ç/g, "c").replace(/Ç/g, "C").replace(/ö/g, "o").replace(/Ö/g, "O").replace(/ü/g, "u").replace(/Ü/g, "U").replace(/[^a-zA-Z0-9]/g, "_");
     pdf.save(`EMS_${fileSafe}_Corrective_Action_Plan_${aud && aud.date ? String(aud.date).slice(0, 10) : _localISODate()}.pdf`);
@@ -84126,7 +84177,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 23:54";
+const EMS_BUILD = "2026-11-04 00:04";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /

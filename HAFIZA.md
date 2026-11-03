@@ -786,3 +786,7 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 ## 03.11.2026 — Siyah alt şerit yönetici/kullanıcıda kayboluyordu (ziyaretçi gibi yapıldı)
 - Karşılaştırma: ziyaretçide `body.visitor-mode .app-shell { margin: 0 }` olduğu için şerit sayfa dibinden 16 px yukarıda biter (kaybolmaz); yönetici/kullanıcıda `.app-shell { margin: -16px -12px }` şeridi sayfanın en alt kenarına yapıştırıyordu ve kullanıcıda 1 sn sonra kayboluyordu. `<style id="footer-bottom-gap">`: `body.ems-shell-on:not(.visitor-mode) .app-shell { margin-bottom: 0 }` → artık üçünde de aynı 16 px boşluk.
 - Kendi testimde (headless) kayboluma hiç rastlamadım; çözüm ziyaretçi sayfasıyla yapısal eşitleme. Sürerse ekran videosu iste.
+
+## 03.11.2026 — Müşteri raporu: Fotoğraf Ekleri sayfaları (DENEME: yalnız NEXT)
+- `downloadCustomerPDF`: `ANNEX = key === "next"`. Fotoğraflı her satır için raporun sonuna tam boy "Fotoğraf Eki · No N" sayfası eklenir (bulgu/düzeltme/ek fotoğraf etiketli). Rapordaki küçük fotoğraf (`data-phrow`) → ek sayfaya, ek sayfadaki "Rapora dön" düğmesi (`data-backlink`) → satırın rapor sayfasına PDF bağlantısı (`pdf.link` + `pageNumber`; konum `_pdfRectsMm`). Sayfa numarası "Sayfa x/toplam" ek sayfalar dahil. İmza (hook) en son sayfada kalır.
+- Kullanıcı gerçek Next raporunu indirip bakacak; beğenirse `ANNEX` tüm müşterilere açılır (koşulu kaldır). Dosya boyutu gerçek fotoğraflarla ölçülmedi (sahte veriyle 11 sayfa ≈ 1 MB).
