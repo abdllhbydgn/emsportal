@@ -29056,7 +29056,8 @@ function _pdfHeadHtml(o) {
   return `<div data-pdf-head="1" style="display:grid; grid-template-columns:${Math.round(h * 2.1)}px minmax(0,1fr) ${Math.round(h * 2.1)}px; align-items:center; gap:16px; padding:${o.pad || "0 0 14px"}; margin:${o.margin || "0 0 18px"}; border-bottom:3px solid #C1272D; background:${o.bg || "transparent"}; direction:ltr;">
     <div style="justify-self:start; display:flex; align-items:center;">${logo ? `<img src="${logo}" style="height:${h}px; width:auto; display:block;" alt="">` : ""}</div>
     <div style="text-align:center; min-width:0;"><div style="font-size:${ts}px; font-weight:900; color:#0F172A; line-height:1.2; letter-spacing:.01em;">${o.title}</div>${sub}</div>
-    <div style="justify-self:end; width:${h}px; height:${h}px; border-radius:${Math.round(h * .23)}px; background:linear-gradient(135deg, ${col[0]}, ${col[1]}); display:flex; align-items:center; justify-content:center; font-size:${Math.round(h * .54)}px; line-height:1;">${ic === "🌾" && typeof ORG_LOGO !== "undefined" ? `<img src="${ORG_LOGO}" style="width:${Math.round(h * .86)}px; height:${Math.round(h * .86)}px; border-radius:50%; display:block;" alt="">` : ic === "🏰" && (window.FAMA_LOGO_PNG || typeof FAMA_LOGO !== "undefined") ? `<img src="${window.FAMA_LOGO_PNG || FAMA_LOGO}" style="width:${Math.round(h * .9)}px; height:auto; display:block;" alt="">` : ic}</div>
+    ${o.rightLogo ? `<div style="justify-self:end; height:${h}px; max-width:${Math.round(h * 2.1)}px; display:flex; align-items:center; justify-content:flex-end;"><img src="${o.rightLogo}" style="max-height:${h}px; max-width:${Math.round(h * 2.1)}px; width:auto; height:auto; object-fit:contain; display:block;" alt=""></div>` : ""}
+    <div style="${o.rightLogo ? "display:none !important; " : ""}justify-self:end; width:${h}px; height:${h}px; border-radius:${Math.round(h * .23)}px; background:linear-gradient(135deg, ${col[0]}, ${col[1]}); display:flex; align-items:center; justify-content:center; font-size:${Math.round(h * .54)}px; line-height:1;">${ic === "🌾" && typeof ORG_LOGO !== "undefined" ? `<img src="${ORG_LOGO}" style="width:${Math.round(h * .86)}px; height:${Math.round(h * .86)}px; border-radius:50%; display:block;" alt="">` : ic === "🏰" && (window.FAMA_LOGO_PNG || typeof FAMA_LOGO !== "undefined") ? `<img src="${window.FAMA_LOGO_PNG || FAMA_LOGO}" style="width:${Math.round(h * .9)}px; height:auto; display:block;" alt="">` : ic}</div>
   </div>`;
 }
 // ═══ RAPOR ÖZET BANDI (07.10.2026) ═══ Raporlardaki özet kartları (toplam, tamamlandı, devam, başlanmadı, uyum) tek
@@ -68915,9 +68916,16 @@ async function downloadCustomerPDF(opts) {
     const breakdownHtml = `<div style="font-size:13px; font-weight:900; color:#1E293B; margin:0 0 8px; text-transform:uppercase; letter-spacing:.04em;">🕵️ ${t3("Bulgu Dağılımı", "Findings Breakdown", "توزيع النتائج")}</div>${sevRows ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; margin-bottom:16px;"><thead><tr><th style="${th}">${t3("Kategori", "Category", "الفئة")}</th><th style="${th}">${t3("Açık", "Open", "مفتوح")}</th><th style="${th}">${t3("Devam", "Active", "جارٍ")}</th><th style="${th}">${t3("Kapandı", "Closed", "مغلق")}</th><th style="${th}">${t3("Toplam", "Total", "الإجمالي")}</th><th style="${th}"></th></tr></thead><tbody>${sevRows}</tbody></table>` : `<div style="color:#94A3B8; font-size:12px; margin-bottom:16px;">—</div>`}`;
     const audHtml = `<div style="font-size:13px; font-weight:900; color:#1E293B; margin:0 0 8px; text-transform:uppercase; letter-spacing:.04em;">🗓️ ${t3("Denetim Geçmişi", "Audit History", "سجل التدقيقات")}</div>${d.audits.length ? d.audits.map(a => { const aud = _custAuditor(a); const nt = biText(a.note || "").replace(/\s*[—–-]\s*(Denetçi|Auditor)\b.*$/i, ""); return `<div style="display:flex; gap:10px; align-items:baseline; padding:6px 0; border-bottom:1px solid #EEF2F7; font-size:12px;"><b style="min-width:84px;">📅 ${fmtD(a.date)}</b><span style="flex:1;">${escHtml(nt || t3("Denetim", "Audit", "تدقيق"))}${aud ? ` <span style="color:#64748B;">· 👤 ${escHtml(aud)}</span>` : ""}</span></div>`; }).join("") : `<div style="color:#94A3B8; font-size:12px;">—</div>`}<div style="height:16px;"></div>`;
     // İngilizce başlık Türkçe büyük harfe çevrilirse i→İ olur; dönem büyük harfi dile göre, başlık sabit / uppercasing English in Turkish makes i→İ; the period follows the UI language, the title stays fixed
-    const capTitle = currentLang === "ar" ? _reportPeriod() + " — Corrective Action Plan" : _reportPeriod().toLocaleUpperCase(currentLang === "en" ? "en-US" : "tr-TR") + " CORRECTIVE ACTION PLAN";
+    // Başlık: "<MARKA> <YIL> CORRECTIVE ACTION PLAN" (kullanıcı isteği, 03.11.2026); sağ üstte o markanın logosu (yoksa dedektif simgesi) /
+    // Title: "<BRAND> <YEAR> CORRECTIVE ACTION PLAN"; the brand's own logo at the top right (detective icon if none)
+    const capTitle = String(c.name).toLocaleUpperCase("en-US") + " " + new Date().getFullYear() + " CORRECTIVE ACTION PLAN";
+    let brandLogo = "";
+    try {
+      const _raw = await new Promise(res => { let d = false; const f = v => { if (!d) { d = true; res(v); } }; setTimeout(() => f(null), 4000); try { _loadDocFileData("customerlogo", key, "logo", f); } catch (e) { f(null); } });
+      if (_raw && String(_raw).startsWith("data:")) brandLogo = String(_raw); // özgün kalitede (müşteri sayfasındaki 84x48 küçültülmüş sürüm değil)
+    } catch (e) { brandLogo = ""; }
     const logoSrc = EMS_REPORT_LOGO, dateStr = new Date().toLocaleDateString(locale);
-    const pageHeaderHtml = (pn, tp) => _pdfHeadHtml({ logo: logoSrc, size: "sm", title: capTitle, titleText: capTitle, sub: `<b style="color:#0F172A;">${escHtml(c.name)}</b>${aud ? " · 🗓️ " + fmtD(aud.date) : ""} · 📅 ${dateStr} · ${t3("Sayfa", "Page", "صفحة")} ${pn}/${tp}`, icon: "🕵️" });
+    const pageHeaderHtml = (pn, tp) => _pdfHeadHtml({ logo: logoSrc, size: "sm", title: escHtml(capTitle), titleText: capTitle, sub: `${aud ? "🗓️ " + fmtD(aud.date) + " · " : ""}📅 ${dateStr} · ${t3("Sayfa", "Page", "صفحة")} ${pn}/${tp}`, icon: "🕵️", rightLogo: brandLogo || "" });
     const pcN = n => total ? Math.round(n * 100 / total) : 0;
     const kpiHtml = aud ? _pdfKpiBandHtml([
       { label: t3("Toplam Bulgu", "Total Findings", "إجمالي النتائج"), val: total, sub: t3("Bu denetimin bulguları", "Findings of this audit", "نتائج التدقيق ده"), bar: 100 },
@@ -84039,7 +84047,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 22:41";
+const EMS_BUILD = "2026-11-03 22:45";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /

@@ -759,3 +759,6 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Telif ve Sürüm / Build çubuğu ekranın altında SABİT
 - `<style id="footer-bar-fixed">` (≥901 px): `.site-footer-bottom` position:fixed bottom:0, left = menü genişliği (316; menü daralınca 84; ziyaretçide 0); `.site-footer` +52 px alt boşluk (içerik çubuğun altında kalmasın). Telefon/tablet (<901) aynı. Sandbox'ta 1440/1100/daraltılmış/ziyaretçi ölçüldü: her kaydırma konumunda görünür. Sürüm 2026-11-03 22:41 (İstanbul).
+
+## 03.11.2026 — Müşteri raporu başlığı (ÖRNEK GÖSTERİLDİ, ONAY BEKLİYOR, main'e alınmadı)
+- `downloadCustomerPDF`: başlık "<MARKA> <YIL> CORRECTIVE ACTION PLAN" (örn. NEXT 2026 CORRECTIVE ACTION PLAN; 3 dilde aynı); sağ üstteki dedektör simgesi yerine o markanın logosu (`_loadDocFileData('customerlogo', key, 'logo')`, özgün kalite; logo yoksa dedektör simgesi kalır); alt satırda marka adı tekrarı kaldırıldı. `_pdfHeadHtml` yeni `rightLogo` seçeneği. Sürüm 2026-11-03 22:45 (İstanbul).
