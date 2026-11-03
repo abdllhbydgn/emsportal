@@ -84126,7 +84126,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 23:46";
+const EMS_BUILD = "2026-11-03 23:54";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84290,6 +84290,10 @@ html[dir="rtl"].ems-sade .dept-banner:not(#site-announcement-popup *):not(#ann-f
 body.visitor-mode.ems-shell-on:not(.ems-page-open) #ems-topbar #etb-crumbs { display: none !important; }
 body.visitor-mode .ems-corner-logo { cursor: pointer; }
 body.visitor-mode.ems-page-open .ems-corner-logo { pointer-events: auto !important; }
+</style>
+<style id="footer-bottom-gap">
+/* Siyah alt şerit (telif + Sürüm / Build) yönetici ve kullanıcı sayfalarında da ziyaretçi sayfası gibi sayfanın en altında 16 px boşlukla biter; -16 px negatif alt boşluk kaldırıldı (şerit kaybolmuyor). (kullanıcı isteği, 03.11.2026) */
+body.ems-shell-on:not(.visitor-mode) .app-shell { margin-bottom: 0; }
 </style>
 <style id="ems-mobile-polish">
 /* Üretim Toplamları ve Kimyasal Tüketim halkaları: dolu yay antrasit (dokunulmadı), tamamlanmayan kalan kısım kırmızı (kullanıcı isteği 01.11.2026). Kırmızı kalan kısım koyu yayla aynı kalınlıkta (21 px), yay 22 px: %100'de kırmızı kenar görünmez. */
