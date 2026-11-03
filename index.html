@@ -34280,7 +34280,7 @@ function _saveCustomerAuditsOnly() {
       showEmsToast(t3(`⚠️ Müşteri Denetimleri belgesi Firestore'un 1 MB sınırına yaklaştı (${(payloadStr.length / 1048576).toFixed(2)} MB). Bana haber verin, arşivleme ekleyelim.`, `⚠️ The Customer Audits document is approaching Firestore's 1 MB limit (${(payloadStr.length / 1048576).toFixed(2)} MB). Please let me know so archiving can be added.`, `⚠️ مستند تدقيقات العملاء قرّب من حد 1 ميجابايت في Firestore.`), 0, "var(--warning, #F59E0B)");
     }
   }
-  _transactionalMergeSave("customerAudits", cloudData => ({
+  return _transactionalMergeSave("customerAudits", cloudData => ({
     customerAudits: _mergeArrayById(cloudData.customerAudits, customerAudits, _cloudBaselines.customerAudits),
     ...meta
   }));
@@ -78276,7 +78276,6 @@ function _nextMergeMaybe() {
   try {
     if (_nextMergeBusy || currentUserRole !== "admin") return;
     if (!(FIREBASE_ENABLED && fbDb) || !_cloudDocsLoaded.customerAudits || _defaultedDocs.has("customerAudits")) return;
-    if ((appliedSeedKeys || []).includes("aud:next-merge-v1")) return;
     if (typeof _canSaveNow === "function" && !_canSaveNow()) return;
     const isA = a => a && a.customerKey === "next" && /^NEXT Marka Denetimi/.test(String(a.note || ""));
     const isB = a => a && a.customerKey === "next" && /^NEXT Takip Denetimi/.test(String(a.note || ""));
@@ -78290,13 +78289,18 @@ function _nextMergeMaybe() {
       else if (A.capStatus === "closed") A.capStatus = "in_progress";
       else if (A.capStatus === "open" && A.findings.some(f => f.status && f.status !== "open")) A.capStatus = "in_progress";
       if (B) customerAudits = customerAudits.filter(a => a !== B);
-      if (!appliedSeedKeys.includes("aud:next-merge-v1")) appliedSeedKeys.push("aud:next-merge-v1");
-      _saveCustomerAuditsOnly();
-      _saveQuestionsOnly();
-      try { _custRefreshIfOpen(); } catch (e) {}
-      try { showEmsToast(t3("✅ NEXT denetimleri tek denetimde birleştirildi (denetçi: Ruba).", "✅ The NEXT audits were merged into one audit (auditor: Ruba).", "✅ تدقيقات NEXT اتدمجت في تدقيق واحد (المدقق: Ruba)."), 7000, "var(--success, #16A34A)"); } catch (e) {}
+      // Anahtar YALNIZ buluta yazma başarılı olunca işlenir (önceki sürümde yazma başarısız olsa da işleniyordu) /
+      // The key is recorded ONLY after the cloud write succeeded (the earlier version recorded it even when the write failed)
+      Promise.resolve(_saveCustomerAuditsOnly()).then(ok => {
+        if (ok === false) { _nextMergeBusy = false; return; }
+        if (!appliedSeedKeys.includes("aud:next-merge-v2")) appliedSeedKeys.push("aud:next-merge-v2");
+        _saveQuestionsOnly();
+        try { _custRefreshIfOpen(); } catch (e) {}
+        try { showEmsToast(t3("✅ NEXT denetimleri tek denetimde birleştirildi (denetçi: Ruba).", "✅ The NEXT audits were merged into one audit (auditor: Ruba).", "✅ تدقيقات NEXT اتدمجت في تدقيق واحد (المدقق: Ruba)."), 7000, "var(--success, #16A34A)"); } catch (e) {}
+      });
     };
     // Önceki bir çalışmada birleştirildiyse yalnız artık kopyayı kaldır / if already merged earlier, only drop the leftover copy
+    if (!B && (appliedSeedKeys || []).includes("aud:next-merge-v2")) return;
     if (!B || (A.mergedFollowUp && A.mergedFollowUp.id === B.id)) { finish(); return; }
     _nextMergeBusy = true;
     const norm = x => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
@@ -78348,7 +78352,7 @@ function _nextMergeMaybe() {
             [ "caEn", "caTr", "responsible", "due", "note", "evidence" ].forEach(f => { if (!tg[f] && bf[f]) tg[f] = bf[f]; });
           }
         });
-        A.mergedFollowUp = { id: B.id, date: B.date, note: B.note, mergedAt: Date.now(), map: plan.map(p => [ p.bf.no, p.target.no, p.isNew ? "new" : "same" ]), findings: JSON.parse(JSON.stringify(B.findings || [])) };
+        A.mergedFollowUp = { id: B.id, date: B.date, note: B.note, mergedAt: Date.now(), map: plan.map(p => ({ from: p.bf.no, to: p.target.no, kind: p.isNew ? "new" : "same" })), findings: JSON.parse(JSON.stringify(B.findings || [])) };
         finish();
       } finally { _nextMergeBusy = false; }
     };
@@ -84016,7 +84020,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 17:34";
+const EMS_BUILD = "2026-11-03 21:24";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
