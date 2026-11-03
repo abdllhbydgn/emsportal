@@ -84039,7 +84039,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 22:34";
+const EMS_BUILD = "2026-11-03 22:39";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84122,6 +84122,15 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   .findings-table th:nth-child(3), .findings-table td:nth-child(3) { width: auto !important; }
   .findings-table th:nth-child(4), .findings-table td:nth-child(4) { width: 26% !important; }
   .findings-table .status-sel { width: auto !important; min-width: 0 !important; max-width: none !important; flex-basis: auto !important; }
+}
+</style>
+<style id="cust-photo-col">
+/* Müşteri soru tablosu: bir satırda 3 fotoğraf yuvası (Bulgu, Düzeltme, Ek) varsa fotoğraf sütunu genişler; üçüncü kutu durum menüsünün üstüne binmez (kullanıcı isteği, 03.11.2026). Yalnız masaüstü; telefonda kart düzeni. */
+@media (min-width: 1000px) {
+  #customer-dashboard-modal .table-wrap table:has(.cust-photo-box > div > div:nth-child(2)) > thead > tr > th:nth-child(4),
+  #customer-dashboard-modal .table-wrap table:has(.cust-photo-box > div > div:nth-child(2)) > tbody > tr > td:nth-child(4):not([colspan]) { width: 190px !important; min-width: 190px !important; }
+  #customer-dashboard-modal .table-wrap table:has(.cust-photo-box > div > div:nth-child(3)) > thead > tr > th:nth-child(4),
+  #customer-dashboard-modal .table-wrap table:has(.cust-photo-box > div > div:nth-child(3)) > tbody > tr > td:nth-child(4):not([colspan]) { width: 276px !important; min-width: 276px !important; }
 }
 </style>
 <style id="side-ver-line">
