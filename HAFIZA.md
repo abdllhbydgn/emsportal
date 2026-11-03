@@ -778,3 +778,7 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 ## 03.11.2026 — Ziyaretçi ana sayfası: video solda, tanıtım sunumu sağda
 - `#visitor-home-media` (`.vh-media`): iki kutu 16:9 yarı yarıya (telefonda alt alta). Sol: YouTube video (`#visitor-home-video-slot`). Sağ: Google Slides "EMS TANITIM SUNUMU 15.05.2026" (`#visitor-home-deck-slot`), embed `…/embed?start=true&loop=true&delayms=5000&rm=minimal` (otomatik başlar, 5 sn, döngü). Slides dosyası Drive'da "bağlantıya sahip herkes görüntüleyebilir". İki iframe de `ems-bg-yt` sınıfında: yalnız görünürken yüklenir.
 - Sunum değişirse Drive'da aynı Slides dosyasını güncelle (adres aynı kalır). Slides'a dönüştürme 41 MB PPTX'ten kullanıcı tarafından yapıldı.
+
+## 03.11.2026 — Ziyaretçi ana sayfası üst şerit (sade hâl) ve ana sayfa bağlantıları
+- Üst şerit taşıma/kaldırma denemesi kullanıcı isteğiyle İPTAL edildi (oklar, şerit, saat düzeni olduğu gibi). Yalnız ziyaretçi ana sayfasında şeritteki "Genel Durum" yazısı gizli (`<style id="visitor-home-bar">`; alt sayfalarda sayfa adı kalır).
+- Ana sayfa simgesi (`#etb-home`) her durumda `goHome()` + en üste kaydırır. Ziyaretçi köşe logosu (`.ems-corner-logo`) tıklanınca `goHome()` (alt sayfalarda da tıklanır). Sol menü logosu zaten ana sayfaya yeniler.
