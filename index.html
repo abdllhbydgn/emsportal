@@ -49823,7 +49823,7 @@ function postProcessData() {
       _ppSeeded++;
     }
     const nKey = (customersList || []).some(c => c.key === "next") ? "next" : null;
-    if (nKey && _sg("aud:next-fu", !customerAudits.some(a => a.customerKey === nKey && String(a.note || "").indexOf("NEXT Takip Denetimi") === 0))) {
+    if (nKey && _sg("aud:next-fu", !customerAudits.some(a => a.customerKey === nKey && (String(a.note || "").indexOf("NEXT Takip Denetimi") === 0 || a.mergedFollowUp)))) {
       customerAudits.push({
         id: customerAudits.length > 0 ? Math.max(...customerAudits.map(a => +a.id || 0)) + 1 : 1,
         customerKey: nKey,
@@ -51828,6 +51828,8 @@ function _onCloudDocChange(onReady) {
     setTimeout(() => { try { _procImportMaybe(); } catch (e) {} }, 4000);
     setTimeout(() => { try { _findingPhotoRecoverMaybe(); } catch (e) {} }, 20000);
     setTimeout(() => { try { _formsImportMaybe(); } catch (e) {} }, 7000);
+    setTimeout(() => { try { _nextMergeMaybe(); } catch (e) {} }, 9000);
+    setTimeout(() => { try { _nextMergeMaybe(); } catch (e) {} }, 30000);
     setTimeout(() => { try { _formsLinkCleanMaybe(); } catch (e) {} }, 14000);
     setTimeout(() => { try { _formsLinkCleanMaybe(); } catch (e) {} }, 40000);
     setTimeout(() => { try { if (_procImportDone || !_legalPresetFlag) { _legalDedupeMaybe(); _procReplaceOldMaybe(); } } catch (e) {} }, 12000);
@@ -78263,6 +78265,103 @@ function _formsLinkCleanMaybe() {
     }, e => { _formsLinkCleanDone = false; console.warn("[Form SharePoint temizliği / Form SharePoint cleanup]", e); });
   } catch (e) { console.warn("[Form SharePoint temizliği / Form SharePoint cleanup]", e); }
 }
+// ═══ NEXT: "Marka Denetimi" (21.06.2026) ve "Takip Denetimi" (20.07.2026) TEK denetimde birleşir (kullanıcı isteği, 03.11.2026) ═══
+// Kurallar: hiçbir fotoğraf SİLİNMEZ (kopyalanır; eski dosyalar yerinde kalır). Aynı bulgu (aynı metin ya da aynı bağlı soru) tek kayda iner: durum/önlem/fotoğraf korunur.
+// Yeni bulgular sona 42, 43… diye eklenir. Denetçi "Ruba". Takip denetiminin özgün kaydı birleşik denetimde \`mergedFollowUp\` altında saklanır. Yalnız yönetici girişinde bir kez çalışır;
+// fotoğraf kopyalama bitmeden hiçbir kayıt değişmez. /
+// Rules: no photo is ever DELETED (copied; old files stay). The same finding (same text or same linked question) becomes one record, keeping status/action/photos. New findings are appended as 42, 43…
+// Auditor "Ruba". The follow-up audit's original record is kept inside the merged audit under \`mergedFollowUp\`. Runs once on admin login; no record changes until the photo copies are done.
+let _nextMergeBusy = false;
+function _nextMergeMaybe() {
+  try {
+    if (_nextMergeBusy || currentUserRole !== "admin") return;
+    if (!(FIREBASE_ENABLED && fbDb) || !_cloudDocsLoaded.customerAudits || _defaultedDocs.has("customerAudits")) return;
+    if ((appliedSeedKeys || []).includes("aud:next-merge-v1")) return;
+    if (typeof _canSaveNow === "function" && !_canSaveNow()) return;
+    const isA = a => a && a.customerKey === "next" && /^NEXT Marka Denetimi/.test(String(a.note || ""));
+    const isB = a => a && a.customerKey === "next" && /^NEXT Takip Denetimi/.test(String(a.note || ""));
+    const A = customerAudits.find(isA), B = customerAudits.find(isB);
+    if (!A || !Array.isArray(A.findings)) return;
+    const finish = () => {
+      A.auditor = "Ruba";
+      const cnt = c => A.findings.filter(f => f && f.category === c).length;
+      A.cat6 = cnt("CAT 6"); A.cat5 = cnt("CAT 5"); A.major = cnt("Major"); A.minor = cnt("Minor");
+      if (A.findings.length && A.findings.every(f => f.status === "closed")) A.capStatus = "closed";
+      else if (A.capStatus === "closed") A.capStatus = "in_progress";
+      else if (A.capStatus === "open" && A.findings.some(f => f.status && f.status !== "open")) A.capStatus = "in_progress";
+      if (B) customerAudits = customerAudits.filter(a => a !== B);
+      if (!appliedSeedKeys.includes("aud:next-merge-v1")) appliedSeedKeys.push("aud:next-merge-v1");
+      _saveCustomerAuditsOnly();
+      _saveQuestionsOnly();
+      try { _custRefreshIfOpen(); } catch (e) {}
+      try { showEmsToast(t3("✅ NEXT denetimleri tek denetimde birleştirildi (denetçi: Ruba).", "✅ The NEXT audits were merged into one audit (auditor: Ruba).", "✅ تدقيقات NEXT اتدمجت في تدقيق واحد (المدقق: Ruba)."), 7000, "var(--success, #16A34A)"); } catch (e) {}
+    };
+    // Önceki bir çalışmada birleştirildiyse yalnız artık kopyayı kaldır / if already merged earlier, only drop the leftover copy
+    if (!B || (A.mergedFollowUp && A.mergedFollowUp.id === B.id)) { finish(); return; }
+    _nextMergeBusy = true;
+    const norm = x => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    const keyOf = f => norm(f.findingEn) || norm(f.findingTr);
+    const hasQ = f => f && f.linkedQuestionId !== undefined && f.linkedQuestionId !== null && f.linkedQuestionId !== "";
+    const aByKey = new Map(), aByQ = new Map();
+    A.findings.forEach(f => { const k = keyOf(f); if (k && !aByKey.has(k)) aByKey.set(k, f); if (hasQ(f)) aByQ.set(String(f.linkedQuestionId), f); });
+    let nextNo = Math.max(0, ...A.findings.map(f => +f.no || 0));
+    const FLD = [ "hasPhoto", "mediaType", "officeExt", "officeFileName" ];
+    const sufOf = s => (s === 1 ? "" : String(s));
+    const plan = (B.findings || []).map(bf => {
+      const dup = aByKey.get(keyOf(bf)) || (hasQ(bf) ? aByQ.get(String(bf.linkedQuestionId)) : null) || null;
+      if (dup) return { bf, target: dup, isNew: false, tasks: [] };
+      const nf = JSON.parse(JSON.stringify(bf));
+      nf.no = ++nextNo; nf.fromFollowUp = B.date || "";
+      for (let s = 1; s <= FINDING_PHOTO_MAX_SLOTS; s++) FLD.concat([ "hasPendingPhoto" ]).forEach(f => { delete nf[f + sufOf(s)]; });
+      return { bf, target: nf, isNew: true, tasks: [] };
+    });
+    // Her kaynak dosya için kopyalama görevi (hedef yuva: yeni bulguda aynı yuva, mevcut bulguda ilk boş yuva)
+    plan.forEach(p => {
+      const used = new Set();
+      for (let s = 1; s <= FINDING_PHOTO_MAX_SLOTS; s++) {
+        const k = _findPhotoSlotKeys(s), bf = p.bf;
+        const isOffice = bf[k.mediaTypeField] === "office" && bf[k.officeFileNameField], isImg = !!bf[k.hasPhotoField];
+        if (!isOffice && !isImg) continue;
+        let ds = s;
+        if (!p.isNew) { ds = 0; for (let t = 1; t <= FINDING_PHOTO_MAX_SLOTS; t++) { const kt = _findPhotoSlotKeys(t); if (!p.target[kt.hasPhotoField] && p.target[kt.mediaTypeField] !== "office" && !used.has(t)) { ds = t; break; } } if (!ds) continue; used.add(ds); }
+        p.tasks.push({ s, ds, isOffice: !!isOffice, kind: isOffice ? "officefile" : "photo" + sufOf(s), dkind: isOffice ? "officefile" : "photo" + sufOf(ds), sid: B.id + "_f" + bf.no + (isOffice && s > 1 ? "_s" + s : ""), did: A.id + "_f" + p.target.no + (isOffice && ds > 1 ? "_s" + ds : "") });
+      }
+    });
+    const all = [];
+    plan.forEach(p => p.tasks.forEach(t => all.push({ p, t })));
+    let failed = 0;
+    const done = () => {
+      if (failed) { console.warn("[NEXT birleştirme] " + failed + " dosya kopyalanamadı; hiçbir kayıt değiştirilmedi, sonraki girişte yeniden denenecek / copy failed; no record changed, will retry"); _nextMergeBusy = false; return; }
+      try {
+        plan.forEach(p => {
+          const tg = p.target, bf = p.bf;
+          p.tasks.forEach(t => {
+            if (!t.ok) return; // kaynak dosya yoktu: bayrak konmaz (özgün kayıt mergedFollowUp'ta durur) / source file did not exist: no flag
+            const ks = _findPhotoSlotKeys(t.s), kd = _findPhotoSlotKeys(t.ds);
+            if (t.isOffice) { tg[kd.mediaTypeField] = "office"; tg[kd.officeExtField] = bf[ks.officeExtField]; tg[kd.officeFileNameField] = bf[ks.officeFileNameField]; delete tg[kd.hasPhotoField]; }
+            else { tg[kd.hasPhotoField] = true; if (bf[ks.mediaTypeField] && bf[ks.mediaTypeField] !== "office") tg[kd.mediaTypeField] = bf[ks.mediaTypeField]; }
+          });
+          if (p.isNew) A.findings.push(tg);
+          else {
+            const rank = { open: 0, in_progress: 1, closed: 2 };
+            if ((rank[bf.status] || 0) > (rank[tg.status] || 0)) tg.status = bf.status;
+            [ "caEn", "caTr", "responsible", "due", "note", "evidence" ].forEach(f => { if (!tg[f] && bf[f]) tg[f] = bf[f]; });
+          }
+        });
+        A.mergedFollowUp = { id: B.id, date: B.date, note: B.note, mergedAt: Date.now(), map: plan.map(p => [ p.bf.no, p.target.no, p.isNew ? "new" : "same" ]), findings: JSON.parse(JSON.stringify(B.findings || [])) };
+        finish();
+      } finally { _nextMergeBusy = false; }
+    };
+    if (!all.length) { done(); return; }
+    let left = all.length;
+    all.forEach(({ t }) => {
+      _loadDocFileData("finding", t.sid, t.kind, data => {
+        if (!data) { t.ok = false; if (--left === 0) done(); return; }
+        _saveDocFileData("finding", t.did, t.dkind, data, ok => { if (ok === false) failed++; else t.ok = true; if (--left === 0) done(); });
+      });
+    });
+  } catch (e) { _nextMergeBusy = false; console.warn("[NEXT birleştirme / NEXT merge]", e); }
+}
 function _formsImportMaybe() {
   try {
     if (_formsImportBusy || _formsImportDone || currentUserRole !== "admin") return;
@@ -83917,7 +84016,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-02 19:25";
+const EMS_BUILD = "2026-11-03 17:34";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
