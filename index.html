@@ -84038,7 +84038,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 22:15";
+const EMS_BUILD = "2026-11-03 22:25";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84121,6 +84121,15 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   .findings-table th:nth-child(3), .findings-table td:nth-child(3) { width: auto !important; }
   .findings-table th:nth-child(4), .findings-table td:nth-child(4) { width: 26% !important; }
   .findings-table .status-sel { width: auto !important; min-width: 0 !important; max-width: none !important; flex-basis: auto !important; }
+}
+</style>
+<style id="side-footer-flow">
+/* Sol menünün altındaki kullanıcı bloğu (ad, Online, Bağlantıyı Kopyala, Çıkış, Şifre Değiştir) artık SABİT değil: menüyle birlikte kayar, en altta durur (kullanıcı isteği, 03.11.2026). Yalnız masaüstü; telefondaki çekmece aynı kalır. */
+@media (min-width: 901px) {
+  html body.ems-shell-on #side-nav.side-nav { overflow-y: auto; overflow-x: hidden; scrollbar-width: none; -ms-overflow-style: none; }
+  html body.ems-shell-on #side-nav.side-nav::-webkit-scrollbar { display: none; }
+  html body.ems-shell-on #side-nav .side-nav-list { flex: none; overflow: visible; min-height: auto; }
+  html body.ems-shell-on #side-nav .side-nav-footer { flex-shrink: 0; }
 }
 </style>
 <style id="q-hide-related">
