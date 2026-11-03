@@ -4588,6 +4588,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
             <span data-i18n="nav_admin_login">Giriş Sayfası</span>
           </button>
         </div>
+        <div class="ems-build-foot side-user-ver" translate="no"></div>
       </div>
     </div>
   </aside>
@@ -84038,7 +84039,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 22:25";
+const EMS_BUILD = "2026-11-03 22:34";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -84122,6 +84123,11 @@ html body #global-filter-modal#global-filter-modal#global-filter-modal#global-fi
   .findings-table th:nth-child(4), .findings-table td:nth-child(4) { width: 26% !important; }
   .findings-table .status-sel { width: auto !important; min-width: 0 !important; max-width: none !important; flex-basis: auto !important; }
 }
+</style>
+<style id="side-ver-line">
+/* Sürüm / Build satırı sol menünün kullanıcı bloğunda da görünür (sayfanın en altındaki siyah şerit bazı ekranlarda görünmüyordu; kullanıcı isteği, 03.11.2026) */
+.side-user-ver { margin-top: 9px; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: rgba(255,255,255,.58); line-height: 1.3; }
+.side-nav.collapsed .side-user-ver { display: none; }
 </style>
 <style id="side-footer-flow">
 /* Sol menünün altındaki kullanıcı bloğu (ad, Online, Bağlantıyı Kopyala, Çıkış, Şifre Değiştir) artık SABİT değil: menüyle birlikte kayar, en altta durur (kullanıcı isteği, 03.11.2026). Yalnız masaüstü; telefondaki çekmece aynı kalır. */
