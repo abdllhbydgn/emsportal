@@ -782,3 +782,7 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 ## 03.11.2026 — Ziyaretçi ana sayfası üst şerit (sade hâl) ve ana sayfa bağlantıları
 - Üst şerit taşıma/kaldırma denemesi kullanıcı isteğiyle İPTAL edildi (oklar, şerit, saat düzeni olduğu gibi). Yalnız ziyaretçi ana sayfasında şeritteki "Genel Durum" yazısı gizli (`<style id="visitor-home-bar">`; alt sayfalarda sayfa adı kalır).
 - Ana sayfa simgesi (`#etb-home`) her durumda `goHome()` + en üste kaydırır. Ziyaretçi köşe logosu (`.ems-corner-logo`) tıklanınca `goHome()` (alt sayfalarda da tıklanır). Sol menü logosu zaten ana sayfaya yeniler.
+
+## 03.11.2026 — Siyah alt şerit yönetici/kullanıcıda kayboluyordu (ziyaretçi gibi yapıldı)
+- Karşılaştırma: ziyaretçide `body.visitor-mode .app-shell { margin: 0 }` olduğu için şerit sayfa dibinden 16 px yukarıda biter (kaybolmaz); yönetici/kullanıcıda `.app-shell { margin: -16px -12px }` şeridi sayfanın en alt kenarına yapıştırıyordu ve kullanıcıda 1 sn sonra kayboluyordu. `<style id="footer-bottom-gap">`: `body.ems-shell-on:not(.visitor-mode) .app-shell { margin-bottom: 0 }` → artık üçünde de aynı 16 px boşluk.
+- Kendi testimde (headless) kayboluma hiç rastlamadım; çözüm ziyaretçi sayfasıyla yapısal eşitleme. Sürerse ekran videosu iste.
