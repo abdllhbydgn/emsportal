@@ -29056,7 +29056,8 @@ function _pdfHeadHtml(o) {
   return `<div data-pdf-head="1" style="display:grid; grid-template-columns:${Math.round(h * 2.1)}px minmax(0,1fr) ${Math.round(h * 2.1)}px; align-items:center; gap:16px; padding:${o.pad || "0 0 14px"}; margin:${o.margin || "0 0 18px"}; border-bottom:3px solid #C1272D; background:${o.bg || "transparent"}; direction:ltr;">
     <div style="justify-self:start; display:flex; align-items:center;">${logo ? `<img src="${logo}" style="height:${h}px; width:auto; display:block;" alt="">` : ""}</div>
     <div style="text-align:center; min-width:0;"><div style="font-size:${ts}px; font-weight:900; color:#0F172A; line-height:1.2; letter-spacing:.01em;">${o.title}</div>${sub}</div>
-    <div style="justify-self:end; width:${h}px; height:${h}px; border-radius:${Math.round(h * .23)}px; background:linear-gradient(135deg, ${col[0]}, ${col[1]}); display:flex; align-items:center; justify-content:center; font-size:${Math.round(h * .54)}px; line-height:1;">${ic === "🌾" && typeof ORG_LOGO !== "undefined" ? `<img src="${ORG_LOGO}" style="width:${Math.round(h * .86)}px; height:${Math.round(h * .86)}px; border-radius:50%; display:block;" alt="">` : ic === "🏰" && (window.FAMA_LOGO_PNG || typeof FAMA_LOGO !== "undefined") ? `<img src="${window.FAMA_LOGO_PNG || FAMA_LOGO}" style="width:${Math.round(h * .9)}px; height:auto; display:block;" alt="">` : ic}</div>
+    ${o.rightLogo ? `<div style="justify-self:end; height:${h}px; max-width:${Math.round(h * 2.1)}px; display:flex; align-items:center; justify-content:flex-end;"><img src="${o.rightLogo}" style="max-height:${h}px; max-width:${Math.round(h * 2.1)}px; width:auto; height:auto; object-fit:contain; display:block;" alt=""></div>` : ""}
+    <div style="${o.rightLogo ? "display:none !important; " : ""}justify-self:end; width:${h}px; height:${h}px; border-radius:${Math.round(h * .23)}px; background:linear-gradient(135deg, ${col[0]}, ${col[1]}); display:flex; align-items:center; justify-content:center; font-size:${Math.round(h * .54)}px; line-height:1;">${ic === "🌾" && typeof ORG_LOGO !== "undefined" ? `<img src="${ORG_LOGO}" style="width:${Math.round(h * .86)}px; height:${Math.round(h * .86)}px; border-radius:50%; display:block;" alt="">` : ic === "🏰" && (window.FAMA_LOGO_PNG || typeof FAMA_LOGO !== "undefined") ? `<img src="${window.FAMA_LOGO_PNG || FAMA_LOGO}" style="width:${Math.round(h * .9)}px; height:auto; display:block;" alt="">` : ic}</div>
   </div>`;
 }
 // ═══ RAPOR ÖZET BANDI (07.10.2026) ═══ Raporlardaki özet kartları (toplam, tamamlandı, devam, başlanmadı, uyum) tek
@@ -68845,6 +68846,71 @@ async function downloadCustomerScreenshot() {
   if (top) { const d = _custSwitchData(currentCustomerKey); top.style.display = "block"; top.innerHTML = '<div style="padding:4px 0 8px;">' + _custDashCardsHtml(d.q.t, d.q.comp, d.q.min, d.q.crit) + "</div>"; }
   downloadElementAsJPG(el, `EMS_${c.name.replace(/[^a-zA-Z0-9ığüşöçİĞÜŞÖÇ]/g, "_")}_Ekran_${_localISODate()}.jpg`, "#ffffff", c.name + " — " + _reportTitle("Müşteri Panosu", "Customer Dashboard", "لوحة العميل"), () => { if (top && saved !== null) { top.innerHTML = saved; top.style.display = savedDisp; } });
 }
+// Rapor logosunun ZEMİNİNİ kaldırır: kenarlardan başlayıp zemin rengine yakın, kenarla bağlı pikselleri şeffaf yapar (harflerin içindeki beyazlar kalır),
+// sonra boş kenarları kırpar. Köşeler birbirine benzemiyorsa (düz zemin yoksa) logoya dokunmaz. /
+// Removes the BACKGROUND of a report logo: starting from the edges, pixels close to the background colour and connected to the edge become transparent (whites inside letters stay),
+// then empty margins are trimmed. If the corners do not match (no flat background) the logo is left untouched.
+function _pdfLogoClean(dataUrl) {
+  return new Promise(resolve => {
+    const done = v => resolve(v || dataUrl);
+    try {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const sc = Math.min(1, 900 / Math.max(img.naturalWidth, 1));
+          const w = Math.max(1, Math.round(img.naturalWidth * sc)), h = Math.max(1, Math.round(img.naturalHeight * sc));
+          const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+          const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0, w, h);
+          const id = cx.getImageData(0, 0, w, h), d = id.data;
+          const px = (x, y) => { const i = (y * w + x) * 4; return [ d[i], d[i + 1], d[i + 2], d[i + 3] ]; };
+          // zemin rengi: kenar piksellerinin ortancası (şeffaf olanlar zaten zemin sayılır) / background colour: median of the opaque border pixels (transparent ones already count as background)
+          const edge = [];
+          for (let x = 0; x < w; x++) { edge.push(px(x, 0), px(x, h - 1)); }
+          for (let y = 0; y < h; y++) { edge.push(px(0, y), px(w - 1, y)); }
+          const opq = edge.filter(c => c[3] >= 30);
+          if (!opq.length) return done(dataUrl); // tamamı şeffaf kenar / fully transparent edge
+          const med = k => { const v = opq.map(c => c[k]).sort((a, b) => a - b); return v[v.length >> 1]; };
+          const bg = [ med(0), med(1), med(2) ];
+          const dist = (c, b) => Math.sqrt((c[0] - b[0]) ** 2 + (c[1] - b[1]) ** 2 + (c[2] - b[2]) ** 2);
+          const near = opq.filter(c => dist(c, bg) <= 48).length;
+          if (near < opq.length * 0.7) return done(dataUrl); // düz zemin yok / no flat background
+          const TOL = 46, SOFT = 92;
+          const seen = new Uint8Array(w * h), stack = [];
+          const push = (x, y) => { if (x < 0 || y < 0 || x >= w || y >= h) return; const k = y * w + x; if (seen[k]) return; seen[k] = 1; stack.push(k); };
+          for (let x = 0; x < w; x++) { push(x, 0); push(x, h - 1); }
+          for (let y = 0; y < h; y++) { push(0, y); push(w - 1, y); }
+          while (stack.length) {
+            const k = stack.pop(), x = k % w, y = (k / w) | 0, i = k * 4;
+            if (d[i + 3] < 30) { push(x + 1, y); push(x - 1, y); push(x, y + 1); push(x, y - 1); continue; } // zaten şeffaf / already transparent
+            const dd = dist([ d[i], d[i + 1], d[i + 2] ], bg);
+            if (dd > SOFT) continue;
+            d[i + 3] = dd <= TOL ? 0 : Math.round(255 * (dd - TOL) / (SOFT - TOL));
+            if (dd <= TOL) { push(x + 1, y); push(x - 1, y); push(x, y + 1); push(x, y - 1); }
+          }
+          // küçük artık lekeleri (köşe kırıntıları) sil: en büyük parçanın %2'sinden küçük bağlı parçalar / drop tiny leftover specks (corner crumbs)
+          { const lab = new Int32Array(w * h), sizes = [ 0 ], members = [ null ]; let nl = 0;
+            for (let s0 = 0; s0 < w * h; s0++) { if (lab[s0] || d[s0 * 4 + 3] <= 24) continue; nl++; const st = [ s0 ], mem = []; lab[s0] = nl;
+              while (st.length) { const k = st.pop(); mem.push(k); const x = k % w, y = (k / w) | 0;
+                for (const [ dx, dy ] of [ [ 1, 0 ], [ -1, 0 ], [ 0, 1 ], [ 0, -1 ], [ 1, 1 ], [ -1, -1 ], [ 1, -1 ], [ -1, 1 ] ]) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue; const nk = ny * w + nx; if (!lab[nk] && d[nk * 4 + 3] > 24) { lab[nk] = nl; st.push(nk); } } }
+              sizes.push(mem.length); members.push(mem); }
+            const mx = Math.max(...sizes);
+            for (let l = 1; l <= nl; l++) if (sizes[l] < mx * 0.02 && sizes[l] < 400) members[l].forEach(k => { d[k * 4 + 3] = 0; }); }
+          cx.putImageData(id, 0, 0);
+          let x0 = w, y0 = h, x1 = -1, y1 = -1;
+          for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 24) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+          if (x1 < 0) return done(dataUrl);
+          const m = 2, bw = Math.min(w, x1 - x0 + 1 + m * 2), bh = Math.min(h, y1 - y0 + 1 + m * 2);
+          const out = document.createElement("canvas"); out.width = bw; out.height = bh;
+          out.getContext("2d").drawImage(cv, Math.max(0, x0 - m), Math.max(0, y0 - m), bw, bh, 0, 0, bw, bh);
+          done(out.toDataURL("image/png"));
+        } catch (e) { done(dataUrl); }
+      };
+      img.onerror = () => done(dataUrl);
+      img.src = dataUrl;
+      setTimeout(() => done(dataUrl), 6000);
+    } catch (e) { done(dataUrl); }
+  });
+}
 async function downloadCustomerPDF(opts) {
   // opts.auditId verilirse rapor yalnız o denetimin bulgularını içerir; biçim ve başlık aynıdır / with opts.auditId the report holds only that audit's findings; same format and title
   const aud = opts && opts.auditId != null ? (customerAudits || []).find(a => String(a.id) === String(opts.auditId)) : null;
@@ -68915,9 +68981,16 @@ async function downloadCustomerPDF(opts) {
     const breakdownHtml = `<div style="font-size:13px; font-weight:900; color:#1E293B; margin:0 0 8px; text-transform:uppercase; letter-spacing:.04em;">🕵️ ${t3("Bulgu Dağılımı", "Findings Breakdown", "توزيع النتائج")}</div>${sevRows ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; margin-bottom:16px;"><thead><tr><th style="${th}">${t3("Kategori", "Category", "الفئة")}</th><th style="${th}">${t3("Açık", "Open", "مفتوح")}</th><th style="${th}">${t3("Devam", "Active", "جارٍ")}</th><th style="${th}">${t3("Kapandı", "Closed", "مغلق")}</th><th style="${th}">${t3("Toplam", "Total", "الإجمالي")}</th><th style="${th}"></th></tr></thead><tbody>${sevRows}</tbody></table>` : `<div style="color:#94A3B8; font-size:12px; margin-bottom:16px;">—</div>`}`;
     const audHtml = `<div style="font-size:13px; font-weight:900; color:#1E293B; margin:0 0 8px; text-transform:uppercase; letter-spacing:.04em;">🗓️ ${t3("Denetim Geçmişi", "Audit History", "سجل التدقيقات")}</div>${d.audits.length ? d.audits.map(a => { const aud = _custAuditor(a); const nt = biText(a.note || "").replace(/\s*[—–-]\s*(Denetçi|Auditor)\b.*$/i, ""); return `<div style="display:flex; gap:10px; align-items:baseline; padding:6px 0; border-bottom:1px solid #EEF2F7; font-size:12px;"><b style="min-width:84px;">📅 ${fmtD(a.date)}</b><span style="flex:1;">${escHtml(nt || t3("Denetim", "Audit", "تدقيق"))}${aud ? ` <span style="color:#64748B;">· 👤 ${escHtml(aud)}</span>` : ""}</span></div>`; }).join("") : `<div style="color:#94A3B8; font-size:12px;">—</div>`}<div style="height:16px;"></div>`;
     // İngilizce başlık Türkçe büyük harfe çevrilirse i→İ olur; dönem büyük harfi dile göre, başlık sabit / uppercasing English in Turkish makes i→İ; the period follows the UI language, the title stays fixed
-    const capTitle = currentLang === "ar" ? _reportPeriod() + " — Corrective Action Plan" : _reportPeriod().toLocaleUpperCase(currentLang === "en" ? "en-US" : "tr-TR") + " CORRECTIVE ACTION PLAN";
+    // Başlık: "<MARKA> <YIL> CORRECTIVE ACTION PLAN" (kullanıcı isteği, 03.11.2026); sağ üstte o markanın logosu (yoksa dedektif simgesi) /
+    // Title: "<BRAND> <YEAR> CORRECTIVE ACTION PLAN"; the brand's own logo at the top right (detective icon if none)
+    const capTitle = String(c.name).toLocaleUpperCase("en-US") + " " + new Date().getFullYear() + " CORRECTIVE ACTION PLAN";
+    let brandLogo = "";
+    try {
+      const _raw = await new Promise(res => { let d = false; const f = v => { if (!d) { d = true; res(v); } }; setTimeout(() => f(null), 4000); try { _loadDocFileData("customerlogo", key, "logo", f); } catch (e) { f(null); } });
+      if (_raw && String(_raw).startsWith("data:")) brandLogo = await _pdfLogoClean(String(_raw)); // özgün kalitede, zemini kaldırılmış (müşteri sayfasındaki 84x48 küçültülmüş sürüm değil)
+    } catch (e) { brandLogo = ""; }
     const logoSrc = EMS_REPORT_LOGO, dateStr = new Date().toLocaleDateString(locale);
-    const pageHeaderHtml = (pn, tp) => _pdfHeadHtml({ logo: logoSrc, size: "sm", title: capTitle, titleText: capTitle, sub: `<b style="color:#0F172A;">${escHtml(c.name)}</b>${aud ? " · 🗓️ " + fmtD(aud.date) : ""} · 📅 ${dateStr} · ${t3("Sayfa", "Page", "صفحة")} ${pn}/${tp}`, icon: "🕵️" });
+    const pageHeaderHtml = (pn, tp) => _pdfHeadHtml({ logo: logoSrc, size: "sm", title: escHtml(capTitle), titleText: capTitle, sub: `${aud ? "🗓️ " + fmtD(aud.date) + " · " : ""}📅 ${dateStr} · ${t3("Sayfa", "Page", "صفحة")} ${pn}/${tp}`, icon: "🕵️", rightLogo: brandLogo || "" });
     const pcN = n => total ? Math.round(n * 100 / total) : 0;
     const kpiHtml = aud ? _pdfKpiBandHtml([
       { label: t3("Toplam Bulgu", "Total Findings", "إجمالي النتائج"), val: total, sub: t3("Bu denetimin bulguları", "Findings of this audit", "نتائج التدقيق ده"), bar: 100 },
@@ -84039,7 +84112,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 22:41";
+const EMS_BUILD = "2026-11-03 23:03";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
