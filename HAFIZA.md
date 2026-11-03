@@ -762,3 +762,6 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Müşteri raporu başlığı (ÖRNEK GÖSTERİLDİ, ONAY BEKLİYOR, main'e alınmadı)
 - `downloadCustomerPDF`: başlık "<MARKA> <YIL> CORRECTIVE ACTION PLAN" (örn. NEXT 2026 CORRECTIVE ACTION PLAN; 3 dilde aynı); sağ üstteki dedektör simgesi yerine o markanın logosu (`_loadDocFileData('customerlogo', key, 'logo')`, özgün kalite; logo yoksa dedektör simgesi kalır); alt satırda marka adı tekrarı kaldırıldı. `_pdfHeadHtml` yeni `rightLogo` seçeneği. Sürüm 2026-11-03 22:45 (İstanbul).
+
+## 03.11.2026 — Müşteri raporu başlığı YAYINDA
+- `downloadCustomerPDF`: başlık "<MARKA> <YIL> CORRECTIVE ACTION PLAN"; sağ üstte müşterinin kendi logosu (`customerlogo` kaydı, özgün kalite). Logonun zemini `_pdfLogoClean` ile otomatik kaldırılır (kenardan bağlı zemin rengi şeffaf, harf içi beyazlar kalır; düz zemin yoksa logoya dokunmaz). Logosu olmayan müşteride eski simge kalır. Tüm müşteriler aynı akışı kullanır.
