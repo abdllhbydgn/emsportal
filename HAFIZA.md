@@ -771,3 +771,6 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Alt çubuk en alta inince kaçıyordu (düzeltildi)
 - Neden: Eroğlu Grubu logoları `loading="lazy"` idi; kaydırınca geç yüklenip alanı uzatıyor, telif/Sürüm çubuğunu aşağı itiyordu. Logolardan `loading="lazy"` ve `decoding="async"` kaldırıldı (hepsi gömülü veri, gereksiz). Sayfa yüksekliği artık baştan sabit.
+
+## 03.11.2026 — Ziyaretçi sayfasında grup logoları (NSCS, Arapça) pasifti (düzeltildi)
+- Neden: `body.visitor-mode .site-footer a` kuralı altbilgideki TÜM linkleri kapatıyordu. Grup logoları (`.group-logo-footer-link`) artık hariç; ziyaretçi de tıklayabilir. Linkler: NSCS https://www.nscstr.com/# , Arapça https://abdllhbydgn.github.io/arapca/#/fabrika .
