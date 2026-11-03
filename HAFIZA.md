@@ -765,3 +765,6 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Müşteri raporu başlığı YAYINDA
 - `downloadCustomerPDF`: başlık "<MARKA> <YIL> CORRECTIVE ACTION PLAN"; sağ üstte müşterinin kendi logosu (`customerlogo` kaydı, özgün kalite). Logonun zemini `_pdfLogoClean` ile otomatik kaldırılır (kenardan bağlı zemin rengi şeffaf, harf içi beyazlar kalır; düz zemin yoksa logoya dokunmaz). Logosu olmayan müşteride eski simge kalır. Tüm müşteriler aynı akışı kullanır.
+
+## 03.11.2026 — Alt çubuk (telif + Sürüm / Build) artık SABİT DEĞİL
+- Kullanıcı sabit olmasını istemediğini söyledi (benim yorumum yanlıştı); `footer-bar-fixed` CSS'i kaldırıldı, çubuk sayfa sonunda normal durur. Sürüm satırı sol menüde de görünür. Sabitleme isteği ayrıca gelmedikçe tekrar ekleme.
