@@ -790,3 +790,7 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 ## 03.11.2026 — Müşteri raporu: Fotoğraf Ekleri sayfaları (DENEME: yalnız NEXT)
 - `downloadCustomerPDF`: `ANNEX = key === "next"`. Fotoğraflı her satır için raporun sonuna tam boy "Fotoğraf Eki · No N" sayfası eklenir (bulgu/düzeltme/ek fotoğraf etiketli). Rapordaki küçük fotoğraf (`data-phrow`) → ek sayfaya, ek sayfadaki "Rapora dön" düğmesi (`data-backlink`) → satırın rapor sayfasına PDF bağlantısı (`pdf.link` + `pageNumber`; konum `_pdfRectsMm`). Sayfa numarası "Sayfa x/toplam" ek sayfalar dahil. İmza (hook) en son sayfada kalır.
 - Kullanıcı gerçek Next raporunu indirip bakacak; beğenirse `ANNEX` tüm müşterilere açılır (koşulu kaldır). Dosya boyutu gerçek fotoğraflarla ölçülmedi (sahte veriyle 11 sayfa ≈ 1 MB).
+
+## 04.11.2026 — Rapor indirme YALNIZ YÖNETİCİYE açık (kullanıcı kuralı)
+- Yönetici dışındaki herkeste (onaylı üye + ziyaretçi, `body.viewer-mode`) TÜM rapor indirme düğmeleri gizli ve işlevleri engelli. `<style id="report-download-gate">` + `<script id="report-download-gate-js">` (47 işlev adı `NAMES`; yeni rapor indirme işlevi eklenirse bu listeye ekle). Ayrıca `EmsPDF` `doc.save` (her PDF) yönetici değilse sessizce atlanır. Sol menüde "Raporlar" bölüm başlığı da gizli.
+- Kapsam dışı (kasıtlı): belge/prosedür/form (Word-Excel) indirmeleri, kanıt fotoğrafı indirmeleri, yedek (zaten admin), Ziyaretçi Kayıt form yazdırma (`vzPrintForm`), toplantı tutanağı (`mtDownload*`), Kimyasal Excel şablonu. İstenirse eklenir.
