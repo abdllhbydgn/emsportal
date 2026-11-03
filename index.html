@@ -7288,8 +7288,11 @@ textarea.ug-in { width: 100%; resize: vertical; }
         <button class="modal-close" onclick="goHomeFromCustomer()" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
-        <button class="modal-close" onclick="downloadCustomerScreenshot()" title="Ekran Görüntüsü İndir / Download Screenshot" aria-label="Ekran Görüntüsü İndir / Download Screenshot">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
+        <button class="modal-close modal-close-download" data-dl-label="Rapor İndir" onclick="downloadCustomerPDF()" data-i18n-attr="title:btn_download_pdf;data-dl-label:dl_label_report" title="PDF İndir / Download PDF" style="color:var(--danger);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="modal-close" onclick="downloadCustomerScreenshot()" data-i18n-attr="title:btn_download_screenshot;aria-label:btn_download_screenshot" title="Ekran Görüntüsü İndir / Download Screenshot" aria-label="Ekran Görüntüsü İndir / Download Screenshot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </button>
         <button class="modal-close" onclick="closeCustomerDashboard()" data-i18n-attr="title:btn_close" title="Kapat / Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -9126,6 +9129,7 @@ const UI_TRANSLATIONS = {
     en: "Show/Hide Password",
     ar: "إظهار/إخفاء كلمة المرور"
   },
+  btn_download_screenshot: { tr: "Ekran Görüntüsü İndir", en: "Download Screenshot", ar: "تنزيل لقطة الشاشة" },
   login_forgot: {
     tr: "Şifremi unuttum / şifremi sıfırla",
     en: "Forgot password / reset password",
@@ -78271,7 +78275,7 @@ function _formsLinkCleanMaybe() {
 // fotoğraf kopyalama bitmeden hiçbir kayıt değişmez. /
 // Rules: no photo is ever DELETED (copied; old files stay). The same finding (same text or same linked question) becomes one record, keeping status/action/photos. New findings are appended as 42, 43…
 // Auditor "Ruba". The follow-up audit's original record is kept inside the merged audit under \`mergedFollowUp\`. Runs once on admin login; no record changes until the photo copies are done.
-let _nextMergeBusy = false;
+let _nextMergeBusy = false, _nextMergeLoops = 0;
 function _nextMergeMaybe() {
   try {
     if (_nextMergeBusy || currentUserRole !== "admin") return;
@@ -78293,10 +78297,20 @@ function _nextMergeMaybe() {
       // The key is recorded ONLY after the cloud write succeeded (the earlier version recorded it even when the write failed)
       Promise.resolve(_saveCustomerAuditsOnly()).then(ok => {
         if (ok === false) { _nextMergeBusy = false; return; }
-        if (!appliedSeedKeys.includes("aud:next-merge-v2")) appliedSeedKeys.push("aud:next-merge-v2");
-        _saveQuestionsOnly();
-        try { _custRefreshIfOpen(); } catch (e) {}
-        try { showEmsToast(t3("✅ NEXT denetimleri tek denetimde birleştirildi (denetçi: Ruba).", "✅ The NEXT audits were merged into one audit (auditor: Ruba).", "✅ تدقيقات NEXT اتدمجت في تدقيق واحد (المدقق: Ruba)."), 7000, "var(--success, #16A34A)"); } catch (e) {}
+        // Birleşik kayıt yazıldı; eski takip denetimi, yazma sırasındaki çakışma kuralı yüzünden bulutta kalmış olabilir: kimliğiyle AÇIKÇA silinir /
+        // The merged record is written; the old follow-up audit may have stayed in the cloud because of the write's conflict rule: it is removed explicitly by id
+        const gone = B ? new Set([ B.id ]) : null;
+        const rm = gone ? _removeIdsFromDocArray("customerAudits", "customerAudits", gone) : Promise.resolve(true);
+        rm.then(ok2 => {
+          if (ok2 === false) { _nextMergeBusy = false; console.warn("[NEXT birleştirme] eski takip denetimi buluttan silinemedi, sonraki girişte yeniden denenecek"); return; }
+          if (!appliedSeedKeys.includes("aud:next-merge-v2")) appliedSeedKeys.push("aud:next-merge-v2");
+          _saveQuestionsOnly();
+          try { _custRefreshIfOpen(); } catch (e) {}
+          try { showEmsToast(t3("✅ NEXT denetimleri tek denetimde birleştirildi (denetçi: Ruba).", "✅ The NEXT audits were merged into one audit (auditor: Ruba).", "✅ تدقيقات NEXT اتدمجت في تدقيق واحد (المدقق: Ruba)."), 7000, "var(--success, #16A34A)"); } catch (e) {}
+          // Aynı takip denetiminden başka kopya varsa (iki kez üretilmiş olabilir) o da birleştirilir
+          _nextMergeBusy = false;
+          if (customerAudits.some(isB) && (_nextMergeLoops = (typeof _nextMergeLoops === "number" ? _nextMergeLoops : 0) + 1) < 6) setTimeout(_nextMergeMaybe, 800);
+        });
       });
     };
     // Önceki bir çalışmada birleştirildiyse yalnız artık kopyayı kaldır / if already merged earlier, only drop the leftover copy
@@ -78352,7 +78366,8 @@ function _nextMergeMaybe() {
             [ "caEn", "caTr", "responsible", "due", "note", "evidence" ].forEach(f => { if (!tg[f] && bf[f]) tg[f] = bf[f]; });
           }
         });
-        A.mergedFollowUp = { id: B.id, date: B.date, note: B.note, mergedAt: Date.now(), map: plan.map(p => ({ from: p.bf.no, to: p.target.no, kind: p.isNew ? "new" : "same" })), findings: JSON.parse(JSON.stringify(B.findings || [])) };
+        const _mf = { id: B.id, date: B.date, note: B.note, mergedAt: Date.now(), map: plan.map(p => ({ from: p.bf.no, to: p.target.no, kind: p.isNew ? "new" : "same" })), findings: JSON.parse(JSON.stringify(B.findings || [])) };
+        if (A.mergedFollowUp && A.mergedFollowUp.id !== B.id) A.mergedFollowUpMore = (A.mergedFollowUpMore || []).concat([ _mf ]); else A.mergedFollowUp = _mf;
         finish();
       } finally { _nextMergeBusy = false; }
     };
@@ -84020,7 +84035,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 21:24";
+const EMS_BUILD = "2026-11-03 22:05";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
