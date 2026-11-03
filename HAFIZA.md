@@ -774,3 +774,7 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Ziyaretçi sayfasında grup logoları (NSCS, Arapça) pasifti (düzeltildi)
 - Neden: `body.visitor-mode .site-footer a` kuralı altbilgideki TÜM linkleri kapatıyordu. Grup logoları (`.group-logo-footer-link`) artık hariç; ziyaretçi de tıklayabilir. Linkler: NSCS https://www.nscstr.com/# , Arapça https://abdllhbydgn.github.io/arapca/#/fabrika .
+
+## 03.11.2026 — Ziyaretçi ana sayfası: video solda, tanıtım sunumu sağda
+- `#visitor-home-media` (`.vh-media`): iki kutu 16:9 yarı yarıya (telefonda alt alta). Sol: YouTube video (`#visitor-home-video-slot`). Sağ: Google Slides "EMS TANITIM SUNUMU 15.05.2026" (`#visitor-home-deck-slot`), embed `…/embed?start=true&loop=true&delayms=5000&rm=minimal` (otomatik başlar, 5 sn, döngü). Slides dosyası Drive'da "bağlantıya sahip herkes görüntüleyebilir". İki iframe de `ems-bg-yt` sınıfında: yalnız görünürken yüklenir.
+- Sunum değişirse Drive'da aynı Slides dosyasını güncelle (adres aynı kalır). Slides'a dönüştürme 41 MB PPTX'ten kullanıcı tarafından yapıldı.
