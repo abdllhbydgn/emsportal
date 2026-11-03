@@ -768,3 +768,6 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 03.11.2026 — Alt çubuk (telif + Sürüm / Build) artık SABİT DEĞİL
 - Kullanıcı sabit olmasını istemediğini söyledi (benim yorumum yanlıştı); `footer-bar-fixed` CSS'i kaldırıldı, çubuk sayfa sonunda normal durur. Sürüm satırı sol menüde de görünür. Sabitleme isteği ayrıca gelmedikçe tekrar ekleme.
+
+## 03.11.2026 — Alt çubuk en alta inince kaçıyordu (düzeltildi)
+- Neden: Eroğlu Grubu logoları `loading="lazy"` idi; kaydırınca geç yüklenip alanı uzatıyor, telif/Sürüm çubuğunu aşağı itiyordu. Logolardan `loading="lazy"` ve `decoding="async"` kaldırıldı (hepsi gömülü veri, gereksiz). Sayfa yüksekliği artık baştan sabit.
