@@ -2041,7 +2041,10 @@ body.ems-shell-on.visitor-mode .ems-corner-logo { top: calc(var(--nav-h) + 8px) 
 /* Ziyaretçi sayfası: içerik ekran genişliğine otomatik sığar; başlık sol üstteki logonun sağında başlar (çakışma yok) */
 body.visitor-mode .container { max-width: none; }
 body.visitor-mode #view-visitor-home > div { max-width: 100% !important; }
-body.visitor-mode #visitor-home-video-slot { aspect-ratio: auto !important; width: 100%; height: clamp(240px, 30vw, 56vh); }
+/* Ziyaretçi ana sayfası: video solda, tanıtım sunumu sağda; ikisi de 16:9 ve yarı yarıya (telefonda alt alta), 03.11.2026 */
+.vh-media { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+.vh-box { aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 12px 32px rgba(20,25,40,0.16); position: relative; min-width: 0; }
+@media (max-width: 760px) { .vh-media { grid-template-columns: 1fr; gap: 14px; } }
 body.visitor-mode { --cl-h: 106px; }
 @media (max-width:768px){ body.visitor-mode { --cl-h: 54px; } #view-visitor-home .visitor-home-card { aspect-ratio: auto; min-height: 190px; } }
 body.visitor-mode .ems-corner-logo img { height: var(--cl-h); }
@@ -4617,15 +4620,27 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
     
     <div id="view-visitor-home">
       <div style="max-width:1100px; margin:0 auto; padding:8px 4px 32px;">
-        <div id="visitor-home-video-slot" style="border-radius:20px; aspect-ratio:16/7; overflow:hidden; margin-bottom:22px; box-shadow:0 12px 32px rgba(20,25,40,0.16); position:relative;">
-          <iframe
-            class="ems-bg-yt" data-src="https://www.youtube.com/embed/H6ktORMBsjY?autoplay=1&mute=1&loop=1&playlist=H6ktORMBsjY&controls=1&rel=0"
-            title="EMS Eroğlu Knitting"
-            style="width:100%; height:100%; border:none; display:block;"
-            allow="autoplay; encrypted-media; fullscreen"
-            allowfullscreen
-            loading="lazy"
-          ></iframe>
+        <div id="visitor-home-media" class="vh-media">
+          <div id="visitor-home-video-slot" class="vh-box">
+            <iframe
+              class="ems-bg-yt" data-src="https://www.youtube.com/embed/H6ktORMBsjY?autoplay=1&mute=1&loop=1&playlist=H6ktORMBsjY&controls=1&rel=0"
+              title="EMS Eroğlu Knitting"
+              style="width:100%; height:100%; border:none; display:block;"
+              allow="autoplay; encrypted-media; fullscreen"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+          <div id="visitor-home-deck-slot" class="vh-box">
+            <iframe
+              class="ems-bg-yt" data-src="https://docs.google.com/presentation/d/1At9GGG9IWX4zbLyDvzaPqlubQH7U3atu18Rg4MclaYs/embed?start=true&loop=true&delayms=5000&rm=minimal"
+              title="EMS Tanıtım Sunumu"
+              style="width:100%; height:100%; border:none; display:block;"
+              allow="autoplay; fullscreen"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
         </div>
                 <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:18px">
           <div class="visitor-home-card" style="--card-c1:#6366F1; --card-c2:#4338CA; animation-delay:.02s;" onclick="openAboutDetail('story')">
@@ -84113,7 +84128,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-03 23:20";
+const EMS_BUILD = "2026-11-03 23:32";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
