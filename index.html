@@ -48783,22 +48783,62 @@ function _nextReplaceQuestions() {
 // Inditex soru seti YENİDEN KURULDU (kullanıcı isteği 04.11.2026): eski Inditex soruları (modül + müşteri belgesi + bulgudan açılanlar) buluttan da bir kez silinir; yerine Inditex'in yayımladığı belgelerden (Davranış Kuralları, Safe to Wear, Clear to Wear, PTR, Green to Wear) çıkarılan 162 soru gelir (kimlik 9101–9262). Bulgular silinmez; yalnız bağlı soru bağı kopar /
 // Inditex question set REBUILT (user request 4 Nov 2026): old Inditex questions (module + customer-document + finding-created) are deleted once from the cloud too; replaced by 162 questions from Inditex's published documents (ids 9101-9262). Findings are kept; only the link to the deleted question is cut
 const INDITEX_NEW_MIN = 9101, INDITEX_NEW_MAX = 9262;
+// Eski Inditex sorusu mu? (yeni 9101–9262 hariç; modül sorusu, müşteri belgesi sorusu ve bulgudan açılanlar dahil) / Is it an old Inditex question? (new 9101-9262 excluded; module, customer-document and finding-created ones included)
+function _inditexIsOld(q) {
+  if (!q || q.id >= INDITEX_NEW_MIN && q.id <= INDITEX_NEW_MAX) return false;
+  return q.category === "inditex" || q.category === "custq" && Array.isArray(q.fqCust) && q.fqCust.includes("inditex");
+}
 function _inditexReplaceQuestions() {
   let n = 0;
   for (let i = auditQuestions.length - 1; i >= 0; i--) {
     const q = auditQuestions[i];
-    if (!q || q.id >= INDITEX_NEW_MIN && q.id <= INDITEX_NEW_MAX) continue;
-    if (q.category === "inditex") { auditQuestions.splice(i, 1); n++; continue; }
-    if (q.category === "custq" && Array.isArray(q.fqCust) && q.fqCust.includes("inditex")) {
-      if (q.fqCust.length === 1) { auditQuestions.splice(i, 1); n++; } else { q.fqCust = q.fqCust.filter(k => k !== "inditex"); n++; }
-    }
+    if (!_inditexIsOld(q)) continue;
+    if (q.category === "custq" && q.fqCust.length > 1) { q.fqCust = q.fqCust.filter(k => k !== "inditex"); n++; continue; }
+    auditQuestions.splice(i, 1); n++;
   }
+  // Inditex denetimindeki hazır "genel uyum kontrol listesi" bulguları (soruların kaynağı) kaldırılır; kullanıcının kendi eklediği bulgular ve fotoğrafları kalır /
+  // The ready-made "general compliance checklist" findings of the Inditex audit (the source of those questions) are removed; findings the user added and their photos stay
+  const tpl = new Set((typeof brandAuditFindingsTemplate !== "undefined" ? brandAuditFindingsTemplate : []).map(f => f && f.findingEn));
   const have = new Set(auditQuestions.map(q => q.id));
   (customerAudits || []).forEach(a => {
     if (!a || a.customerKey !== "inditex" || !Array.isArray(a.findings)) return;
-    a.findings.forEach(f => { if (!f) return; f.qAutoLinked = true; if (f.linkedQuestionId != null && !have.has(f.linkedQuestionId)) delete f.linkedQuestionId; });
+    const keep = a.findings.filter(f => f && !tpl.has(f.findingEn));
+    if (keep.length !== a.findings.length) { n += a.findings.length - keep.length; a.findings = keep; }
+    a.findings.forEach(f => { if (f && f.linkedQuestionId != null && !have.has(f.linkedQuestionId)) delete f.linkedQuestionId; });
   });
   return n;
+}
+// Buluttaki belgelerden de kesin silme (bellekteki silme tek başına buluta yansımayabilir): yalnız yönetici, oturum başına bir tur, bir kez /
+// Definite removal from the cloud documents too (in-memory removal alone may not reach the cloud): admin only, one pass per session, once
+let _inditexPurgeBusy = false;
+function _removeWhereInDocArray(docId, field, pred) {
+  return _runTransactionWithRetry(tx => {
+    const ref = fbDb.collection("ems_csr").doc(docId);
+    return tx.get(ref).then(snap => {
+      const data = snap.exists ? snap.data() : {};
+      const arr = Array.isArray(data[field]) ? data[field] : [];
+      const keep = arr.filter(x => !pred(x));
+      if (keep.length !== arr.length) tx.set(ref, { [field]: keep }, { merge: true });
+    });
+  }).then(() => true).catch(e => { console.warn("[Koşullu silme / Conditional remove] " + docId, e); return false; });
+}
+function _inditexCloudPurgeMaybe(tries) {
+  try {
+    if (_inditexPurgeBusy || currentUserRole !== "admin" || !(FIREBASE_ENABLED && fbDb)) return;
+    if (appliedSeedKeys.includes("inditex:cloud-purge-20261104")) return;
+    const ready = _cloudDocsLoaded.questions && _cloudDocsLoaded.customerQuestions && _cloudDocsLoaded.customerAudits && !_defaultedDocs.has("questions") && (typeof _canSaveNow !== "function" || _canSaveNow());
+    if (!ready) { if ((tries || 0) < 20) setTimeout(() => _inditexCloudPurgeMaybe((tries || 0) + 1), 3000); return; }
+    _inditexPurgeBusy = true;
+    const pred = q => q && _inditexIsOld(q) && !(Array.isArray(q.fqCust) && q.fqCust.length > 1);
+    Promise.all([ _removeWhereInDocArray("customerQuestions", "customerQuestions", pred), _removeWhereInDocArray("questions", "auditQuestions", pred) ]).then(res => {
+      if (res.some(r => r === false)) return;
+      _inditexReplaceQuestions();
+      appliedSeedKeys.push("inditex:cloud-purge-20261104");
+      try { _buildQuestionMerges(); } catch (e) {}
+      save();
+      try { if (document.querySelector(".modal-overlay.open")) setLanguage(currentLang); } catch (e) {}
+    }).finally(() => { _inditexPurgeBusy = false; });
+  } catch (e) { console.warn("[Inditex bulut temizliği / Inditex cloud purge]", e); }
 }
 // ── MÜŞTERİLER VE DENETİMLER BAĞIMSIZ: eski ortak sorulardan müşterinin kendi sorusuna durum/fotoğraf devri (kayıp yok, bir kez uygulanır, tekrar çalışsa zarar vermez) ──
 // ── CUSTOMERS & AUDITS ARE INDEPENDENT: carry status/photos from the old shared questions into the customer's own questions (nothing lost, applied once, harmless to re-run) ──
@@ -50533,6 +50573,7 @@ function _onCloudDocChange(onReady) {
     setTimeout(() => { try { _findingPhotoRecoverMaybe(); } catch (e) {} }, 20000);
     setTimeout(() => { try { _formsImportMaybe(); } catch (e) {} }, 7000);
     setTimeout(() => { try { _nextMergeMaybe(); } catch (e) {} }, 9000);
+    setTimeout(() => { try { _inditexCloudPurgeMaybe(); } catch (e) {} }, 11000);
     setTimeout(() => { try { _nextMergeMaybe(); } catch (e) {} }, 30000);
     setTimeout(() => { try { _formsLinkCleanMaybe(); } catch (e) {} }, 14000);
     setTimeout(() => { try { _formsLinkCleanMaybe(); } catch (e) {} }, 40000);
@@ -82845,7 +82886,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-04 13:11";
+const EMS_BUILD = "2026-11-04 14:07";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
