@@ -807,3 +807,8 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 
 ## 07.11.2026 — Favicon değişti (kullanıcı isteği)
 - `index.html` satır 35 `<link rel="icon">`: yeni 64×64 PNG (üç eğimli kırmızı şerit #C92140, ARKA PLAN ŞEFFAF), data URI olarak gömülü. Kullanıcının verdiği görsel 22×46 px olduğu için şeritler vektör olarak yeniden çizildi (PIL, 8x örnekleme). Yalnız favicon; telefon ana ekran (apple-touch) simgesi eklenmedi (kullanıcı "sadece favicon" dedi). Kaynak/araç: scratchpad `fav/` (icon-*.png, onizleme.png).
+
+## 08.11.2026 — Üretim Raporları "Toplam" sekmesi bağlı dosyayı görmezden geliyordu (düzeltildi)
+- Sebep: `renderProductionDateView()` içinde `_prodViewPeriod === "total"` iken, `PROD_FIXED_TOTALS` (elle girilmiş/varsayılan sabit sayılar) koşulsuz olarak `filled` üzerine yazılıyordu — Textreem dosyası bağlansa bile "Toplam" sekmesi hep eski sabit rakamları gösteriyordu ("Günlük/Haftalık/Aylık" sekmeleri etkilenmiyordu).
+- Çözüm: koşula `&& !_prodFileHandle` eklendi (satır ~75733): sabit rakamlar yalnız dosya bağlı DEĞİLKEN uygulanır; dosya bağlıyken "Toplam" da gerçek (dosyadan hesaplanan) toplamı gösterir.
+- Kullanıcının Extreme (AppSTREME) sisteminden "Order Follow Up Report" dışa aktarımı, portalın beklediği Textreem formatına (Date/Department/Quantity, departman bazlı hareket satırları) dönüştürüldü; kaynak dönüştürücü scratchpad'de (`extreme_tools/`), ileride tekrar kullanılabilir.
