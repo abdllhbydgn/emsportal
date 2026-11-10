@@ -80,11 +80,12 @@ service cloud.firestore {
       allow get: if request.auth != null &&
                     (request.auth.uid == uid || isAdmin());
       allow list: if isAdmin();
-      allow create: if request.auth != null && request.auth.uid == uid
+      allow create: if (request.auth != null && request.auth.uid == uid
         && request.resource.data.approved == false
         && request.resource.data.departments.size() == 0
         && request.resource.data.createdBy == 'self-signup'
-        && request.auth.token.email.matches('.*@eroglums[.]com$');
+        && request.auth.token.email.matches('.*@eroglums[.]com$'))
+        || isAdmin();
       // Kullanıcı yalnız kendi "şifre değiştirme zorunlu" işaretini kapatabilir (zorunlu şifre değişikliğinden sonra).
       allow update: if isAdmin()
         || (request.auth != null && request.auth.uid == uid
