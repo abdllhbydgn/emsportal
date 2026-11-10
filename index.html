@@ -67782,9 +67782,11 @@ async function downloadCustomerPDF(opts) {
     const PW = anyEk ? 80 : 92;
     const photoCols = (arr, rk) => (anyEk ? [ 0, 1, 2 ] : [ 0, 1 ]).map(i => `<div style="width:${PW}px; flex:none; text-align:center;">${arr && arr[i] ? `<img ${rk != null ? `data-phrow="${rk}" ` : ""}src="${arr[i]}" style="width:${PW}px; height:${PW}px; object-fit:cover; border-radius:8px; border:1px solid #E5E8ED; display:block;" alt="">` : `<div style="width:${PW}px; height:${PW}px; border-radius:8px; border:1.5px dashed #CBD5E1; background:#F8FAFC; display:flex; align-items:center; justify-content:center; color:#CBD5E1; font-size:24px;">＋</div>`}<div style="font-size:9px; font-weight:800; margin-top:3px; text-transform:uppercase; color:${i === 1 ? "#15803D" : i === 2 ? "#475569" : "#B91C1C"};">${SLOT_LBL[i]}</div></div>`).join("");
     const chip = m => `<div style="background:${m.color}; color:#fff; font-size:9.5px; font-weight:800; padding:5px 7px; border-radius:99px; white-space:nowrap; display:inline-block; max-width:100%; box-sizing:border-box;">${m.icon} ${m.label}</div>`;
-    // Fotoğraf Ekleri (deneme: yalnız NEXT, 03.11.2026): fotoğraflı her satır için raporun sonuna tam boy bir ek sayfa eklenir; küçük fotoğraf o sayfaya bağlanır /
-    // Photo Annex (trial: NEXT only): every row with photos gets a full-size annex page at the end; the small photo links to it
-    const ANNEX = String(key).toLowerCase() === "next", annexRows = [];
+    // Fotoğraf Ekleri (tüm müşterilerde, 10.11.2026 — önceden yalnız NEXT'te deneniyordu): fotoğraflı her satır için
+    // raporun sonuna tam boy bir ek sayfa eklenir; küçük fotoğraf o sayfaya bağlanır /
+    // Photo Annex (all customers, 2026-11-10 — previously trialled on NEXT only): every row with photos gets a
+    // full-size annex page at the end; the small photo links to it
+    const ANNEX = true, annexRows = [];
     const rowCard = (num, topLine, text, extra, photos, m) => {
       const hasP = ANNEX && photos && [ 0, 1, 2 ].some(i => photos[i]);
       if (hasP) annexRows.push({ num: num, topLine: topLine, text: text, extra: extra, photos: photos, m: m });
@@ -83515,7 +83517,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-10 11:32";
+const EMS_BUILD = "2026-11-10 11:49";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
