@@ -82157,16 +82157,16 @@ async function amDownloadExcel(meetingId) {
   ws.mergeCells("A2:L2");
   const t2 = ws.getCell("A2"); t2.value = mt.subject || ""; t2.font = { italic: true, size: 11, color: { argb: NAVY } }; t2.fill = fill(SOFT); t2.alignment = { vertical: "middle", indent: 1 };
   ws.mergeCells("A3:L3");
-  const t3c = ws.getCell("A3"); t3c.value = "📅 " + (mt.date || "") + "    👤 " + "Hazırlayan" + ": " + (mt.preparedBy || ""); t3c.font = { size: 10.5, color: { argb: GREY } }; t3c.fill = fill(SOFT); t3c.alignment = { vertical: "middle", indent: 1 };
+  const t3c = ws.getCell("A3"); t3c.value = "📅 " + (mt.date || "") + "    👤 " + t3("Hazırlayan", "Prepared by", "أعدّه") + ": " + (mt.preparedBy || ""); t3c.font = { size: 10.5, color: { argb: GREY } }; t3c.fill = fill(SOFT); t3c.alignment = { vertical: "middle", indent: 1 };
   ws.getRow(2).height = 20; ws.getRow(3).height = 20;
   const items = mt.items || [];
   const n = s => items.filter(it => it.status === s).length;
   const kpis = [
-    [ "Toplam", items.length, NAVY ],
-    [ "Açık", n("Açık"), RED ],
-    [ "Karar Verildi", n("Karar verildi"), NAVY ],
-    [ "Tamamlandı", n("Tamamlandı"), GREEN ],
-    [ "Acil Öncelik", items.filter(it => it.priority === "Acil").length, RED ]
+    [ t3("Toplam", "Total", "الإجمالي"), items.length, NAVY ],
+    [ t3("Açık", "Open", "مفتوح"), n("Açık"), RED ],
+    [ t3("Karar Verildi", "Decided", "تم القرار"), n("Karar verildi"), NAVY ],
+    [ t3("Tamamlandı", "Completed", "مكتمل"), n("Tamamlandı"), GREEN ],
+    [ t3("Acil Öncelik", "Urgent Priority", "أولوية عاجلة"), items.filter(it => it.priority === "Acil").length, RED ]
   ];
   // KPI bandı: 5 hücre çifti (etiket + değer) / KPI band: 5 label+value cell pairs
   kpis.forEach((k, i) => {
@@ -82178,16 +82178,18 @@ async function amDownloadExcel(meetingId) {
   });
   ws.getRow(5).height = 22;
   const T0 = 7;
-  const head = [ "#", "Konu", "Alan", "Kategori", "Öncelik", "Sorumlu", "Termin", "Durum", "Not", "Karar Detayı", "Açık Sorular", "Fotoğraf" ];
+  const head = [ "#", t3("Konu", "Subject", "الموضوع"), t3("Alan", "Area", "المنطقة"), t3("Kategori", "Category", "الفئة"), t3("Öncelik", "Priority", "الأولوية"), t3("Sorumlu", "Owner", "المسؤول"), t3("Termin", "Due date", "الموعد"), t3("Durum", "Status", "الحالة"), t3("Not", "Note", "ملاحظة"), t3("Karar Detayı", "Decision Details", "تفاصيل القرار"), t3("Açık Sorular", "Open Questions", "أسئلة مفتوحة"), t3("Fotoğraf", "Photo", "صورة") ];
   const hr = ws.getRow(T0);
   head.forEach((h, i) => { const cell = hr.getCell(i + 1); cell.value = h; cell.font = { bold: true, size: 10.5, color: { argb: WHITE } }; cell.fill = fill(NAVY); cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true }; cell.border = box; });
   hr.height = 24;
   items.forEach((it, i) => {
     const dec = it.decision || {};
-    const decRows = (dec.rows && dec.rows.tr || []).map(r => r.l + ": " + r.v).join("\n");
-    const qs = (dec.questions && dec.questions.tr || []).map((q, j) => (j + 1) + ". " + q).join("\n");
+    const decRowsArr = _amL({ tr: dec.rows && dec.rows.tr, en: dec.rows && dec.rows.en, ar: dec.rows && dec.rows.ar }) || [];
+    const qsArr = _amL({ tr: dec.questions && dec.questions.tr, en: dec.questions && dec.questions.en, ar: dec.questions && dec.questions.ar }) || [];
+    const decRows = decRowsArr.map(r => r.l + ": " + r.v).join("\n");
+    const qs = qsArr.map((q, j) => (j + 1) + ". " + q).join("\n");
     const row = ws.getRow(T0 + 1 + i);
-    const vals = [ it.no, it.title.tr, it.area.tr, it.category.tr, _amPriMeta(it.priority).k, it.owner || "—", it.due || "—", _amStatusMeta(it.status).k, it.note.tr || "", decRows, qs, dec.photoKey ? "Var" : "Yok" ];
+    const vals = [ it.no, _amL(it.title), _amL(it.area), _amL(it.category), _amPriLabel(it.priority), it.owner || "—", it.due || "—", _amStatusLabel(it.status), _amL(it.note) || "", decRows, qs, dec.photoKey ? t3("Var", "Yes", "نعم") : t3("Yok", "No", "لا") ];
     vals.forEach((v, j) => {
       const cell = row.getCell(j + 1);
       cell.value = v;
@@ -82210,14 +82212,16 @@ async function amDownloadExcel(meetingId) {
 }
 async function _amDownloadExcelBasic(mt) {
   await _ensureLibs();
-  const head = [ "#", "Konu", "Alan", "Kategori", "Öncelik", "Sorumlu", "Termin", "Durum", "Not", "Karar Tarihi", "Karar Detayı", "Açık Sorular", "Fotoğraf" ];
+  const head = [ "#", t3("Konu", "Subject", "الموضوع"), t3("Alan", "Area", "المنطقة"), t3("Kategori", "Category", "الفئة"), t3("Öncelik", "Priority", "الأولوية"), t3("Sorumlu", "Owner", "المسؤول"), t3("Termin", "Due date", "الموعد"), t3("Durum", "Status", "الحالة"), t3("Not", "Note", "ملاحظة"), t3("Karar Tarihi", "Decision Date", "تاريخ القرار"), t3("Karar Detayı", "Decision Details", "تفاصيل القرار"), t3("Açık Sorular", "Open Questions", "أسئلة مفتوحة"), t3("Fotoğraf", "Photo", "صورة") ];
   const rows = (mt.items || []).map(it => {
     const dec = it.decision || {};
-    const decRows = (dec.rows && dec.rows.tr || []).map(r => r.l + ": " + r.v).join("\n");
-    const qs = (dec.questions && dec.questions.tr || []).map((q, i) => (i + 1) + ". " + q).join("\n");
-    return [ it.no, it.title.tr, it.area.tr, it.category.tr, _amPriMeta(it.priority).k, it.owner || "", it.due || "", _amStatusMeta(it.status).k, it.note.tr, dec.date || "", decRows, qs, dec.photoKey ? "Var" : "Yok" ];
+    const decRowsArr = _amL({ tr: dec.rows && dec.rows.tr, en: dec.rows && dec.rows.en, ar: dec.rows && dec.rows.ar }) || [];
+    const qsArr = _amL({ tr: dec.questions && dec.questions.tr, en: dec.questions && dec.questions.en, ar: dec.questions && dec.questions.ar }) || [];
+    const decRows = decRowsArr.map(r => r.l + ": " + r.v).join("\n");
+    const qs = qsArr.map((q, i) => (i + 1) + ". " + q).join("\n");
+    return [ it.no, _amL(it.title), _amL(it.area), _amL(it.category), _amPriLabel(it.priority), it.owner || "", it.due || "", _amStatusLabel(it.status), _amL(it.note), dec.date || "", decRows, qs, dec.photoKey ? t3("Var", "Yes", "نعم") : t3("Yok", "No", "لا") ];
   });
-  const aoa = [ [ mt.title ], [ mt.subject || "" ], [ "Tarih: " + (mt.date || "") + "   Hazırlayan: " + (mt.preparedBy || "") ], [], head ].concat(rows);
+  const aoa = [ [ mt.title ], [ mt.subject || "" ], [ t3("Tarih", "Date", "التاريخ") + ": " + (mt.date || "") + "   " + t3("Hazırlayan", "Prepared by", "أعدّه") + ": " + (mt.preparedBy || "") ], [], head ].concat(rows);
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   ws["!cols"] = [ { wch: 4 }, { wch: 34 }, { wch: 16 }, { wch: 16 }, { wch: 9 }, { wch: 18 }, { wch: 11 }, { wch: 13 }, { wch: 30 }, { wch: 11 }, { wch: 46 }, { wch: 40 }, { wch: 8 } ];
   const wb = XLSX.utils.book_new();
@@ -82233,31 +82237,32 @@ async function amDownloadPDF(meetingId) {
     const esc = escHtml, items = mt.items || [];
     const n = s => items.filter(it => it.status === s).length;
     const kpi = _pdfKpiBandHtml([
-      { label: "Toplam", val: items.length, bar: 100 },
-      { label: "Açık", val: n("Açık"), color: "#EF4444", bar: items.length ? Math.round(n("Açık") * 100 / items.length) : 0 },
-      { label: "Karar Verildi", val: n("Karar verildi"), color: "#60A5FA", bar: items.length ? Math.round(n("Karar verildi") * 100 / items.length) : 0 },
-      { label: "Tamamlandı", val: n("Tamamlandı"), color: "#10B981", bar: items.length ? Math.round(n("Tamamlandı") * 100 / items.length) : 0 },
-      { label: "Acil Öncelik", val: items.filter(it => it.priority === "Acil").length, color: "#C8A44A", gold: true }
+      { label: t3("Toplam", "Total", "الإجمالي"), val: items.length, bar: 100 },
+      { label: t3("Açık", "Open", "مفتوح"), val: n("Açık"), color: "#EF4444", bar: items.length ? Math.round(n("Açık") * 100 / items.length) : 0 },
+      { label: t3("Karar Verildi", "Decided", "تم القرار"), val: n("Karar verildi"), color: "#60A5FA", bar: items.length ? Math.round(n("Karar verildi") * 100 / items.length) : 0 },
+      { label: t3("Tamamlandı", "Completed", "مكتمل"), val: n("Tamamlandı"), color: "#10B981", bar: items.length ? Math.round(n("Tamamlandı") * 100 / items.length) : 0 },
+      { label: t3("Acil Öncelik", "Urgent Priority", "أولوية عاجلة"), val: items.filter(it => it.priority === "Acil").length, color: "#C8A44A", gold: true }
     ], { narrow: true });
     const th = "padding:7px 8px; text-align:start; font-size:10.5px; color:#fff; background:#1A3660;", td = "padding:6px 8px; font-size:10.5px; border-bottom:1px solid #E2E8F0; vertical-align:top;";
     const statusColor = k => k === "Tamamlandı" ? "#059669" : k === "Karar verildi" ? "#1A3660" : k === "Açık" ? "#DC2626" : "#64748B";
     const priColor = k => k === "Acil" ? "#DC2626" : k === "Yüksek" ? "#B45309" : "#64748B";
-    const mainTbl = `<table style="width:100%; border-collapse:collapse; margin:6px 0 18px;"><thead><tr>${[ "#", "Konu", "Alan", "Öncelik", "Sorumlu", "Durum" ].map(x => `<th style="${th}">${x}</th>`).join("")}</tr></thead><tbody>${items.map(it => `<tr style="page-break-inside:avoid;"><td style="${td} text-align:center; font-weight:900; color:#C1272D;">${it.no}</td><td style="${td} font-weight:700;">${esc(it.title.tr)}</td><td style="${td}">${esc(it.area.tr)}</td><td style="${td} font-weight:700; color:${priColor(it.priority)};">${esc(_amPriMeta(it.priority).k)}</td><td style="${td}">${esc(it.owner || "—")}</td><td style="${td} font-weight:700; color:${statusColor(it.status)};">${esc(_amStatusMeta(it.status).k)}</td></tr>`).join("")}</tbody></table>`;
+    const mainTbl = `<table style="width:100%; border-collapse:collapse; margin:6px 0 18px;"><thead><tr>${[ "#", t3("Konu", "Subject", "الموضوع"), t3("Alan", "Area", "المنطقة"), t3("Öncelik", "Priority", "الأولوية"), t3("Sorumlu", "Owner", "المسؤول"), t3("Durum", "Status", "الحالة") ].map(x => `<th style="${th}">${x}</th>`).join("")}</tr></thead><tbody>${items.map(it => `<tr style="page-break-inside:avoid;"><td style="${td} text-align:center; font-weight:900; color:#C1272D;">${it.no}</td><td style="${td} font-weight:700;">${esc(_amL(it.title))}</td><td style="${td}">${esc(_amL(it.area))}</td><td style="${td} font-weight:700; color:${priColor(it.priority)};">${esc(_amPriLabel(it.priority))}</td><td style="${td}">${esc(it.owner || "—")}</td><td style="${td} font-weight:700; color:${statusColor(it.status)};">${esc(_amStatusLabel(it.status))}</td></tr>`).join("")}</tbody></table>`;
     const photoCache = {};
     await Promise.all(items.filter(it => it.decision && it.decision.photoKey).map(it => new Promise(res => {
       _amPhotoImgRaw(mt.id, it.decision.photoKey, dataUrl => { photoCache[it.no] = dataUrl; res(); });
     })));
     const detailBlocks = items.map(it => {
       const dec = it.decision || {};
-      const decRows = dec.rows && dec.rows.tr || [];
-      const qs = dec.questions && dec.questions.tr || [];
-      if (!decRows.length && !qs.length && !it.note.tr && !photoCache[it.no]) return "";
+      const decRows = _amL({ tr: dec.rows && dec.rows.tr, en: dec.rows && dec.rows.en, ar: dec.rows && dec.rows.ar }) || [];
+      const qs = _amL({ tr: dec.questions && dec.questions.tr, en: dec.questions && dec.questions.en, ar: dec.questions && dec.questions.ar }) || [];
+      const noteTxt = _amL(it.note);
+      if (!decRows.length && !qs.length && !noteTxt && !photoCache[it.no]) return "";
       const kv = decRows.length ? `<table style="width:100%; border-collapse:collapse; margin:4px 0 8px;">${decRows.map(r => `<tr><td style="padding:4px 8px; font-size:10px; font-weight:700; background:#F1F5F9; width:34%; border-bottom:1px solid #E2E8F0;">${esc(r.l)}</td><td style="padding:4px 8px; font-size:10px; border-bottom:1px solid #E2E8F0;">${esc(r.v)}</td></tr>`).join("")}</table>` : "";
       const ql = qs.length ? `<ol style="margin:0 0 8px; padding-inline-start:18px; font-size:10px;">${qs.map(q => `<li>${esc(q)}</li>`).join("")}</ol>` : "";
       const photoHtml = photoCache[it.no] ? `<img src="${photoCache[it.no]}" style="max-width:320px; max-height:220px; display:block; margin:4px 0 8px; border-radius:6px; border:1px solid #E2E8F0;">` : "";
-      const noteHtml = it.note.tr ? `<div style="font-size:10px; color:#475569; font-style:italic; margin-bottom:6px;">📝 ${esc(it.note.tr)}</div>` : "";
+      const noteHtml = noteTxt ? `<div style="font-size:10px; color:#475569; font-style:italic; margin-bottom:6px;">📝 ${esc(noteTxt)}</div>` : "";
       return `<div style="page-break-inside:avoid; margin-bottom:14px; padding:10px 12px; background:#FAFBFD; border:1px solid #E2E8F0; border-radius:8px;">
-        <div style="font-size:12px; font-weight:900; color:#1A3660; margin-bottom:4px;">#${it.no} ${esc(it.title.tr)}</div>
+        <div style="font-size:12px; font-weight:900; color:#1A3660; margin-bottom:4px;">#${it.no} ${esc(_amL(it.title))}</div>
         ${noteHtml}${kv}${ql}${photoHtml}
       </div>`;
     }).join("");
@@ -82265,13 +82270,14 @@ async function amDownloadPDF(meetingId) {
     wrap.className = "notranslate";
     wrap.setAttribute("translate", "no");
     wrap.style.cssText = 'position:fixed; left:-99999px; top:0; width:900px; background:#fff; font-family:"Plus Jakarta Sans",Arial,sans-serif; padding:36px; box-sizing:border-box;' + (currentLang === "ar" ? " direction:rtl;" : "");
+    const amLocale = currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR";
     wrap.innerHTML = `${_pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", title: esc(mt.title), sub: esc(mt.subject || "") + " · 📅 " + esc(mt.date || "") + " · 👤 " + esc(mt.preparedBy || ""), icon: "📋" })}
       ${kpi}
-      <div style="font-size:13px; font-weight:900; color:#1E293B; margin:18px 0 4px; text-transform:uppercase; letter-spacing:.04em;">${"Madde Listesi"}</div>
+      <div style="font-size:13px; font-weight:900; color:#1E293B; margin:18px 0 4px; text-transform:uppercase; letter-spacing:.04em;">${t3("Madde Listesi", "Item List", "قائمة البنود")}</div>
       ${mainTbl}
-      <div style="font-size:13px; font-weight:900; color:#1E293B; margin:18px 0 4px; text-transform:uppercase; letter-spacing:.04em;">${"Karar Detayları"}</div>
+      <div style="font-size:13px; font-weight:900; color:#1E293B; margin:18px 0 4px; text-transform:uppercase; letter-spacing:.04em;">${t3("Karar Detayları", "Decision Details", "تفاصيل القرارات")}</div>
       ${detailBlocks}
-      <div style="margin-top:14px; padding-top:10px; border-top:1px solid #E2E8F0; font-size:9.5px; color:#94A3B8; text-align:center;">EMS — Eroğlu Knitting · ${"Bu rapor sistem tarafından otomatik oluşturulmuştur"} · ${new Date().toLocaleString("tr-TR")}</div>`;
+      <div style="margin-top:14px; padding-top:10px; border-top:1px solid #E2E8F0; font-size:9.5px; color:#94A3B8; text-align:center;">EMS — Eroğlu Knitting · ${t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was automatically generated by the system", "التقرير ده اتعمل تلقائيًا بواسطة النظام")} · ${new Date().toLocaleString(amLocale)}</div>`;
     document.body.appendChild(wrap);
     let pdf = null;
     try {
@@ -82397,11 +82403,11 @@ function _amDetailHtml(mt) {
   const items = mt.items || [];
   const n = s => items.filter(it => it.status === s).length;
   const kpis = [
-    [ items.length, "Toplam", "" ],
-    [ n("Açık"), "Açık", "am-kpi-red" ],
-    [ n("Karar verildi"), "Karar Verildi", "" ],
-    [ n("Tamamlandı"), "Tamamlandı", "am-kpi-green" ],
-    [ items.filter(it => it.priority === "Acil").length, "Acil Öncelik", "am-kpi-red" ]
+    [ items.length, t3("Toplam", "Total", "الإجمالي"), "" ],
+    [ n("Açık"), t3("Açık", "Open", "مفتوح"), "am-kpi-red" ],
+    [ n("Karar verildi"), t3("Karar Verildi", "Decided", "تم القرار"), "" ],
+    [ n("Tamamlandı"), t3("Tamamlandı", "Completed", "مكتمل"), "am-kpi-green" ],
+    [ items.filter(it => it.priority === "Acil").length, t3("Acil Öncelik", "Urgent Priority", "أولوية عاجلة"), "am-kpi-red" ]
   ];
   const rows = _amFilteredItems(mt);
   return `
@@ -82416,7 +82422,7 @@ function _amDetailHtml(mt) {
   <div class="am-kpis">${kpis.map(k => `<div class="am-kpi ${k[2]}"><b>${k[0]}</b><span>${escHtml(k[1])}</span></div>`).join("")}</div>
   <div class="am-tabs">${AM_TABS.map(tb => `<button type="button" class="am-tab${_amUI.tab === tb[0] ? " on" : ""}" onclick="amTab('${tb[0]}')">${escHtml(t3(tb[1], tb[2], tb[3]))}</button>`).join("")}</div>
   <div class="am-bar"><input type="search" placeholder="${escHtml(t3("Ara…", "Search…", "بحث…"))}" value="${escHtml(_amUI.q)}" oninput="amSearch(this.value)">${_amCan() ? `<button type="button" class="am-btn am-btn-r" onclick="amNewItem('${mt.id}')">+ ${escHtml(t3("Madde Ekle", "Add Item", "إضافة بند"))}</button>` : ""}</div>
-  <div class="am-card"><table><thead><tr><th>#</th><th>${escHtml("Konu")}</th><th>${escHtml("Alan")}</th><th>${escHtml("Öncelik")}</th><th>${escHtml("Sorumlu")}</th><th>${escHtml("Durum")}</th></tr></thead><tbody>
+  <div class="am-card"><table><thead><tr><th>#</th><th>${escHtml(t3("Konu", "Subject", "الموضوع"))}</th><th>${escHtml(t3("Alan", "Area", "المنطقة"))}</th><th>${escHtml(t3("Öncelik", "Priority", "الأولوية"))}</th><th>${escHtml(t3("Sorumlu", "Owner", "المسؤول"))}</th><th>${escHtml(t3("Durum", "Status", "الحالة"))}</th></tr></thead><tbody>
   ${rows.length ? rows.map(it => {
     const sm = _amStatusMeta(it.status), pm = _amPriMeta(it.priority);
     return `<tr class="am-row" onclick="amOpenDrawer('${mt.id}',${it.no})"><td class="am-no">${it.no}</td><td><b>${escHtml(_amL(it.title))}</b></td><td>${escHtml(_amL(it.area))}</td><td><span class="am-pill" style="background:${pm.bg};color:${pm.c}">${escHtml(_amPriLabel(it.priority))}</span></td><td>${escHtml(it.owner || "—")}</td><td><span class="am-pill" style="background:${sm.bg};color:${sm.c}">${escHtml(_amStatusLabel(it.status))}</span></td></tr>`;
@@ -82442,12 +82448,12 @@ function _amDrawerHtml(mt, it) {
       <div class="am-drawer-row"><span class="am-pill" style="background:${_amStatusMeta(it.status).bg};color:${_amStatusMeta(it.status).c}">${escHtml(_amStatusLabel(it.status))}</span><span class="am-pill" style="background:${_amPriMeta(it.priority).bg};color:${_amPriMeta(it.priority).c}">${escHtml(_amPriLabel(it.priority))}</span></div>
       ${_amCan() ? `<div class="am-drawer-row am-status-row">${AM_STATUS.map(s => `<button type="button" class="am-stbtn${it.status === s.k ? " on" : ""}" style="${it.status === s.k ? "background:" + s.bg + ";color:" + s.c : ""}" onclick="amSetStatus('${mt.id}',${it.no},'${s.k}')">${escHtml(t3(s.k, s.en, s.ar))}</button>`).join("")}</div>` : ""}
       <div class="f"><label>${escHtml(t3("Alan / Kategori", "Area / Category", "المنطقة / الفئة"))}</label><div>${escHtml(_amL(it.area))} — ${escHtml(_amL(it.category))}</div></div>
-      <div class="f"><label>${escHtml("Sorumlu")}${_amCan() ? ` <button type="button" class="am-ic-btn sm" onclick="amEditField('${mt.id}',${it.no},'owner')">✏️</button>` : ""}</label><div>${escHtml(it.owner || "—")}</div></div>
+      <div class="f"><label>${escHtml(t3("Sorumlu", "Owner", "المسؤول"))}${_amCan() ? ` <button type="button" class="am-ic-btn sm" onclick="amEditField('${mt.id}',${it.no},'owner')">✏️</button>` : ""}</label><div>${escHtml(it.owner || "—")}</div></div>
       <div class="f"><label>${escHtml(t3("Termin", "Due date", "الموعد"))}${_amCan() ? ` <button type="button" class="am-ic-btn sm" onclick="amEditField('${mt.id}',${it.no},'due')">✏️</button>` : ""}</label><div>${escHtml(it.due || "—")}</div></div>
-      ${_amL(it.note) ? `<div class="f"><label>${escHtml("Not")}${_amCan() ? ` <button type="button" class="am-ic-btn sm" onclick="amEditField('${mt.id}',${it.no},'note')">✏️</button>` : ""}</label><div>${escHtml(_amL(it.note))}</div></div>` : ""}
-      ${rows.length ? `<h4>${escHtml("Karar Detayı")}</h4><table class="am-kv">${rows.map(r => `<tr><td>${escHtml(r.l)}</td><td>${escHtml(r.v)}</td></tr>`).join("")}</table>` : ""}
-      ${qs.length ? `<h4>${escHtml("Açık Sorular")}</h4><ol>${qs.map(q => `<li>${escHtml(q)}</li>`).join("")}</ol>` : ""}
-      <h4>${escHtml("Fotoğraf")}</h4>
+      ${_amL(it.note) ? `<div class="f"><label>${escHtml(t3("Not", "Note", "ملاحظة"))}${_amCan() ? ` <button type="button" class="am-ic-btn sm" onclick="amEditField('${mt.id}',${it.no},'note')">✏️</button>` : ""}</label><div>${escHtml(_amL(it.note))}</div></div>` : ""}
+      ${rows.length ? `<h4>${escHtml(t3("Karar Detayı", "Decision Details", "تفاصيل القرار"))}</h4><table class="am-kv">${rows.map(r => `<tr><td>${escHtml(r.l)}</td><td>${escHtml(r.v)}</td></tr>`).join("")}</table>` : ""}
+      ${qs.length ? `<h4>${escHtml(t3("Açık Sorular", "Open Questions", "أسئلة مفتوحة"))}</h4><ol>${qs.map(q => `<li>${escHtml(q)}</li>`).join("")}</ol>` : ""}
+      <h4>${escHtml(t3("Fotoğraf", "Photo", "صورة"))}</h4>
       ${hasPhoto ? `<div class="am-photo"><img id="${imgId}" style="visibility:hidden;cursor:zoom-in;" onclick="amZoomPhoto('${mt.id}','${photoKey}')" alt=""><p>${escHtml(_amL(dec.photoCaption || {}))}</p></div>` : `<div class="am-empty-row">${escHtml(t3("Fotoğraf yok.", "No photo.", "مفيش صورة."))}</div>`}
       ${_amCan() ? `<button type="button" class="am-btn" onclick="amUploadPhoto('${mt.id}',${it.no})">📷 ${escHtml(hasPhoto ? t3("Fotoğrafı Değiştir", "Replace Photo", "استبدال الصورة") : t3("Fotoğraf Ekle", "Add Photo", "إضافة صورة"))}</button>` : ""}
       ${_amCan() ? `<button type="button" class="am-btn am-btn-danger" onclick="amDeleteItem('${mt.id}',${it.no})">🗑️ ${escHtml(t3("Maddeyi Sil", "Delete Item", "مسح البند"))}</button>` : ""}
@@ -83517,7 +83523,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-10 12:02";
+const EMS_BUILD = "2026-11-10 12:17";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
