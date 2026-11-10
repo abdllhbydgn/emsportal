@@ -1666,6 +1666,7 @@ body.ems-modal-resizing, body.ems-modal-resizing * { user-select: none !importan
 #pdf-progress-track { width: 180px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 99px; margin-top: 10px; overflow: hidden; }
 #pdf-progress-bar { height: 100%; width: 0%; background: var(--gold); border-radius: 99px; transition: width 0.25s ease; }
 #pdf-progress-pct { margin-top: 6px; font-size: 11.5px; font-weight: 800; opacity: 0.9; letter-spacing: 0.03em; }
+#pdf-progress-note { margin-top: 8px; font-size: 10.5px; font-weight: 600; opacity: 0.78; max-width: 260px; line-height: 1.4; }
 @media (max-width: 640px) {
   #pdf-progress-overlay { right: 12px; bottom: 12px; left: 12px; max-width: none; }
 }
@@ -3259,6 +3260,8 @@ body.ems-silent-modal #global-filter-modal { opacity: 0 !important; transition: 
 .ent-edge{position:absolute;top:0;bottom:0;inset-inline-end:0;width:90px;background:linear-gradient(to left,#0E1526,rgba(14,21,38,0))}
 html[dir=rtl] .ent-edge{background:linear-gradient(to right,#0E1526,rgba(14,21,38,0))}
 .ent-beam{position:absolute;top:-20%;bottom:-20%;left:0;width:22%;background:linear-gradient(105deg,rgba(255,255,255,0),rgba(255,236,190,.2),rgba(255,255,255,0));transform:translateX(-160%) skewX(-18deg);animation:entBeam 12s ease-in-out infinite}
+#view-welcome.ent-calm .ent-beam,#view-welcome.ent-calm .ent-glow{animation:none!important;opacity:0!important;transition:opacity .6s}
+#view-welcome.ent-calm .ent-sky{animation:none!important;transform:scale(1.03)!important}
 @keyframes entBeam{0%,56%{transform:translateX(-160%) skewX(-18deg);opacity:0}62%{opacity:1}100%{transform:translateX(330%) skewX(-18deg);opacity:0}}
 #view-welcome .ent-logo{position:absolute;top:clamp(24px,4.4vw,56px);inset-inline-start:clamp(24px,3.9vw,56px);width:clamp(84px,8.6vw,124px);height:auto;margin:0;filter:none}
 .ent-copy{position:absolute;inset-inline-start:clamp(24px,3.9vw,56px);inset-inline-end:clamp(24px,5vw,90px);bottom:clamp(28px,3.7vw,54px);display:flex;flex-direction:column;gap:14px}
@@ -27801,12 +27804,46 @@ function _h2cWithColorFix(opts) {
   };
   return o;
 }
+// Rapor indirirken sayfayı değiştirememe / indirmenin iptal olması (kullanıcı bildirimi, 10.11.2026) KÖK NEDENİ:
+// html2canvas çağrısı tek, bölünemeyen senkron bir iş parçası; birçok rapor TÜM içeriği TEK _h2c() çağrısında
+// yakalayıp sonra A4 sayfalarına bölüyor (_pdfAddCanvasA4(null, ...)), yani ekran bu TEK çağrı boyunca (büyük
+// raporda birkaç saniye) tepki vermiyormuş gibi görünüyordu; ayrıca showPdfProgress() ile ağır işin arasında
+// tarayıcıya "hazırlanıyor" yazısını ÇİZME fırsatı verilmediği için kullanıcı siteyi anında donmuş sanıyordu.
+// ÇÖZÜM (merkezi, tüm ~15+ rapor üreticisini kapsar — her _h2c() çağrısı buradan geçer): ağır iş başlamadan
+// önce bir render karesi beklenir (ilerleme kutusu gerçekten ekrana çizilsin), iş bitince de tarayıcıya kısa bir
+// an bırakılır (bekleyen tıklamalar — başka sayfaya geçme, modal kapatma — işlensin). Üretim hâlâ arka planda
+// sürer ve bitince normal şekilde iner; sayfa gerçekten kapatılırsa (sekme kapatma/yenileme) bu elbette durur. /
+// ROOT CAUSE of "can't switch pages / download gets cancelled while a report is generating" (user report,
+// 2026-11-10): a single html2canvas() call is one unbreakable synchronous unit of work; many reports capture
+// ALL their content in ONE _h2c() call and only slice it into A4 pages afterwards (_pdfAddCanvasA4(null, ...)),
+// so the UI looked unresponsive for that whole call (seconds, for a large report); also, nothing ever yielded
+// between showPdfProgress() and that heavy call, so the browser never got a chance to paint "Preparing report"
+// before the freeze — users thought the site had hung outright. FIX (central, covers every report generator —
+// they all call _h2c()): yield one render frame before the heavy work starts (so the progress toast actually
+// paints) and yield back to the browser once a capture finishes (so queued clicks — switching pages, closing a
+// modal — get processed). Generation keeps running in the background and still downloads normally when done;
+// only truly closing/reloading the tab stops it, which no in-page fix can prevent.
+function _emsYieldToUI() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 0)));
+  });
+}
+// el canlı (hâlâ açık bir panelin/modalın) bir eleman olabileceğinden (örn. _h2c(el,...) doğrudan ekrandaki bir
+// kutuyu yakalıyorsa), ağır iş başlamadan önceki bekleme kısa tutulur (tek render karesi — ilerleme kutusunun
+// çizilmesi için yeter) ki kullanıcı o ekranı anında kapatırsa yakalanan içerik eskimiş olmasın; yakalama
+// bittikten SONRAki bekleme (artık canlı DOM'a bağlılık yok) daha güvenli şekilde uzun tutulabilir. /
+// el may be a LIVE element (still-open panel/modal), so the wait before the heavy work stays short (one render
+// frame — enough for the progress toast to paint) so that if the user closes that screen right away the
+// capture isn't stale; the wait AFTER capture (no more live-DOM dependency at that point) can safely be longer.
+function _emsYieldBeforeCapture() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
 function _h2c(el, opts) {
-  const run = _h2cLock.then(() => {
+  const run = _h2cLock.then(() => _emsYieldBeforeCapture()).then(() => {
     const titled = el && opts && opts.reportTitle;
     if (titled) el.setAttribute("data-h2c-title", "1");
     return _h2cRun(el, opts).then(_pdfTagCanvas).finally(() => { if (titled) el.removeAttribute("data-h2c-title"); });
-  });
+  }).then(canvas => _emsYieldToUI().then(() => canvas));
   _h2cLock = run.catch(() => {});
   return run;
 }
@@ -54542,6 +54579,8 @@ function showPendingApprovalScreen() {
   if (signupCard) signupCard.style.display = "none";
   if (pendingCard) pendingCard.style.display = "flex";
   _setPendingCardMode("approval");
+  const welcomeView = document.getElementById("view-welcome");
+  if (welcomeView) welcomeView.classList.add("ent-calm");
 }
 function _setPendingCardMode(mode) {
   const approvalBlock = document.getElementById("pending-approval-block");
@@ -54697,6 +54736,8 @@ function showLoginForm(prefillEmail) {
   _entShowOptions(false);
   if (signupCard) signupCard.style.display = "none";
   if (pendingCard) pendingCard.style.display = "none";
+  const welcomeView0 = document.getElementById("view-welcome");
+  if (welcomeView0) welcomeView0.classList.remove("ent-calm");
   if (card) {
     card.style.display = "flex";
     card.classList.toggle("mode-admin", !!prefillEmail);
@@ -54716,8 +54757,12 @@ function showLoginForm(prefillEmail) {
 function backToEntryChoices() {
   const card = document.getElementById("login-card");
   const signupCard = document.getElementById("signup-card");
+  const pendingCard0 = document.getElementById("pending-approval-card");
   if (card) card.style.display = "none";
   if (signupCard) signupCard.style.display = "none";
+  if (pendingCard0) pendingCard0.style.display = "none";
+  const welcomeView1 = document.getElementById("view-welcome");
+  if (welcomeView1) welcomeView1.classList.remove("ent-calm");
   _entShowOptions(true);
   const errEl = document.getElementById("login-error");
   if (errEl) errEl.innerText = "";
@@ -60500,13 +60545,35 @@ function downloadElementAsJPG(el, filename, bgColor, reportTitle, onDone) {
     });
   }
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    _h2c(el, {
+    // Ekran görüntüsü, canlı (açık) modal elemanını değil, ANINDA alınmış ayrı bir kopyasını kullanır (kullanıcı
+    // bildirimi, 10.11.2026): böylece kullanıcı modalı kapatsa veya başka sayfaya geçse de görüntü bozulmaz —
+    // içerik bu satırda zaten bağımsız bir kopyaya alınmış olur, canlı DOM'a bağlılık kalmaz. /
+    // The screenshot is taken from an IMMEDIATE, independent copy, not the live (open) modal element (user
+    // report, 2026-11-10): so closing the modal or navigating away afterwards can no longer break the capture —
+    // the content is already snapshotted into a detached copy at this point, with no dependency on the live DOM.
+    const snapshot = el.cloneNode(true);
+    // cloneNode() kopyalamaz: canlı <canvas> (örn. grafik/halka) piksellerini kopyaya elle aktar / cloneNode()
+    // does not copy drawn pixels: carry over any live <canvas> (e.g. chart/ring) content into the clone by hand.
+    try {
+      const liveCv = el.querySelectorAll("canvas"), snapCv = snapshot.querySelectorAll("canvas");
+      liveCv.forEach((c, i) => {
+        const t = snapCv[i];
+        if (!t) return;
+        try { t.width = c.width; t.height = c.height; t.getContext("2d").drawImage(c, 0, 0); } catch (e) {}
+      });
+    } catch (e) {}
+    restoreStyles();
+    const offHost = document.createElement("div");
+    offHost.style.cssText = "position:fixed; left:-99999px; top:0;";
+    offHost.appendChild(snapshot);
+    document.body.appendChild(offHost);
+    _h2c(snapshot, {
       scale: _pdfCanvasScale(),
       backgroundColor: bgColor || "#ffffff",
       useCORS: true,
       reportTitle: reportTitle
     }).then(canvas => {
-      restoreStyles();
+      document.body.removeChild(offHost);
       const link = document.createElement("a");
       link.download = filename;
       link.href = canvas.toDataURL("image/jpeg", .8);
@@ -60515,7 +60582,7 @@ function downloadElementAsJPG(el, filename, bgColor, reportTitle, onDone) {
       document.body.removeChild(link);
       try { if (onDone) onDone(); } catch (e) {}
     }).catch(err => {
-      restoreStyles();
+      try { if (offHost.parentNode) document.body.removeChild(offHost); } catch (e2) {}
       console.error("JPG indirme hatası / JPG download error:", err);
       alert(t3("Görsel indirilemedi.", "Could not download the image.", "مقدرناش ننزّل الصورة."));
       try { if (onDone) onDone(); } catch (e) {}
@@ -67845,9 +67912,13 @@ function showPdfProgress(text) {
   const textEl = document.getElementById("pdf-progress-text");
   const bar = document.getElementById("pdf-progress-bar");
   const pctEl = document.getElementById("pdf-progress-pct");
+  const noteEl = document.getElementById("pdf-progress-note");
   if (textEl) textEl.innerText = text || t3("Rapor Hazırlanıyor...", "Preparing Report...", "بيتم إعداد التقرير...");
   if (bar) bar.style.width = "0%";
   if (pctEl) pctEl.innerText = "0%";
+  // Rapor arka planda hazırlanırken diğer sayfalara geçilebilir (kullanıcı bildirimi, 10.11.2026) / the report keeps
+  // preparing in the background — the user can keep using the rest of the portal while it finishes.
+  if (noteEl) noteEl.innerText = t3("Diğer sayfalara geçebilirsiniz, hazır olunca inecek.", "You can switch pages — it will download when ready.", "تقدر تنتقل لصفحات تانية، هيترزل أوتوماتيك لما يخلص.");
   ov.style.display = "flex";
 }
 function updatePdfProgress(current, total) {
@@ -78351,6 +78422,7 @@ function _fxInit() {
   <div id="pdf-progress-text">Rapor Hazırlanıyor... / Preparing Report...</div>
   <div id="pdf-progress-track"><div id="pdf-progress-bar"></div></div>
   <div id="pdf-progress-pct">0%</div>
+  <div id="pdf-progress-note">Diğer sayfalara geçebilirsiniz, hazır olunca inecek. / You can switch pages — it will download when ready.</div>
 </div>
 <script>
 (function() {
@@ -83443,7 +83515,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-09 14:32";
+const EMS_BUILD = "2026-11-10 11:28";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
