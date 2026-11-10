@@ -48884,7 +48884,7 @@ function _removeWhereInDocArray(docId, field, pred) {
 function _inditexCloudPurgeMaybe(tries) {
   try {
     if (_inditexPurgeBusy || currentUserRole !== "admin" || !(FIREBASE_ENABLED && fbDb)) return;
-    if (appliedSeedKeys.includes("inditex:cloud-purge-20261104")) return;
+    if (appliedSeedKeys.includes("inditex:cloud-purge-20261110")) return;
     const ready = _cloudDocsLoaded.questions && _cloudDocsLoaded.customerQuestions && _cloudDocsLoaded.customerAudits && !_defaultedDocs.has("questions") && (typeof _canSaveNow !== "function" || _canSaveNow());
     if (!ready) { if ((tries || 0) < 20) setTimeout(() => _inditexCloudPurgeMaybe((tries || 0) + 1), 3000); return; }
     _inditexPurgeBusy = true;
@@ -48892,7 +48892,7 @@ function _inditexCloudPurgeMaybe(tries) {
     Promise.all([ _removeWhereInDocArray("customerQuestions", "customerQuestions", pred), _removeWhereInDocArray("questions", "auditQuestions", pred) ]).then(res => {
       if (res.some(r => r === false)) return;
       _inditexReplaceQuestions();
-      appliedSeedKeys.push("inditex:cloud-purge-20261104");
+      appliedSeedKeys.push("inditex:cloud-purge-20261110");
       try { _buildQuestionMerges(); } catch (e) {}
       save();
       try { if (document.querySelector(".modal-overlay.open")) setLanguage(currentLang); } catch (e) {}
@@ -83517,7 +83517,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-10 11:49";
+const EMS_BUILD = "2026-11-10 12:02";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
