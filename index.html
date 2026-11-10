@@ -69356,7 +69356,7 @@ function _renderAdminHub() {
       <div class="ahub-lock-ic">${_ahubSvg("lock")}</div>
       <h3>${escHtml(t3("Admin Paneli kilitli", "Admin Panel is locked", "لوحة المسؤول مقفولة"))}</h3>
       <p>${escHtml(t3("Devam etmek için yönetim şifresini girin.", "Enter the admin PIN to continue.", "اكتب رمز الإدارة علشان تكمّل."))}</p>
-      <input id="ahub-pin" type="password" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="••••••" aria-label="PIN" onkeydown="if(event.key==='Enter'){event.preventDefault();adminHubUnlock(event);}">
+      <input id="ahub-pin" type="text" inputmode="numeric" maxlength="12" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore placeholder="••••••" aria-label="PIN" style="-webkit-text-security:disc; text-security:disc;" onkeydown="if(event.key==='Enter'){event.preventDefault();adminHubUnlock(event);}">
       <div id="ahub-pin-msg" class="ahub-pin-msg" role="alert"></div>
       <button type="button" class="ahub-unlock" onclick="adminHubUnlock(event)">${escHtml(t3("Kilidi Aç", "Unlock", "فتح القفل"))}</button>
     </div>`;
@@ -83550,7 +83550,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-10 12:47";
+const EMS_BUILD = "2026-11-10 12:56";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
