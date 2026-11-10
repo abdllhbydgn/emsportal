@@ -1183,6 +1183,12 @@ html[dir="rtl"] #ahub-back svg, html[dir="rtl"] #ahub-fwd svg { transform: scale
 .ahub-hbtn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.35); background: none; color: #fff; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex: none; }
 .ahub-hbtn svg { width: 20px; height: 20px; }
 .ahub-hbtn:hover { background: rgba(255,255,255,.14); }
+.ahub-lang { display: flex; gap: 2px; padding: 3px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); border-radius: 999px; flex: none; }
+.ahub-lang .lang-btn { border: 0; background: transparent; color: rgba(255,255,255,.72); font-size: 11.5px; font-weight: 800; padding: 7px 10px; border-radius: 999px; cursor: pointer; letter-spacing: .03em; font-family: inherit; }
+.ahub-lang .lang-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
+.ahub-lang .lang-btn.active { background: #fff; color: var(--navy-d); }
+/* Telefon ekranında başlık metniyle yer çakışıyor: dil düğmeleri saklanır (panelden çıkıp ana sayfadaki TR/EN/AR'dan değiştirilebilir) / On phones it would crowd out the title text: the buttons are hidden there (still switchable from the site's own TR/EN/AR after leaving the panel) */
+@media (max-width: 600px) { .ahub-lang { display: none !important; } }
 .ahub-body { padding: 26px 34px 40px; flex: 1; }
 .ahub-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
 .ahub-stat { position: relative; overflow: hidden; display: flex; gap: 14px; align-items: center; background: #fff; border: 1px solid #E1E7F0; border-radius: 18px; padding: 18px 20px; box-shadow: 0 10px 24px rgba(18,37,63,.05); }
@@ -10684,6 +10690,21 @@ function _setLanguageCore(lang) {
   } catch (e) {
     console.warn("screen rerender", e);
   }
+  try {
+    const _ahm = document.getElementById("admin-hub-modal");
+    if (_ahm && _ahm.classList.contains("open") && typeof _renderAdminHub === "function") _renderAdminHub();
+  } catch (e) {}
+  try {
+    if (typeof _amRefreshIfOpen === "function") _amRefreshIfOpen();
+  } catch (e) {}
+  try {
+    if (typeof _ahubTool !== "undefined" && _ahubTool && typeof AHUB_TOOLS !== "undefined") {
+      const T = AHUB_TOOLS[_ahubTool.key];
+      const tEl = document.getElementById("ahubt-title"), sEl = document.getElementById("ahubt-sub");
+      if (T && tEl) tEl.innerText = T.name();
+      if (T && sEl) sEl.innerText = t3("Admin Paneli", "Admin Panel", "لوحة المسؤول") + "  ›  " + T.name();
+    }
+  } catch (e) {}
   try {
     _biApplyAll();
   } catch (e) {}
@@ -69153,6 +69174,10 @@ function adminHubRun(key, fromNav) {
 }
 // ---- Merkezden açılan bölümler: hepsinin üstünde aynı başlık (geri/ileri/merkez/anasayfa/kilit/kapat) ----
 // ---- Tools opened from the Admin Center get the same header bar on top ----
+function _ahubLangBtnsHtml() {
+  const b = l => `<button type="button" class="lang-btn${currentLang === l ? " active" : ""}" data-lang="${l}" onclick="setLanguage('${l}')" title="${l === "tr" ? "Türkçe" : l === "en" ? "English" : "العربية"}">${l.toUpperCase()}</button>`;
+  return `<div class="ahub-lang" role="group">${b("tr")}${b("en")}${b("ar")}</div>`;
+}
 const AHUB_TOOLS = {
   approvals: { id: "pending-approvals-modal", close: () => closePendingApprovalsModal(), name: () => t3("Onay Bekleyenler", "Pending Approvals", "مستني الموافقة") },
   users: { id: "user-management-modal", close: () => closeUserManagement(), name: () => t3("Kullanıcı Yönetimi", "User Management", "إدارة المستخدمين") },
@@ -69178,6 +69203,7 @@ function _ahubToolbarEl() {
   b.innerHTML = `<div class="ahub-nav" role="group"><button type="button" class="ahub-nbtn" id="ahubt-back" onclick="ahubToolBack()">${_ahubSvg("chevL")}</button><button type="button" class="ahub-nbtn" id="ahubt-fwd" onclick="adminHubFwd()">${_ahubSvg("chevR")}</button><button type="button" class="ahub-nbtn" id="ahubt-home" onclick="ahubToolTo('hub')">${_ahubSvg("grid")}</button></div>
     <span class="ahub-logo">${_ahubSvg("gear")}</span><div class="ahub-head-tx"><h2 id="ahubt-title"></h2><p id="ahubt-sub"></p></div>
     <button type="button" class="ahub-sitehome" id="ahubt-sitehome" onclick="ahubToolTo('site')">${_ahubSvg("house")}<span></span></button>
+    ${_ahubLangBtnsHtml()}
     <button type="button" class="ahub-hbtn" id="ahubt-lock" onclick="ahubToolTo('lock')">${_ahubSvg("lock")}</button>
     <button type="button" class="ahub-hbtn" id="ahubt-close" onclick="ahubToolBack()">✕</button>`;
   document.body.appendChild(b);
@@ -69590,6 +69616,7 @@ function openAdminHub() {
       <div class="ahub-head"><div class="ahub-nav" role="group"><button type="button" class="ahub-nbtn" id="ahub-back" onclick="adminHubBack()">${_ahubSvg("chevL")}</button><button type="button" class="ahub-nbtn" id="ahub-fwd" onclick="adminHubFwd()">${_ahubSvg("chevR")}</button><button type="button" class="ahub-nbtn" id="ahub-home" onclick="adminHubHome()">${_ahubSvg("grid")}</button></div>
         <span class="ahub-logo">${_ahubSvg("gear")}</span><div class="ahub-head-tx"><h2 id="admin-hub-title" class="modal-title"></h2><p id="admin-hub-sub"></p></div>
         <button type="button" class="ahub-sitehome" id="ahub-sitehome" onclick="adminHubSiteHome()">${_ahubSvg("house")}<span></span></button>
+        ${_ahubLangBtnsHtml()}
         <button type="button" class="ahub-hbtn" id="admin-hub-lockbtn" onclick="adminHubLock()">${_ahubSvg("lock")}</button>
         <button type="button" class="ahub-hbtn" onclick="closeAdminHub()" aria-label="Kapat">✕</button></div>
       <div class="ahub-body" id="admin-hub-body"></div></div>`;
@@ -83523,7 +83550,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-10 12:17";
+const EMS_BUILD = "2026-11-10 12:40";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
