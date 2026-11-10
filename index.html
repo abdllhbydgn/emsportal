@@ -69352,14 +69352,14 @@ function _renderAdminHub() {
   if (!_adminHubUnlocked()) {
     box.classList.remove("has-side");
     if (lockBtn) lockBtn.style.display = "none";
-    box.innerHTML = `<form class="ahub-lock" onsubmit="adminHubUnlock(event)" autocomplete="off">
+    box.innerHTML = `<div class="ahub-lock">
       <div class="ahub-lock-ic">${_ahubSvg("lock")}</div>
       <h3>${escHtml(t3("Admin Paneli kilitli", "Admin Panel is locked", "لوحة المسؤول مقفولة"))}</h3>
       <p>${escHtml(t3("Devam etmek için yönetim şifresini girin.", "Enter the admin PIN to continue.", "اكتب رمز الإدارة علشان تكمّل."))}</p>
-      <input id="ahub-pin" type="password" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="••••••" aria-label="PIN">
+      <input id="ahub-pin" type="password" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="••••••" aria-label="PIN" onkeydown="if(event.key==='Enter'){event.preventDefault();adminHubUnlock(event);}">
       <div id="ahub-pin-msg" class="ahub-pin-msg" role="alert"></div>
-      <button type="submit" class="ahub-unlock">${escHtml(t3("Kilidi Aç", "Unlock", "فتح القفل"))}</button>
-    </form>`;
+      <button type="button" class="ahub-unlock" onclick="adminHubUnlock(event)">${escHtml(t3("Kilidi Aç", "Unlock", "فتح القفل"))}</button>
+    </div>`;
     setTimeout(() => { const i = document.getElementById("ahub-pin"); if (i) i.focus(); }, 60);
     return;
   }
@@ -83550,7 +83550,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-10 12:40";
+const EMS_BUILD = "2026-11-10 12:47";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
