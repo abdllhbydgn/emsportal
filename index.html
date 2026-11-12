@@ -82298,7 +82298,8 @@ async function amDownloadPDF(meetingId) {
     wrap.setAttribute("translate", "no");
     wrap.style.cssText = 'position:fixed; left:-99999px; top:0; width:900px; background:#fff; font-family:"Plus Jakarta Sans",Arial,sans-serif; padding:36px; box-sizing:border-box;' + (currentLang === "ar" ? " direction:rtl;" : "");
     const amLocale = currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR";
-    wrap.innerHTML = `${_pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", title: esc(mt.title), sub: esc(mt.subject || "") + " · 📅 " + esc(mt.date || "") + " · 👤 " + esc(mt.preparedBy || ""), icon: "📋" })}
+    const customIcon = await new Promise(res => _amPhotoImgRaw(mt.id, "icon", res));
+    wrap.innerHTML = `${_pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", title: esc(mt.title), sub: esc(mt.subject || "") + " · 📅 " + esc(mt.date || "") + " · 👤 " + esc(mt.preparedBy || ""), icon: "📋", rightLogo: customIcon || undefined })}
       ${kpi}
       <div style="font-size:13px; font-weight:900; color:#1E293B; margin:18px 0 4px; text-transform:uppercase; letter-spacing:.04em;">${t3("Madde Listesi", "Item List", "قائمة البنود")}</div>
       ${mainTbl}
@@ -82357,6 +82358,29 @@ function amEditField(meetingId, no, field) {
 }
 
 // ── Fotoğraf (madde başına, parçalı depo) ──
+let _amIconInput = null, _amIconTarget = null;
+function amSetReportIcon(meetingId) {
+  if (!_amCan()) return;
+  if (!_amIconInput) {
+    _amIconInput = document.createElement("input");
+    _amIconInput.type = "file"; _amIconInput.accept = "image/*"; _amIconInput.style.display = "none";
+    _amIconInput.addEventListener("change", e => {
+      const file = e.target.files && e.target.files[0]; if (!file || !_amIconTarget) return;
+      const reader = new FileReader;
+      reader.onload = ev => {
+        const mId = _amIconTarget;
+        _saveDocFileData("advisorPhoto", _amPhotoId(mId, "icon"), "photo", ev.target.result, ok => {
+          if (ok) { delete _amPhotoCache[_amPhotoId(mId, "icon")]; _amRefreshIfOpen(); }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    document.body.appendChild(_amIconInput);
+  }
+  _amIconTarget = meetingId;
+  _amIconInput.value = "";
+  _amIconInput.click();
+}
 let _amPhotoInput = null, _amPhotoTarget = null;
 function amUploadPhoto(meetingId, no) {
   if (!_amCan()) return;
@@ -82439,7 +82463,7 @@ function _amDetailHtml(mt) {
   const rows = _amFilteredItems(mt);
   return `
   <div class="am-detail-head">
-    <div><h3>${escHtml(mt.title)}${_amCan() ? `<button type="button" class="am-ic-btn" onclick="amEditMeetingMeta('${mt.id}')" title="${escHtml(t3("Düzenle", "Edit", "تعديل"))}">✏️</button>` : ""}</h3>
+    <div><h3>${escHtml(mt.title)}${_amCan() ? `<button type="button" class="am-ic-btn" onclick="amEditMeetingMeta('${mt.id}')" title="${escHtml(t3("Düzenle", "Edit", "تعديل"))}">✏️</button><button type="button" class="am-ic-btn" onclick="amSetReportIcon('${mt.id}')" title="${escHtml(t3("Bu toplantının rapor ikonunu değiştir", "Change this meeting's report icon", "غيّر أيقونة تقرير هذا الاجتماع"))}">🖼️</button>` : ""}</h3>
     <div class="am-detail-sub">${escHtml(mt.subject || "")} · 📅 ${escHtml(mt.date || "")} · 👤 ${escHtml(mt.preparedBy || "")}</div></div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
       <button type="button" class="am-btn" onclick="amDownloadPDF('${mt.id}')">📄 ${escHtml(t3("PDF Rapor", "PDF Report", "تقرير PDF"))}</button>
@@ -83550,7 +83574,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-10 12:56";
+const EMS_BUILD = "2026-11-12 12:16";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
