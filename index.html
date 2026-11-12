@@ -10817,6 +10817,15 @@ function _langInstallOpenTrackers() {
     } catch (e) {}
   });
 }
+// Esc tuşu: en üstteki açık pencereyi kapatır (X'e güvenmeyen bir yedek yol) / Escape key: closes the topmost open window (a fallback that doesn't depend on the X button)
+document.addEventListener("keydown", function(e) {
+  if (e.key !== "Escape") return;
+  const opens = Array.prototype.slice.call(document.querySelectorAll(".modal-overlay.open"));
+  if (!opens.length) return;
+  const top = opens[opens.length - 1];
+  const closeBtn = top.querySelector('.modal-close-group button[data-i18n-attr*="btn_close"]') || top.querySelector(".modal-close[onclick]");
+  if (closeBtn) { e.preventDefault(); closeBtn.click(); }
+}, true);
 function _langRerenderOpenScreens() {
   _LANG_RERENDER_SCREENS.forEach(([id, fn]) => {
     const el = document.getElementById(id);
@@ -83574,7 +83583,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-12 12:16";
+const EMS_BUILD = "2026-11-12 17:11";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
