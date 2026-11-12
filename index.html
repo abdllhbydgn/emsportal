@@ -3424,7 +3424,7 @@ body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welco
 @keyframes ems-page-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-header { background: #fff; cursor: default !important; padding: 16px 28px; border-bottom: 1px solid #E3E8F0; position: sticky; top: 0; z-index: 6; }
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-title { font-size: 21px; letter-spacing: -.01em; }
-body.ems-shell-on .modal-overlay:not(#advisor-meeting-modal):not(#user-management-modal):not(#pending-approvals-modal):not(#backup-history-modal):not(#finance-modal):not(#ann-fx-modal) .modal-fullscreen-toggle-btn { display: none !important; }
+body.ems-shell-on .modal-overlay .modal-fullscreen-toggle-btn { display: none !important; }
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-close-group button[data-i18n-attr*="btn_back"],
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-close-group button[data-i18n-attr*="btn_home"] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) { animation: none; } }
@@ -69320,6 +69320,10 @@ function adminHubLock() {
 function _renderAdminHub() {
   const box = document.getElementById("admin-hub-body");
   if (!box) return;
+  // Sol menü (ahub-side-in) her çizimde yeniden kuruluyor, bu da kaydırma konumunu sıfırlıyordu; burada saklayıp aşağıda geri koyuyoruz /
+  // The left menu is rebuilt on every render, which reset its scroll position; captured here and restored below
+  const _sideScrollTop = (box.querySelector(".ahub-side-in") || {}).scrollTop || 0;
+  const _ahubRestoreSideScroll = () => { const _si = box.querySelector(".ahub-side-in"); if (_si) _si.scrollTop = _sideScrollTop; };
   document.getElementById("admin-hub-title").innerText = t3("Admin Paneli", "Admin Panel", "لوحة المسؤول");
   const _vn = { texts: t3("Ekran Yazıları", "Screen Texts", "نصوص الشاشة"), about: t3("Hakkımızda", "About Us", "من نحن"), menu: t3("Menü Düzeni", "Menu Layout", "ترتيب القائمة"), report: t3("Rapor Bilgileri", "Report Details", "بيانات التقارير"), log: t3("Değişiklik Geçmişi", "Change History", "سجل التغييرات"), dataLog: t3("Veri Kayıt Günlüğü", "Data Activity Log", "سجل نشاط البيانات"), custDash: t3("Müşteri Panosu", "Customer Dashboard", "لوحة العملاء"), track: t3("Takip & Uyarılar", "Tracking & Alerts", "المتابعة والتنبيهات"), custOpenF: t3("Müşteri Panosu › Açık Bulgular", "Customer Dashboard › Open Findings", "لوحة العملاء › النتائج المفتوحة"), custOpenQ: t3("Müşteri Panosu › Başlanmayan Sorular", "Customer Dashboard › Not-Started Questions", "لوحة العملاء › الأسئلة اللي لسه ما اتبدأتش") }[_ahubView] || (String(_ahubView).startsWith("tool:") && AHUB_TOOLS[_ahubView.slice(5)] ? _ahubItemName(_ahubView.slice(5), siteContent.hub || {}) : "");
   document.getElementById("admin-hub-sub").innerText = _vn ? t3("Admin Paneli", "Admin Panel", "لوحة المسؤول") + "  ›  " + _vn : t3("Tüm yönetici işlemleri tek yerde", "All admin tools in one place", "كل أدوات الإدارة في مكان واحد");
@@ -69344,6 +69348,7 @@ function _renderAdminHub() {
   { const hb = document.querySelector("#admin-hub-modal .ahub-head"); if (hb && hb.offsetHeight) box.style.setProperty("--ahub-head-h", hb.offsetHeight + "px"); }
   if (String(_ahubView).startsWith("tool:") && AHUB_TOOLS[_ahubView.slice(5)]) {
     box.innerHTML = _ahubLayout(`<div class="ahub-pane-ph">${escHtml(t3("Yükleniyor…", "Loading…", "بيتحمّل…"))}</div>`);
+    _ahubRestoreSideScroll();
     return;
   }
   if (_ahubView !== "home") {
@@ -69351,6 +69356,7 @@ function _renderAdminHub() {
     if (R) {
       const n = _scDraftCount();
       box.innerHTML = _ahubLayout(`<div class="sc-page">${R()}</div>` + (_ahubView === "log" || _ahubView === "dataLog" || _ahubView === "track" || String(_ahubView).indexOf("cust") === 0 ? "" : _scSaveBar(n)));
+      _ahubRestoreSideScroll();
       if (_ahubView === "track") { const tb = document.getElementById("ahub-track-body"); if (tb) try { renderMgmtSummary(tb); } catch (e) { console.error(e); tb.innerHTML = `<div class="sc-empty">${escHtml(t3("Bilgiler yüklenemedi.", "Could not load.", "ماقدرناش نحمّل."))}</div>`; } }
       return;
     }
@@ -83540,7 +83546,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-13 00:55";
+const EMS_BUILD = "2026-11-13 01:07";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
