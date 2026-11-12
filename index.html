@@ -3421,10 +3421,31 @@ body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welco
   border-radius: 0 !important; box-shadow: none !important; margin: 0 !important; top: 0 !important; left: 0 !important; transform: none !important;
   background: var(--page-bg) !important;
 }
+/* Büyüt/küçült düğmesi görünür olan ekranlarda küçültülmüş hâl gerçekten küçülsün (yukarıdaki kural her ikisini de tam boy yapıyordu, düğmeyi işlevsiz bırakıyordu) /
+   On the screens where the expand/shrink button is visible, the "shrunk" state must actually shrink (the rule above forced both states to full size, making the button a no-op) */
+body.ems-shell-on #advisor-meeting-modal .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #user-management-modal .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #pending-approvals-modal .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #backup-history-modal .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #finance-modal .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #ann-fx-modal .modal-container:not(.modal-fullscreen) {
+  width: auto !important; max-width: min(1100px, 92vw) !important; height: auto !important; max-height: 86vh !important;
+  border-radius: 20px !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04) !important;
+  margin: auto !important; top: auto !important; left: auto !important; position: relative !important;
+  background: #fff !important;
+}
+body.ems-shell-on #advisor-meeting-modal.open:has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #user-management-modal.open:has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #pending-approvals-modal.open:has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #backup-history-modal.open:has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #finance-modal.open:has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #ann-fx-modal.open:has(.modal-container:not(.modal-fullscreen)) {
+  align-items: center !important; justify-content: center !important; padding: 16px !important; background: rgba(15,23,42,.45) !important;
+}
 @keyframes ems-page-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-header { background: #fff; cursor: default !important; padding: 16px 28px; border-bottom: 1px solid #E3E8F0; position: sticky; top: 0; z-index: 6; }
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-title { font-size: 21px; letter-spacing: -.01em; }
-body.ems-shell-on .modal-overlay .modal-fullscreen-toggle-btn { display: none !important; }
+body.ems-shell-on .modal-overlay:not(#advisor-meeting-modal):not(#user-management-modal):not(#pending-approvals-modal):not(#backup-history-modal):not(#finance-modal):not(#ann-fx-modal) .modal-fullscreen-toggle-btn { display: none !important; }
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-close-group button[data-i18n-attr*="btn_back"],
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-close-group button[data-i18n-attr*="btn_home"] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) { animation: none; } }
@@ -83546,7 +83567,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-13 01:07";
+const EMS_BUILD = "2026-11-13 01:08";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
