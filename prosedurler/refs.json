@@ -2266,5 +2266,65 @@
  ],
  "EMS.İS.PRO.18.24": [
   "EMS.İS.POL.18.01"
+ ],
+ "EMS.SO.PRO.23.09": [
+  "EMS.KS.PRO.22.06",
+  "EMS.QA.PRO.02.07",
+  "EMS.SO.PRO.23.04",
+  "EMS.ÜR.PRO.05.07",
+  "EMS.ÜR.TL.05.02",
+  "EMS.ÜR.TL.05.09"
+ ],
+ "EMS.SO.PRO.23.10": [
+  "EMS.KS.PRO.22.05",
+  "EMS.QA.PRO.02.07",
+  "EMS.SO.PRO.23.02",
+  "EMS.ÜR.PRO.05.09",
+  "EMS.ÜR.TL.05.03",
+  "EMS.İS.TL.18.03"
+ ],
+ "EMS.SO.PRO.23.11": [
+  "EMS.QA.PRO.02.05",
+  "EMS.QA.PRO.02.09",
+  "EMS.QA.TL.02.05",
+  "EMS.SO.PRO.23.07",
+  "EMS.ÜR.PRO.05.10",
+  "EMS.ÜR.PRO.05.11",
+  "EMS.ÜR.TL.05.06",
+  "EMS.ÜR.TL.05.13"
+ ],
+ "EMS.SO.PRO.23.12": [
+  "EMS.KM.PRO.20.01",
+  "EMS.KM.PRO.20.05",
+  "EMS.KS.TL.22.03",
+  "EMS.ÜR.PRO.05.08",
+  "EMS.ÜR.TL.05.04",
+  "EMS.ÜR.TL.05.10"
+ ],
+ "EMS.SO.PRO.23.13": [
+  "EMS.KS.TL.22.03",
+  "EMS.QA.PRO.02.07",
+  "EMS.QA.TL.02.02",
+  "EMS.ÜR.PRO.05.08",
+  "EMS.ÜR.TL.05.05"
+ ],
+ "EMS.SO.PRO.23.14": [
+  "EMS.BK.PRO.07.01",
+  "EMS.LB.TL.09.01",
+  "EMS.ÜR.PRO.05.06",
+  "EMS.ÜR.TL.05.01",
+  "EMS.ÜR.TL.05.07",
+  "EMS.ÜR.TL.05.08"
+ ],
+ "EMS.SO.PRO.23.15": [
+  "EMS.BY.POL.06.01",
+  "EMS.BY.PRO.06.01",
+  "EMS.BY.PRO.06.02",
+  "EMS.BY.PRO.06.03",
+  "EMS.BY.TL.06.01",
+  "EMS.BY.TL.06.03",
+  "EMS.BY.TL.06.04",
+  "EMS.KM.TL.20.01",
+  "EMS.SO.PRO.23.04"
  ]
 }
