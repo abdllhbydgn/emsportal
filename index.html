@@ -3515,7 +3515,7 @@ body.ems-shell-on #snw-calendar-box { display: none !important; }
 body.ems-shell-on .nav-emoji svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 body.ems-shell-on #team-side-nav .nav-emoji { display: inline-grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 10px; font-size: 0; }
 body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .ems-resize-handle { display: none !important; }
-body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal) .modal-header .modal-title { cursor: pointer; }
+body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welcome-modal):not(#cert-photo-lightbox):not(#office-file-preview-modal):not(#advisor-meeting-modal):not(#user-management-modal):not(#pending-approvals-modal):not(#backup-history-modal):not(#finance-modal):not(#ann-fx-modal) .modal-header .modal-title { cursor: pointer; }
 #ems-topbar .etb-btn#etb-full { display: none; }
 body.ems-shell-on.ems-page-open #ems-topbar .etb-btn#etb-full { display: grid; }
 #ems-focus-exit { display: none; }
@@ -78809,7 +78809,7 @@ function _fxInit() {
       } catch (e) {}
     });
     const prim = a => a.filter(x => x === undefined || x === null || [ "string", "number", "boolean" ].indexOf(typeof x) > -1);
-    const POPUP = id => id === "site-announcement-popup" || id === "viewer-welcome-modal" || id === "cert-photo-lightbox" || id === "office-file-preview-modal";
+    const POPUP = id => id === "site-announcement-popup" || id === "viewer-welcome-modal" || id === "cert-photo-lightbox" || id === "office-file-preview-modal" || id === "advisor-meeting-modal" || id === "user-management-modal" || id === "pending-approvals-modal" || id === "backup-history-modal" || id === "finance-modal" || id === "ann-fx-modal";
     function closeAllOverlays() {
       $$(".modal-overlay.open, .qa-dept-overlay.open").forEach(el => {
         if (!POPUP(el.id)) el.classList.remove("open");
@@ -83541,7 +83541,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-12 23:56";
+const EMS_BUILD = "2026-11-13 00:47";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
