@@ -3423,23 +3423,23 @@ body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welco
 }
 /* Büyüt/küçült düğmesi görünür olan ekranlarda küçültülmüş hâl gerçekten küçülsün (yukarıdaki kural her ikisini de tam boy yapıyordu, düğmeyi işlevsiz bırakıyordu) /
    On the screens where the expand/shrink button is visible, the "shrunk" state must actually shrink (the rule above forced both states to full size, making the button a no-op) */
-body.ems-shell-on #advisor-meeting-modal .modal-container:not(.modal-fullscreen),
-body.ems-shell-on #user-management-modal .modal-container:not(.modal-fullscreen),
-body.ems-shell-on #pending-approvals-modal .modal-container:not(.modal-fullscreen),
-body.ems-shell-on #backup-history-modal .modal-container:not(.modal-fullscreen),
-body.ems-shell-on #finance-modal .modal-container:not(.modal-fullscreen),
-body.ems-shell-on #ann-fx-modal .modal-container:not(.modal-fullscreen) {
+body.ems-shell-on #advisor-meeting-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #user-management-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #pending-approvals-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #backup-history-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #finance-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen),
+body.ems-shell-on #ann-fx-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen) {
   width: auto !important; max-width: min(1100px, 92vw) !important; height: auto !important; max-height: 86vh !important;
   border-radius: 20px !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04) !important;
   margin: auto !important; top: auto !important; left: auto !important; position: relative !important;
   background: #fff !important;
 }
-body.ems-shell-on #advisor-meeting-modal.open:has(.modal-container:not(.modal-fullscreen)),
-body.ems-shell-on #user-management-modal.open:has(.modal-container:not(.modal-fullscreen)),
-body.ems-shell-on #pending-approvals-modal.open:has(.modal-container:not(.modal-fullscreen)),
-body.ems-shell-on #backup-history-modal.open:has(.modal-container:not(.modal-fullscreen)),
-body.ems-shell-on #finance-modal.open:has(.modal-container:not(.modal-fullscreen)),
-body.ems-shell-on #ann-fx-modal.open:has(.modal-container:not(.modal-fullscreen)) {
+body.ems-shell-on #advisor-meeting-modal.open:not(.ahub-pane):has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #user-management-modal.open:not(.ahub-pane):has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #pending-approvals-modal.open:not(.ahub-pane):has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #backup-history-modal.open:not(.ahub-pane):has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #finance-modal.open:not(.ahub-pane):has(.modal-container:not(.modal-fullscreen)),
+body.ems-shell-on #ann-fx-modal.open:not(.ahub-pane):has(.modal-container:not(.modal-fullscreen)) {
   align-items: center !important; justify-content: center !important; padding: 16px !important; background: rgba(15,23,42,.45) !important;
 }
 @keyframes ems-page-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
@@ -3539,6 +3539,8 @@ body.ems-shell-on .modal-overlay:not(#site-announcement-popup):not(#viewer-welco
 #ems-topbar .etb-btn#etb-full { display: none; }
 body.ems-shell-on.ems-page-open #ems-topbar .etb-btn#etb-full { display: grid; }
 #ems-focus-exit { display: none; }
+/* Admin Paneli kendi ✕ düğmesiyle kapanır; odak düğmesi onun üstüne binmesin / The Admin Panel has its own ✕; the focus button must not sit on top of it */
+body.ahub-on #ems-focus-exit { display: none !important; }
 body.ems-shell-on.ems-focus #ems-focus-exit { display: grid; position: fixed; top: 14px; right: 18px; z-index: 20600; width: 42px; height: 42px; border: 1px solid #DCE3EC; border-radius: 12px; background: #fff; color: var(--navy); cursor: pointer; place-items: center; box-shadow: 0 8px 20px -10px rgba(15,23,42,.5); padding: 0; }
 html[dir="rtl"] body.ems-shell-on.ems-focus #ems-focus-exit { right: auto; left: 18px; }
 #ems-focus-exit svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -69352,18 +69354,21 @@ function _ahubToolbarEl() {
 }
 function _ahubPlaceTool(el) {
   const head = document.querySelector("#admin-hub-modal .ahub-head"), side = document.querySelector("#admin-hub-modal .ahub-side");
-  const top = head ? Math.max(0, Math.round(head.getBoundingClientRect().bottom)) : 0;
+  const top0 = head ? Math.max(0, Math.round(head.getBoundingClientRect().bottom)) : 0;
   const sr = side && side.offsetWidth ? side.getBoundingClientRect() : null;
   const rtl = document.documentElement.dir === "rtl" || document.body.dir === "rtl";
-  const left = sr && !rtl ? Math.round(sr.right) : 0, right = sr && rtl ? Math.round(window.innerWidth - sr.left) : 0;
+  const full = el.classList.contains("ahub-pane-full"); // büyüt düğmesi: bölüm tüm ekranı kaplar / expand button: pane covers the whole screen
   const set = (p, v) => el.style.setProperty(p, v, "important");
   el.classList.add("ahub-pane");
+  const top = full ? 0 : top0, left = full ? 0 : (sr && !rtl ? Math.round(sr.right) : 0), right = full ? 0 : (sr && rtl ? Math.round(window.innerWidth - sr.left) : 0);
+  if (typeof window._emsFsBtnSync === "function") window._emsFsBtnSync(el);
   set("top", top + "px"); set("left", left + "px"); set("right", right + "px"); set("bottom", "0px"); set("inset", top + "px " + right + "px 0px " + left + "px");
   set("z-index", el.id === "contact-dir-dlg" ? "100001" : "20400");
 }
 function _ahubUnplaceTool(el) {
   if (!el) return;
-  el.classList.remove("ahub-pane");
+  el.classList.remove("ahub-pane", "ahub-pane-full");
+  if (typeof window._emsFsBtnSync === "function") window._emsFsBtnSync(el);
   [ "top", "left", "right", "bottom", "inset", "z-index" ].forEach(p => { try { el.style.removeProperty(p); } catch (e) {} });
 }
 function _ahubCloseToolSilent() {
@@ -78788,7 +78793,27 @@ function _fxInit() {
   function fsTitle(isFs) {
     return typeof t3 === "function" ? t3(isFs ? "Küçült" : "Tam Ekran", isFs ? "Restore" : "Fullscreen", isFs ? "استعادة" : "ملء الشاشة") : isFs ? "Restore" : "Fullscreen";
   }
+  // Admin Paneli içinde açılan bölümde düğme bölümü tüm ekrana büyütür, tekrar basınca sol menülü normal hâle döner /
+  // Inside the Admin Panel the button expands the pane to the whole screen; pressing again returns to the normal view with the side menu
+  window._emsFsBtnSync = function(overlay) {
+    if (!overlay) return;
+    var grp = overlay.querySelector(".modal-header .modal-close-group");
+    if (grp) injectButton(grp); // sonradan oluşturulan pencereler / windows created later
+    var btn = overlay.querySelector(".modal-header .modal-fullscreen-toggle-btn");
+    if (!btn) return;
+    var c = btn.closest(".modal-container");
+    var isFs = overlay.classList.contains("ahub-pane") ? overlay.classList.contains("ahub-pane-full") : !!(c && c.classList.contains("modal-fullscreen"));
+    if ((btn.innerHTML.indexOf("M8 3v3") >= 0) === isFs) return;
+    btn.innerHTML = isFs ? COMPRESS_SVG : EXPAND_SVG;
+    btn.title = fsTitle(isFs);
+  };
   window.toggleModalFullscreen = function(btn) {
+    var pane = btn.closest(".ahub-pane");
+    if (pane) {
+      pane.classList.toggle("ahub-pane-full");
+      if (typeof _ahubPlaceTool === "function") _ahubPlaceTool(pane); else window._emsFsBtnSync(pane);
+      return;
+    }
     var container = btn.closest(".modal-container");
     if (!container) return;
     var isFs = container.classList.toggle("modal-fullscreen");
@@ -83711,7 +83736,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-13 01:14";
+const EMS_BUILD = "2026-11-13 01:34";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
