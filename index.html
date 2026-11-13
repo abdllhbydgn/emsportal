@@ -65584,7 +65584,83 @@ function _applyCustomerSection() {
 }
 // ── BULGU EKLE / ADD FINDING ──
 function _addFindingBtnHtml() {
-  return `<button type="button" class="editor-only-el" data-scope="customer_audits" onclick="openAddFindingForm()" style="display:inline-flex; align-items:center; gap:6px; background:var(--success, #16A34A); color:#fff; border:none; border-radius:9px; padding:8px 13px; font-size:12px; font-weight:800; cursor:pointer;">➕ ${t3("Bulgu Ekle", "Add Finding", "ضيف نتيجة")}</button>`;
+  const add = `<button type="button" class="editor-only-el" data-scope="customer_audits" onclick="openAddFindingForm()" style="display:inline-flex; align-items:center; gap:6px; background:var(--success, #16A34A); color:#fff; border:none; border-radius:9px; padding:8px 13px; font-size:12px; font-weight:800; cursor:pointer;">➕ ${t3("Bulgu Ekle", "Add Finding", "ضيف نتيجة")}</button>`;
+  if (currentUserRole !== "admin") return add;
+  return `<span style="display:inline-flex; gap:8px; flex-wrap:wrap; align-items:center;">${add}${_importFindingsBtnHtml()}</span>`;
+}
+function _importFindingsBtnHtml() {
+  if (currentUserRole !== "admin") return "";
+  return `<button type="button" onclick="importAuditFindingsFile()" title="${t3("Denetim raporu bulgularını hazır dosyadan toplu yükle", "Bulk-load audit report findings from a prepared file", "حمّل نتايج تقرير التدقيق من ملف جاهز")}" style="display:inline-flex; align-items:center; gap:6px; background:#1A3660; color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">📥 ${t3("Bulguları Dosyadan Yükle", "Load Findings From File", "حمّل النتايج من ملف")}</button>`;
+}
+// ── BULGULARI DOSYADAN YÜKLE (yalnız yönetici): denetim raporu bulguları gizlidir, site koduna gömülmez; yönetici hazır dosyayı bir kez seçer, kayıtlar buluta yazılır /
+// ── LOAD FINDINGS FROM A FILE (admin only): audit report findings are confidential and are not embedded in the site code; the admin picks the prepared file once and the records go to the cloud
+function importAuditFindingsFile() {
+  if (currentUserRole !== "admin") return;
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = () => {
+    const f = inp.files && inp.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      let d = null;
+      try { d = JSON.parse(String(rd.result || "")); } catch (e) {}
+      _applyAuditFindingsFile(d);
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+function _applyAuditFindingsFile(d) {
+  if (currentUserRole !== "admin") return 0;
+  const key = currentCustomerKey;
+  if (!d || d.type !== "ems-audit-findings" || !Array.isArray(d.findings) || !d.findings.length) {
+    alert(t3("Bu dosya bir bulgu dosyası değil.", "This file is not a findings file.", "الملف ده مش ملف نتايج."));
+    return 0;
+  }
+  if (d.customerKey !== key) {
+    alert(t3("Bu dosya başka bir müşteriye ait: ", "This file belongs to another customer: ", "الملف ده لعميل تاني: ") + d.customerKey);
+    return 0;
+  }
+  const str = v => String(v == null ? "" : v).trim();
+  let audit = customerAudits.find(a => a && a.customerKey === key && (d.ref && String(a.note || "").indexOf(d.ref) >= 0));
+  const isNew = !audit;
+  if (isNew) audit = { id: customerAudits.length > 0 ? Math.max(...customerAudits.map(a => +a.id || 0)) + 1 : 1, customerKey: key, date: str(d.date) || _localISODate(), note: str(d.note), auditor: str(d.auditor), cat6: 0, cat5: 0, major: 0, minor: 0, capStatus: "open", findings: [] };
+  if (!Array.isArray(audit.findings)) audit.findings = [];
+  const have = new Set(audit.findings.map(f => f && f.findingEn));
+  const qIds = new Set(auditQuestions.filter(q => _isCustQ(q)).map(q => q.id));
+  const cats = [ "Minor", "Major", "CAT 5", "CAT 6" ];
+  let no = audit.findings.length ? Math.max(...audit.findings.map(f => +f.no || 0)) : 0, added = 0;
+  const fresh = [];
+  d.findings.forEach(x => {
+    const en = str(x && x.findingEn), tr = str(x && x.findingTr);
+    if (!en && !tr || have.has(en || tr)) return;
+    const f = { no: ++no, category: cats.includes(x.category) ? x.category : "Minor", findingTr: tr || en, findingEn: en || tr, caTr: str(x.caTr) || str(x.caEn), caEn: str(x.caEn) || str(x.caTr), status: "open" };
+    if (x.linkedQuestionId != null && qIds.has(x.linkedQuestionId)) { f.linkedQuestionId = x.linkedQuestionId; f.qAutoLinked = true; }
+    fresh.push(f); added++;
+  });
+  if (!added) {
+    alert(t3("Bu dosyadaki bulguların hepsi zaten yüklü.", "All findings in this file are already loaded.", "كل النتايج اللي في الملف ده متحمّلة قبل كده."));
+    return 0;
+  }
+  // Bulut belgesi 1 MB sınırını aşmasın / Keep the cloud document under the 1 MB limit
+  const size = new Blob([ JSON.stringify(customerAudits) + JSON.stringify(fresh) ]).size;
+  if (size > 900000) {
+    alert(t3("Yüklenemedi: denetim kayıtları belgesi sınıra çok yakın (", "Not loaded: the audits document is too close to its limit (", "ما اتحمّلش: مستند التدقيقات قرب من الحد (") + Math.round(size / 1024) + " KB).");
+    return 0;
+  }
+  if (isNew) customerAudits.push(audit);
+  fresh.forEach(f => audit.findings.push(f));
+  if (audit.capStatus === "closed") audit.capStatus = "open";
+  const cnt = c => audit.findings.filter(f => f && f.category === c).length;
+  audit.cat6 = cnt("CAT 6"); audit.cat5 = cnt("CAT 5"); audit.major = cnt("Major"); audit.minor = cnt("Minor");
+  const _qBefore = auditQuestions.length;
+  try { _linkFindingsToQuestions(audit); } catch (e) { console.warn(e); }
+  _saveCustomerAuditsOnly();
+  if (auditQuestions.length !== _qBefore) { _saveQuestionsOnly(); calcMetrics(); }
+  try { if (typeof showSuccessToast === "function") showSuccessToast("✅ " + added + " " + t3("bulgu yüklendi.", "findings loaded.", "نتيجة اتحمّلت.")); } catch (e) {}
+  try { renderCustomerProfileAudits(key); renderCustomerFindingsSection(key, audit.id); renderCustomerSwitch(); _custRefreshIfOpen(); } catch (e) { console.warn(e); }
+  return added;
 }
 function openAddFindingForm() {
   if (!roleGuard("customer_audits")) return;
@@ -66294,7 +66370,7 @@ function renderCustomerTable() {
     empty.innerHTML = none ? `<div class="cust-sum-card" style="text-align:center; padding:28px;">📭 <strong>${t3("Bu marka için henüz soru seti yok.", "No question set for this brand yet.", "لسه مفيش مجموعة أسئلة للعلامة التجارية دي.")}</strong><br>${t3("\"Yeni Bulgu Ekle\" ile bulgu eklediğinizde sorular burada listelenir.", "Questions will be listed here once you add a finding with \"Add New Finding\".", "الأسئلة هتظهر هنا أول ما تضيف نتيجة من \"إضافة نتيجة جديدة\".")}</div>` : "";
   }
   const head = document.getElementById("cust-q-head");
-  if (head) head.innerHTML = `<div class="cust-q-bar"><h3>📋 ${bs.cat ? escHtml(getCustomerCatName("brandq")) + " — " : ""}${t3("Denetim Soruları", "Audit Questions", "أسئلة التدقيق")} <span class="cnt">${bs.qs.length + _custExtraItems(currentCustomerKey, bs).length}</span></h3><div class="cust-q-actions"><button type="button" class="editor-only-el" data-scope="customer_audits" onclick="openAddFindingForm()" style="display:inline-flex; align-items:center; gap:6px; background:var(--success, #16A34A); color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">➕ ${t3("Yeni Bulgu Ekle", "Add New Finding", "ضيف نتيجة جديدة")}</button><button type="button" class="cust-dl-btn" onclick="downloadCustomerPDF()">⬇️ ${t3("Rapor İndir", "Download Report", "تنزيل التقرير")}</button></div></div>`;
+  if (head) head.innerHTML = `<div class="cust-q-bar"><h3>📋 ${bs.cat ? escHtml(getCustomerCatName("brandq")) + " — " : ""}${t3("Denetim Soruları", "Audit Questions", "أسئلة التدقيق")} <span class="cnt">${bs.qs.length + _custExtraItems(currentCustomerKey, bs).length}</span></h3><div class="cust-q-actions"><button type="button" class="editor-only-el" data-scope="customer_audits" onclick="openAddFindingForm()" style="display:inline-flex; align-items:center; gap:6px; background:var(--success, #16A34A); color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">➕ ${t3("Yeni Bulgu Ekle", "Add New Finding", "ضيف نتيجة جديدة")}</button>${_importFindingsBtnHtml()}<button type="button" class="cust-dl-btn" onclick="downloadCustomerPDF()">⬇️ ${t3("Rapor İndir", "Download Report", "تنزيل التقرير")}</button></div></div>`;
   const xItems = _custExtraItems(currentCustomerKey, bs);
   if (!bs.qs.length && !xItems.length) {
     tbody.innerHTML = "";
@@ -83736,7 +83812,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-13 01:34";
+const EMS_BUILD = "2026-11-13 16:05";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
