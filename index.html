@@ -1060,6 +1060,8 @@ body:not(.ems-shell-on) .ahub-overlay { position: fixed; inset: 0; padding: 0; a
 .drv-no { background: #fff; border: 1.5px solid #CBD5E1; color: #12253F; } .drv-no:hover { border-color: #12253F; } .drv-yes { background: #C1272D; border: 0; color: #fff; } .drv-yes:hover { filter: brightness(1.06); }
 #cert-photo-lightbox-title { font-size: 13px !important; font-weight: 700 !important; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-width: 0; flex: 1; margin-inline-end: 12px; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
 .ahub-track-bar { display: flex; justify-content: flex-end; margin: -6px 0 12px; } .mg-embed .mg-nav { position: static; }
+.cust-cat-head td { background: #1A3660 !important; color: #fff; font-weight: 800; font-size: 13px; letter-spacing: .2px; padding: 9px 14px !important; }
+.cust-cat-head td span { display: inline-block; margin-inline-start: 8px; background: rgba(255,255,255,.18); border-radius: 20px; padding: 1px 9px; font-size: 11px; }
 .ahub-pane-ph { padding: 60px 0; text-align: center; color: #94a3b8; font-weight: 700; }
 @media (max-width: 600px) { .ahub-pane { padding: 14px 12px 30px !important; } }
 /* Genel Bakış panosu */
@@ -48976,7 +48978,7 @@ function postProcessData() {
   const _cdl = typeof _cloudDocsLoaded === "object" && _cloudDocsLoaded ? _cloudDocsLoaded : null;
   const _linkReady = !_cdl || !Object.values(_cdl).some(Boolean) || _cdl.questions && _cdl.customerQuestions && _cdl.customerAudits && _cdl.customersList;
   if (_linkReady && _sg("next:replace-pdf-20260720", true)) try { _ppSeeded += _nextReplaceQuestions(); } catch (e) { console.warn("[Next soru değişimi / Next question replace]", e); }
-  if (_linkReady && _sg("inditex:replace-ics-20261104", true)) try { _ppSeeded += _inditexReplaceQuestions(); } catch (e) { console.warn("[Inditex soru değişimi / Inditex question replace]", e); }
+  if (_linkReady && _seedReady) try { _ppSeeded += _inditexReplaceQuestions(); } catch (e) { console.warn("[Inditex soru değişimi / Inditex question replace]", e); }
   if (_linkReady) try { const _cm = _custSplitMigrate(); _ppSeeded += _cm; if (_custPhotoQ.length) setTimeout(_custPhotoCopyRun, 3000); } catch (e) { console.warn("[Müşteri ayırma / Customer split]", e); }
   if (_linkReady) try { _ppSeeded += _linkFindingsToQuestions(); _ppSeeded += _custDedupRows(); } catch (e) { console.warn("[Bulgu-soru bağlantısı / Finding-question link]", e); }
   if (_linkReady) try { _ppSeeded += _dropRecommendQuestions(); } catch (e) { console.warn("[Öneri soruları / Recommendation questions]", e); }
@@ -49007,6 +49009,40 @@ function _nextReplaceQuestions() {
 // Inditex soru seti YENİDEN KURULDU (kullanıcı isteği 04.11.2026): eski Inditex soruları (modül + müşteri belgesi + bulgudan açılanlar) buluttan da bir kez silinir; yerine Inditex'in yayımladığı belgelerden (Davranış Kuralları, Safe to Wear, Clear to Wear, PTR, Green to Wear) çıkarılan 162 soru gelir (kimlik 9101–9262). Bulgular silinmez; yalnız bağlı soru bağı kopar /
 // Inditex question set REBUILT (user request 4 Nov 2026): old Inditex questions (module + customer-document + finding-created) are deleted once from the cloud too; replaced by 162 questions from Inditex's published documents (ids 9101-9262). Findings are kept; only the link to the deleted question is cut
 const INDITEX_NEW_MIN = 9301, INDITEX_NEW_MAX = 9402;
+// Inditex soruları 15 kategoride listelenir (EG.CSR.EAU.002 rapor maddelerine göre): [bölüm, TR, EN, AR, rapor madde numaraları] /
+// Inditex questions are listed in 15 categories (by EG.CSR.EAU.002 report items): [section, TR, EN, AR, report item numbers]
+const INDITEX_Q_CATS = [
+  [ "O", "İSG Yönetimi ve Organizasyon", "OHS Management & Organisation", "إدارة وتنظيم السلامة والصحة المهنية", [ 1, 2, 3, 5, 6, 20, 29, 60 ] ],
+  [ "O", "Acil Durum ve Tahliye", "Emergency & Evacuation", "الطوارئ والإخلاء", [ 4, 10, 12, 22, 27, 28, 30, 38, 39, 55, 56, 58, 66 ] ],
+  [ "O", "Yangın Güvenliği", "Fire Safety", "السلامة من الحريق", [ 7, 8, 9, 13, 18, 19, 21, 26, 36, 44, 47, 54 ] ],
+  [ "O", "Elektrik Güvenliği", "Electrical Safety", "السلامة الكهربائية", [ 14, 25, 46, 49, 63 ] ],
+  [ "O", "KKD ve Kimyasal Güvenlik", "PPE & Chemical Safety", "معدات الوقاية والسلامة الكيميائية", [ 11, 15, 16, 40, 41, 62 ] ],
+  [ "O", "Makine, Ekipman ve Kesici Aletler", "Machinery, Equipment & Sharp Tools", "الماكينات والمعدات والأدوات الحادة", [ 24, 37, 42, 48, 50, 52, 57 ] ],
+  [ "O", "Sağlık, Revir ve İlk Yardım", "Health, Clinic & First Aid", "الصحة والعيادة والإسعافات الأولية", [ 17, 31, 32, 33, 59 ] ],
+  [ "O", "Hijyen ve Çalışma Ortamı", "Hygiene & Workplace Conditions", "النظافة وبيئة العمل", [ 23, 34, 35, 43, 45, 51, 53, 64, 65 ] ],
+  [ "H", "İş Sözleşmeleri", "Employment Contracts", "عقود العمل", [ 1, 2, 3, 4, 13, 15 ] ],
+  [ "H", "Sosyal Sigorta", "Social Insurance", "التأمينات الاجتماعية", [ 9, 16, 33 ] ],
+  [ "H", "Ücret ve Bordro", "Wages & Payroll", "الأجور وكشوف المرتبات", [ 12, 21, 27, 34 ] ],
+  [ "H", "Özlük Dosyaları ve İşe Alım", "Personnel Files & Recruitment", "ملفات العاملين والتوظيف", [ 7, 8, 10, 11, 14, 20, 37 ] ],
+  [ "H", "Politika, Prosedür ve Eğitim", "Policies, Procedures & Training", "السياسات والإجراءات والتدريب", [ 5, 6, 18, 19, 23, 24, 25, 31 ] ],
+  [ "H", "Çalışan Hakları ve Muamele", "Workers' Rights & Treatment", "حقوق العاملين والمعاملة", [ 17, 22, 26 ] ],
+  [ "H", "Şikâyet ve İşçi Temsilciliği", "Grievance & Worker Representation", "الشكاوى وتمثيل العمال", [ 28, 29, 30, 32, 35, 36 ] ]
+];
+// Rapor maddesi → soru kimliği: İSG 1–60 → 9301–9360, İSG 62–66 → 9361–9365 (raporda 61 yok), İK 1–37 → 9366–9402 /
+// Report item → question id: OHS 1-60 → 9301-9360, OHS 62-66 → 9361-9365 (the report has no item 61), HR 1-37 → 9366-9402
+const INDITEX_Q_CAT_OF = (() => {
+  const m = {};
+  INDITEX_Q_CATS.forEach((c, i) => c[4].forEach(n => { m[c[0] === "O" ? 9300 + (n > 61 ? n - 1 : n) : 9365 + n] = i; }));
+  return m;
+})();
+function _inditexCatIdx(q) { const i = q ? INDITEX_Q_CAT_OF[q.id] : null; return i == null ? 99 : i; }
+function _inditexCatName(i) {
+  const c = INDITEX_Q_CATS[i];
+  if (!c) return "";
+  const sec = c[0] === "O" ? t3("İSG", "OHS", "السلامة المهنية") : t3("İK", "HR", "الموارد البشرية");
+  return sec + " — " + (currentLang === "tr" ? c[1] : currentLang === "ar" ? c[3] : c[2]);
+}
+function _isInditexNewQ(q) { return !!q && q.id >= INDITEX_NEW_MIN && q.id <= INDITEX_NEW_MAX; }
 // Eski Inditex sorusu mu? (yeni 9101–9262 hariç; modül sorusu, müşteri belgesi sorusu ve bulgudan açılanlar dahil) / Is it an old Inditex question? (new 9101-9262 excluded; module, customer-document and finding-created ones included)
 function _inditexIsOld(q) {
   if (!q || q.id >= INDITEX_NEW_MIN && q.id <= INDITEX_NEW_MAX) return false;
@@ -49022,19 +49058,30 @@ function _inditexReplaceQuestions() {
   }
   // Inditex denetimindeki hazır "genel uyum kontrol listesi" bulguları (soruların kaynağı) kaldırılır; kullanıcının kendi eklediği bulgular ve fotoğrafları kalır /
   // The ready-made "general compliance checklist" findings of the Inditex audit (the source of those questions) are removed; findings the user added and their photos stay
-  const tpl = new Set((typeof brandAuditFindingsTemplate !== "undefined" ? brandAuditFindingsTemplate : []).map(f => f && f.findingEn));
+  const _tplAll = typeof brandAuditFindingsTemplate !== "undefined" ? brandAuditFindingsTemplate : [];
+  const tpl = new Set(_tplAll.map(f => f && f.findingEn)), tplTr = new Set(_tplAll.map(f => f && f.findingTr));
   const have = new Set(auditQuestions.map(q => q.id));
+  // Fotoğrafı olan bulgu silinmez (kullanıcı kuralı) / A finding that has a photo is never removed (user rule)
+  const hasPhoto = f => Object.keys(f).some(k => /photo/i.test(k) && f[k]);
+  const seededNote = a => /Genel uyum kontrol listesi/i.test(String(a.note || ""));
   (customerAudits || []).forEach(a => {
     if (!a || a.customerKey !== "inditex" || !Array.isArray(a.findings)) return;
-    const keep = a.findings.filter(f => f && !tpl.has(f.findingEn));
+    // Hazır kontrol listesi denetimi: metni sonradan değişmiş maddeler de kaldırılır / Seeded checklist audit: items whose text changed later go too
+    const seeded = seededNote(a);
+    const keep = a.findings.filter(f => f && (hasPhoto(f) || !(seeded || tpl.has(f.findingEn) || tplTr.has(f.findingTr))));
     if (keep.length !== a.findings.length) { n += a.findings.length - keep.length; a.findings = keep; }
     a.findings.forEach(f => { if (f && f.linkedQuestionId != null && !have.has(f.linkedQuestionId)) delete f.linkedQuestionId; });
   });
+  // İçi boşalan hazır kontrol listesi kaydı da kalkar (gerçek bir denetim değildi) / The emptied seeded checklist record goes too (it was not a real audit)
+  for (let i = customerAudits.length - 1; i >= 0; i--) {
+    const a = customerAudits[i];
+    if (a && a.customerKey === "inditex" && seededNote(a) && Array.isArray(a.findings) && !a.findings.length) { customerAudits.splice(i, 1); n++; }
+  }
   return n;
 }
 // Buluttaki belgelerden de kesin silme (bellekteki silme tek başına buluta yansımayabilir): yalnız yönetici, oturum başına bir tur, bir kez /
 // Definite removal from the cloud documents too (in-memory removal alone may not reach the cloud): admin only, one pass per session, once
-let _inditexPurgeBusy = false;
+let _inditexPurgeBusy = false, _inditexPurgeDone = false;
 function _removeWhereInDocArray(docId, field, pred) {
   return _runTransactionWithRetry(tx => {
     const ref = fbDb.collection("ems_csr").doc(docId);
@@ -49049,17 +49096,17 @@ function _removeWhereInDocArray(docId, field, pred) {
 function _inditexCloudPurgeMaybe(tries) {
   try {
     if (_inditexPurgeBusy || currentUserRole !== "admin" || !(FIREBASE_ENABLED && fbDb)) return;
-    if (appliedSeedKeys.includes("inditex:cloud-purge-20261112")) return;
+    if (_inditexPurgeDone) return;
     const ready = _cloudDocsLoaded.questions && _cloudDocsLoaded.customerQuestions && _cloudDocsLoaded.customerAudits && !_defaultedDocs.has("questions") && (typeof _canSaveNow !== "function" || _canSaveNow());
     if (!ready) { if ((tries || 0) < 20) setTimeout(() => _inditexCloudPurgeMaybe((tries || 0) + 1), 3000); return; }
     _inditexPurgeBusy = true;
     const pred = q => q && _inditexIsOld(q) && !(Array.isArray(q.fqCust) && q.fqCust.length > 1);
     Promise.all([ _removeWhereInDocArray("customerQuestions", "customerQuestions", pred), _removeWhereInDocArray("questions", "auditQuestions", pred) ]).then(res => {
       if (res.some(r => r === false)) return;
-      _inditexReplaceQuestions();
-      appliedSeedKeys.push("inditex:cloud-purge-20261112");
+      _inditexPurgeDone = true;
+      const _n = _inditexReplaceQuestions();
       try { _buildQuestionMerges(); } catch (e) {}
-      save();
+      if (_n) save();
       try { if (document.querySelector(".modal-overlay.open")) setLanguage(currentLang); } catch (e) {}
     }).finally(() => { _inditexPurgeBusy = false; });
   } catch (e) { console.warn("[Inditex bulut temizliği / Inditex cloud purge]", e); }
@@ -49156,6 +49203,8 @@ function _custSplitMigrate() {
       if (!f || f.linkedQuestionId == null) return;
       const lq = byId.get(f.linkedQuestionId);
       if (!lq || _isCustQ(lq)) return;
+      // Inditex: soru seti yalnız rapor sorularıdır; genel sorudan kopya açılmaz, bağ kopar / Inditex: the set is only the report questions; no copy of a general question, the link is cut
+      if (a.customerKey === "inditex") { delete f.linkedQuestionId; f.qAutoLinked = true; n++; return; }
       let ids = [ lq.id ];
       try { const g = _qGroupFast(lq.id); if (g) ids = g.members.map(m => m.id); } catch (e) {}
       const rid = Object.keys(_CUST_ROW_LINKS).find(r => { const o = byId.get(+r); return o && _isQOfCust(o, a.customerKey) && _CUST_ROW_LINKS[r].some(m => ids.includes(m)); });
@@ -64891,11 +64940,15 @@ function _linkFindingsToQuestions(onlyAudit) {
       if (f.qAutoLinked && lq && _isCustQ(lq)) return;
       if (f.qAutoLinked && f.linkedQuestionId != null && !lq) { delete f.linkedQuestionId; changed++; return; }
       if (lq && _isCustQ(lq)) { f.qAutoLinked = true; return; }
+      const _wasAuto = !!f.qAutoLinked;
       f.qAutoLinked = true;
       changed++;
       const kTr = _findingKeyText(f.findingTr), kEn = _findingKeyText(f.findingEn);
       if (!kTr && !kEn) return;
       let q = kEn && byText.get(ck + "|" + kEn) || kTr && byText.get(ck + "|" + kTr);
+      if (q && ck === "inditex" && !_isInditexNewQ(q)) q = null;
+      // Inditex: bulgudan yeni soru açılmaz (soru seti sabit: rapor soruları) / Inditex: no new question from a finding (fixed set: the report questions)
+      if (!q && ck === "inditex") { if (_wasAuto) changed--; return; }
       if (!q) {
         const tr = _fqPart(f.findingTr || f.findingEn), en = _fqPart(f.findingEn || f.findingTr);
         q = { id: nextId++, category: "custq", text: tr + " / " + en, scope: "", status: F2Q[f.status] || "critical", fromFindings: true, fqCust: [ ck ] };
@@ -65378,7 +65431,8 @@ function _brandSet(key) {
   const mc = _brandModuleCat(key);
   // Müşterinin sorusu yalnız kendisine aittir; başka bölümlerle ve başka müşterilerle ortak değildir /
   // A customer's question belongs only to that customer; it is shared with no other module or customer
-  const qs = (auditQuestions || []).filter(q => _isQOfCust(q, key));
+  const qs = (auditQuestions || []).filter(q => _isQOfCust(q, key) && (key !== "inditex" || _isInditexNewQ(q)));
+  if (key === "inditex") qs.sort((a, b) => _inditexCatIdx(a) - _inditexCatIdx(b) || a.id - b.id);
   // NEXT: soru seti yalnız 21.06 ve 20.07.2026 rapor maddeleridir (bulguya bağlı sorular) /
   // NEXT: the question set is only the 21 Jun and 20 Jul 2026 report items (finding-linked questions)
   if (_docCustKey(key) === "next") {
@@ -66379,9 +66433,11 @@ function renderCustomerTable() {
   const moduleName = getCustomerCatName("brandq");
   const list = bs.qs.map(q => ({ q: q, status: _custQStatus(currentCustomerKey, q), text: rawLocalizedQuestionText(q), scope: currentLang === "ar" && AR_Q_SCOPE[q.id] ? AR_Q_SCOPE[q.id] : biText(q.scope || "") })).filter(r => {
     const matchFilter = customerActiveFilter === "all" || customerActiveFilter === "pct" || r.status === customerActiveFilter;
-    const matchSearch = !query || (r.text || "").toLocaleLowerCase("tr").includes(query) || (r.scope || "").toLocaleLowerCase("tr").includes(query);
+    const matchSearch = !query || (r.text || "").toLocaleLowerCase("tr").includes(query) || (r.scope || "").toLocaleLowerCase("tr").includes(query) || currentCustomerKey === "inditex" && _inditexCatName(_inditexCatIdx(r.q)).toLocaleLowerCase("tr").includes(query);
     return matchFilter && matchSearch;
   });
+  const _byCat = currentCustomerKey === "inditex";
+  if (_byCat) list.sort((a, b) => _inditexCatIdx(a.q) - _inditexCatIdx(b.q) || a.q.id - b.q.id);
   xItems.slice().sort((p, q2) => String(p.a.date || "").localeCompare(String(q2.a.date || ""))).forEach(x => {
     const text = _brandFindingText(x), sc = x.kind === "f" ? x.f.category : x.sev;
     const matchFilter = customerActiveFilter === "all" || customerActiveFilter === "pct" || x.status === customerActiveFilter;
@@ -66396,11 +66452,14 @@ function renderCustomerTable() {
   tbody.innerHTML = list.map((r, idx) => {
     const st = r.status;
     if (r.x) return _custFindingRowHtml(r, idx);
-    const rowCat = r.q.category === bs.cat ? moduleName : getCustomerCatName(normCat(r.q.category));
+    const _ci = _byCat ? _inditexCatIdx(r.q) : -1;
+    const rowCat = _ci >= 0 && _ci < 99 ? _inditexCatName(_ci) : r.q.category === bs.cat ? moduleName : getCustomerCatName(normCat(r.q.category));
+    // Kategori başlığı: kategorinin ilk satırından önce / Category header: before the first row of the category
+    const _catHead = _ci >= 0 && _ci < 99 && (idx === 0 || !list[idx - 1].q || _inditexCatIdx(list[idx - 1].q) !== _ci) ? `<tr class="cust-cat-head"><td colspan="5">${escHtml(rowCat)} <span>${list.filter(z => z.q && _inditexCatIdx(z.q) === _ci).length}</span></td></tr>` : "";
     // Soruya bağlı bu müşterinin bulguları: tıklayınca bulguya gider / This customer's findings linked to the question: click to open
     const _g = _qGroup(r.q.id);
     const fChips = (_g ? _g.members.map(m => m.id) : [ r.q.id ]).flatMap(id => fIdx.get(id) || []).map(x => `<button type="button" data-nochip="1" style="margin:6px 4px 0 0; font-size:11px; font-weight:800; border:1px solid var(--border); background:var(--surface, #fff); color:${x.f.status === "closed" ? "var(--success)" : x.f.status === "in_progress" ? "var(--warning)" : "var(--danger)"}; border-radius:7px; padding:3px 8px; cursor:pointer;">🕵️ ${escHtml(x.f.category || "")} #${x.f.no} · ${new Date(x.a.date).toLocaleDateString(currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR")}</button>`).join("");
-    return `<tr>\n      <td><strong>${idx + 1}</strong></td>\n      <td><span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted);">${escHtml(String(rowCat).replace(/&amp;/g, "&"))}</span></td>\n      <td><strong>${escHtml(r.text)}</strong>${_qMergeBadgeHtml(r.q.id)}${_qOwnerChipHtml(r.q.id)}${currentUserRole === "admin" ? `<div><button type="button" class="cust-q-del" onclick="deleteCustomerQuestion(${r.q.id})" title="${escHtml(t3("Bu soruyu sil (yönetici)", "Delete this question (admin)", "امسح السؤال ده (المدير)"))}">🗑️ ${escHtml(t3("Soruyu sil", "Delete question", "مسح السؤال"))}</button></div>` : ""}${fChips ? `<div>${fChips}</div>` : ""}</td>\n      <td><div class="cust-photo-box">${(() => { const ps = _custPhotoSource(r.q); return ps.lf ? _findingPhotoCellHtml(ps.lf.a.id, ps.lf.f.no, null, false) : _questionPhotoCellHtml(ps.q.id, true); })()}</div></td>\n      <td style="white-space:nowrap;">\n        <select class="status-sel ${st}" onchange="changeBrandQuestionStatus(${r.q.id}, this)">\n          <option value="compliant" ${st === "compliant" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="minor" ${st === "minor" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="critical" ${st === "critical" ? "selected" : ""}>❌ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>\n      </td>\n    </tr>`;
+    return _catHead + `<tr>\n      <td><strong>${idx + 1}</strong></td>\n      <td><span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted);">${escHtml(String(rowCat).replace(/&amp;/g, "&"))}</span></td>\n      <td><strong>${escHtml(r.text)}</strong>${_qMergeBadgeHtml(r.q.id)}${_qOwnerChipHtml(r.q.id)}${currentUserRole === "admin" ? `<div><button type="button" class="cust-q-del" onclick="deleteCustomerQuestion(${r.q.id})" title="${escHtml(t3("Bu soruyu sil (yönetici)", "Delete this question (admin)", "امسح السؤال ده (المدير)"))}">🗑️ ${escHtml(t3("Soruyu sil", "Delete question", "مسح السؤال"))}</button></div>` : ""}${fChips ? `<div>${fChips}</div>` : ""}</td>\n      <td><div class="cust-photo-box">${(() => { const ps = _custPhotoSource(r.q); return ps.lf ? _findingPhotoCellHtml(ps.lf.a.id, ps.lf.f.no, null, false) : _questionPhotoCellHtml(ps.q.id, true); })()}</div></td>\n      <td style="white-space:nowrap;">\n        <select class="status-sel ${st}" onchange="changeBrandQuestionStatus(${r.q.id}, this)">\n          <option value="compliant" ${st === "compliant" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="minor" ${st === "minor" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="critical" ${st === "critical" ? "selected" : ""}>❌ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>\n      </td>\n    </tr>`;
   }).join("");
   list.forEach(r => {
     if (r.x) {
@@ -68041,7 +68100,7 @@ async function downloadCustomerPDF(opts) {
       if (![ 0, 1, 2 ].some(j => ph[j])) { const lf = r.fs.find(x => (fPh[x.a.id + "_" + x.f.no] || []).some(Boolean)); if (lf) ph = fPh[lf.a.id + "_" + lf.f.no]; }
       const fl = r.fs.slice(0, 2).map(x => `<div style="font-size:10px; color:#475569; margin-top:3px;">🕵️ ${fmtD(x.a.date)} · <b>${escHtml(x.f.category || "")}</b> · ${capSt(x.f.status)}${fca(x.f) ? ` — <i>${escHtml(fca(x.f))}</i>` : ""}</div>`).join("");
       const own = [ q.owner ? "👤 " + escHtml(q.owner) : "", q.ownerDue ? "📅 " + fmtD(q.ownerDue) : "" ].filter(Boolean).join(" · ");
-      return rowCard(i + 1, `${t3("Müşteri Denetim Soruları", "Customer Audit Questions", "أسئلة تدقيق العميل")}${q.scope ? " · " + escHtml(biText(q.scope)) : ""}`, escHtml(rawLocalizedQuestionText(q)), (own ? `<div style="font-size:10px; color:#475569; margin-top:3px;">${own}</div>` : "") + fl, ph, m);
+      return rowCard(i + 1, key === "inditex" && _inditexCatIdx(q) < 99 ? escHtml(_inditexCatName(_inditexCatIdx(q))) : `${t3("Müşteri Denetim Soruları", "Customer Audit Questions", "أسئلة تدقيق العميل")}${q.scope ? " · " + escHtml(biText(q.scope)) : ""}`, escHtml(rawLocalizedQuestionText(q)), (own ? `<div style="font-size:10px; color:#475569; margin-top:3px;">${own}</div>` : "") + fl, ph, m);
     });
     const xHtml = xi.filter(it => it.kind === "f").map((it, i) => {
       const m = SM[it.status] || SM.critical, f = it.f, ph = fPh[it.a.id + "_" + f.no] || [];
@@ -83812,7 +83871,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-13 16:05";
+const EMS_BUILD = "2026-11-14 11:06";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
