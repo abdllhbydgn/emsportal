@@ -65644,7 +65644,8 @@ function _addFindingBtnHtml() {
 }
 function _importFindingsBtnHtml() {
   if (currentUserRole !== "admin") return "";
-  return `<button type="button" onclick="importAuditFindingsFile()" title="${t3("Denetim raporu bulgularını ve fotoğraflarını hazır dosyadan toplu yükle", "Bulk-load audit report findings and photos from a prepared file", "حمّل نتايج تقرير التدقيق وصورها من ملف جاهز")}" style="display:inline-flex; align-items:center; gap:6px; background:#1A3660; color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">📥 ${t3("Bulguları Dosyadan Yükle", "Load Findings From File", "حمّل النتايج من ملف")}</button>`;
+  const _cmp = currentCustomerKey === "inditex" ? `<button type="button" onclick="openInditexMatchDialog()" title="${t3("Sitedeki onaylı ve kanıt fotoğraflı sorularla karşılaştır, aynı soruların durumunu ve kanıtını Inditex'e aktar", "Compare with approved questions that have evidence photos and carry status and evidence to Inditex", "قارن بالأسئلة المعتمدة اللي ليها صور إثبات وانقل الحالة والإثبات لإنديتكس")}" style="display:inline-flex; align-items:center; gap:6px; background:#7C3AED; color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">🔎 ${t3("Onaylı Sorularla Karşılaştır", "Compare With Approved Questions", "قارن بالأسئلة المعتمدة")}</button>` : "";
+  return _cmp + `<button type="button" onclick="importAuditFindingsFile()" title="${t3("Denetim raporu bulgularını ve fotoğraflarını hazır dosyadan toplu yükle", "Bulk-load audit report findings and photos from a prepared file", "حمّل نتايج تقرير التدقيق وصورها من ملف جاهز")}" style="display:inline-flex; align-items:center; gap:6px; background:#1A3660; color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">📥 ${t3("Bulguları Dosyadan Yükle", "Load Findings From File", "حمّل النتايج من ملف")}</button>`;
 }
 // ── BULGULARI DOSYADAN YÜKLE (yalnız yönetici): denetim raporu bulguları gizlidir, site koduna gömülmez; yönetici hazır dosyayı bir kez seçer, kayıtlar buluta yazılır /
 // ── LOAD FINDINGS FROM A FILE (admin only): audit report findings are confidential and are not embedded in the site code; the admin picks the prepared file once and the records go to the cloud
@@ -65664,6 +65665,131 @@ function importAuditFindingsFile() {
     rd.readAsText(f);
   };
   inp.click();
+}
+// ── INDITEX: sitedeki ONAYLI + KANIT FOTOĞRAFLI sorularla karşılaştır (yalnız yönetici, önizlemeli) ──
+// Kullanıcı isteği 14.11.2026: aynı soru varsa Inditex sorusu "Tamamlandı" olur ve kanıt kopyalanır. Sorular BİRLEŞTİRİLMEZ (ayrı nesneler kalır); yalnız durum ve kanıt aktarılır, hiçbir fotoğraf silinmez ve üstüne yazılmaz.
+// ── INDITEX: compare with the site's APPROVED questions that have EVIDENCE photos (admin only, with preview) ──
+// User request 14 Nov 2026: when the same question exists, the Inditex question becomes "Completed" and the evidence is copied. Questions are NOT merged (they stay separate objects); only status and evidence are carried over, no photo is deleted or overwritten.
+const _SIM_STOP = new Set(("the and are for with that this have has been there any all their which from available being was were will shall should must may can not per via into onto upon such than then also each both other more most only over under same some these those they its our your out off about between during without within including include includes etc does done made make used use using whether when where while what who whom whose how mevcut var olan için ile ve bir bu da de olarak gibi daha çok tüm her veya ya ise ait göre kadar sonra önce olup mıdır midir mudur müdür edilmiş yapılmış yapılıyor ediliyor sağlanıyor uygulanıyor").split(" "));
+function _simEn(s) { return String(s || "").toLowerCase().replace(/[^a-z\s]/g, " ").split(/\s+/).filter(w => w.length >= 3 && !_SIM_STOP.has(w)).map(w => w.replace(/ies$/, "y").replace(/(ing|ed|es|s)$/, m => w.length - m.length >= 4 ? "" : m)); }
+function _simTr(s) { return String(s || "").toLocaleLowerCase("tr").replace(/[^a-zçğıöşü\s]/g, " ").split(/\s+/).filter(w => w.length >= 3 && !_SIM_STOP.has(w)).map(w => w.slice(0, 5)); }
+function _simRows(list) {
+  const rows = list.map(q => { const t = splitBilingual(q.text || ""); return { q: q, en: _simEn(t.en), tr: _simTr(t.tr) }; });
+  const df = new Map();
+  rows.forEach(r => new Set(r.en.concat(r.tr.map(x => "t:" + x))).forEach(t => df.set(t, (df.get(t) || 0) + 1)));
+  const N = rows.length || 1, idf = t => Math.log(1 + N / (df.get(t) || 1));
+  const vec = (toks, pre) => { const m = new Map(); toks.forEach(t => { const k = pre + t; m.set(k, (m.get(k) || 0) + 1); }); let n = 0; m.forEach((v, k) => { const w = v * idf(k); m.set(k, w); n += w * w; }); return { m: m, n: Math.sqrt(n) }; };
+  rows.forEach(r => { r.ve = vec(r.en, ""); r.vt = vec(r.tr, "t:"); });
+  return rows;
+}
+function _simCos(a, b) {
+  if (!a.n || !b.n) return 0;
+  const sm = a.m.size < b.m.size ? a.m : b.m, lg = a.m.size < b.m.size ? b.m : a.m;
+  let d = 0; sm.forEach((v, k) => { const w = lg.get(k); if (w) d += v * w; });
+  return d / (a.n * b.n);
+}
+const INX_MATCH_MIN = 0.55, INX_MATCH_AUTO = 0.7;
+function _inxMatchCandidates() {
+  const msKey = ((customersList || []).find(c => _isMsCustomer(c.key)) || {}).key;
+  const stOf = q => { if (q.category === "custq") { const k = (q.fqCust || [])[0]; return k ? _custQStatus(k, q) : q.status; } if (q.category === "ms" && msKey) return _custQStatus(msKey, q); return q.status; };
+  const holderOf = q => { if (_qPhotoFilledCount(q) > 0) return q; const g = _qGroup(q.id); return g && g.members.find(x => _qPhotoFilledCount(x) > 0) || null; };
+  const all = _simRows(auditQuestions);
+  const inx = all.filter(r => _isInditexNewQ(r.q) && _custQStatus("inditex", r.q) !== "compliant");
+  const src = [];
+  all.forEach(r => { const q = r.q; if (_isInditexNewQ(q) || _isQOfCust(q, "inditex") || stOf(q) !== "compliant") return; const h = holderOf(q); if (h) { r.holder = h; src.push(r); } });
+  const pairs = [];
+  inx.forEach(a => {
+    let best = null, bs = 0;
+    src.forEach(o => { const sc = Math.max(_simCos(a.ve, o.ve), _simCos(a.vt, o.vt)); if (sc > bs) { bs = sc; best = o; } });
+    if (best && bs >= INX_MATCH_MIN) pairs.push({ inq: a.q, src: best.q, holder: best.holder, score: bs });
+  });
+  pairs.sort((x, y) => y.score - x.score);
+  return { pairs: pairs, sources: src.length, inxOpen: inx.length };
+}
+function _inxSrcLabel(q) {
+  if (q.category === "custq" && (q.fqCust || []).length) return t3("Müşteri: ", "Customer: ", "العميل: ") + _fqCustNames(q);
+  try { return String(getCustomerCatName(normCat(q.category))).replace(/&amp;/g, "&"); } catch (e) { return String(q.category || ""); }
+}
+let _inxMatchData = null;
+function closeInditexMatchDialog() { const d = document.getElementById("inx-match-dlg"); if (d) d.remove(); document.removeEventListener("keydown", _inxMatchEsc, true); }
+function _inxMatchEsc(e) { if (e.key === "Escape") { e.stopPropagation(); closeInditexMatchDialog(); } }
+function openInditexMatchDialog() {
+  if (currentUserRole !== "admin") return;
+  closeInditexMatchDialog();
+  const data = _inxMatchData = _inxMatchCandidates();
+  const nAuto = data.pairs.filter(p => p.score >= INX_MATCH_AUTO).length;
+  const d = document.createElement("div");
+  d.id = "inx-match-dlg";
+  d.style.cssText = "position:fixed; inset:0; z-index:30000; background:rgba(15,23,42,.55); display:flex; align-items:center; justify-content:center; padding:12px;";
+  d.onclick = e => { if (e.target === d) closeInditexMatchDialog(); };
+  const card = (p, i) => `<label style="display:block; border:1px solid var(--border,#e2e8f0); border-radius:12px; padding:10px 12px; margin:8px 0; background:${p.score >= INX_MATCH_AUTO ? "#fff" : "#FFFBEB"}; cursor:pointer;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;"><input type="checkbox" class="inx-m-cb" data-i="${i}" ${p.score >= INX_MATCH_AUTO ? "checked" : ""} style="width:18px; height:18px;"><span style="background:${p.score >= INX_MATCH_AUTO ? "#16A34A" : "#D97706"}; color:#fff; border-radius:20px; padding:2px 10px; font-size:12px; font-weight:800;">%${Math.round(p.score * 100)}</span><span style="font-size:11px; color:var(--muted,#64748b); font-weight:700;">${p.score >= INX_MATCH_AUTO ? t3("Önerilen", "Suggested", "مقترح") : t3("Kontrol edin", "Please check", "راجع")} · 📎 ${_qPhotoFilledCount(p.holder)}</span></div>
+    <div style="font-size:13px; font-weight:800; color:#0f172a;">Inditex #${p.inq.id}: <span style="font-weight:700;">${escHtml(rawLocalizedQuestionText(p.inq))}</span></div>
+    <div style="font-size:12.5px; color:#334155; margin-top:5px;">✅ ${escHtml(_inxSrcLabel(p.src))} #${p.src.id}: ${escHtml(rawLocalizedQuestionText(p.src))}</div></label>`;
+  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:1000px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.35);">
+    <div style="padding:14px 18px; border-bottom:1px solid #e2e8f0;"><div style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><h3 style="margin:0; font-size:17px; color:#1A3660;">🔎 ${t3("Onaylı sorularla karşılaştırma", "Comparison with approved questions", "المقارنة بالأسئلة المعتمدة")}</h3><button type="button" onclick="closeInditexMatchDialog()" style="border:none; background:#f1f5f9; border-radius:8px; width:34px; height:34px; font-size:18px; cursor:pointer;">✕</button></div>
+    <div style="font-size:12.5px; color:#475569; margin-top:6px; line-height:1.5;">${t3(`Sitede onaylı ve kanıt fotoğraflı ${data.sources} soru var (müşteri soruları dahil). Tamamlanmamış ${data.inxOpen} Inditex sorusundan ${data.pairs.length} tanesi bunlarla eşleşiyor; ${nAuto} tanesi önerilen (%70 ve üstü). Seçilenlerin durumu Tamamlandı olur ve kanıt fotoğrafı kopyalanır. Sorular birleşmez, hiçbir fotoğraf silinmez.`, `The site has ${data.sources} approved questions with evidence photos (customer questions included). Of ${data.inxOpen} open Inditex questions, ${data.pairs.length} match them; ${nAuto} are suggested (70% and above). Selected ones become Completed and the evidence photo is copied. Questions are not merged and no photo is deleted.`, `في ${data.sources} سؤال معتمد بصور إثبات (بما فيها أسئلة العملاء). من ${data.inxOpen} سؤال مفتوح لإنديتكس، ${data.pairs.length} بيتطابقوا؛ ${nAuto} مقترحين (٧٠٪ فأكتر). المختارين بيبقوا مكتملين وصورة الإثبات بتتنسخ. الأسئلة ما بتتدمجش ومفيش صورة بتتمسح.`)}</div>
+    ${data.pairs.length ? `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;"><button type="button" class="fx-btn" onclick="_inxMatchSel('auto')">${t3("Önerilenleri seç", "Select suggested", "اختار المقترح")}</button><button type="button" class="fx-btn" onclick="_inxMatchSel('all')">${t3("Tümünü seç", "Select all", "اختار الكل")}</button><button type="button" class="fx-btn" onclick="_inxMatchSel('none')">${t3("Hiçbirini seçme", "Select none", "ما تختارش حاجة")}</button></div>` : ""}</div>
+    <div id="inx-match-list" style="padding:6px 18px; overflow:auto; flex:1;">${data.pairs.length ? data.pairs.map(card).join("") : `<div style="padding:30px; text-align:center; color:#64748b;">${t3("Eşleşen soru bulunamadı. Başka bölümlerde henüz onaylı ve kanıt fotoğraflı eşleşen soru yok.", "No matching question found. There is no approved question with an evidence photo that matches yet.", "ما لقيناش سؤال مطابق. مفيش لسه سؤال معتمد بصورة إثبات يطابق.")}</div>`}</div>
+    <div style="padding:12px 18px; border-top:1px solid #e2e8f0; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; align-items:center;"><span id="inx-match-cnt" style="font-size:12px; color:#475569; margin-inline-end:auto;"></span><button type="button" class="fx-btn" onclick="closeInditexMatchDialog()">${t3("Kapat", "Close", "إغلاق")}</button>${data.pairs.length ? `<button type="button" id="inx-match-go" onclick="applyInditexMatches()" style="background:#16A34A; color:#fff; border:none; border-radius:9px; padding:9px 16px; font:inherit; font-size:13px; font-weight:800; cursor:pointer;">✅ ${t3("Seçilenleri uygula", "Apply selected", "طبّق المختار")}</button>` : ""}</div></div>`;
+  document.body.appendChild(d);
+  document.addEventListener("keydown", _inxMatchEsc, true);
+  d.querySelectorAll(".inx-m-cb").forEach(cb => cb.addEventListener("change", _inxMatchCount));
+  _inxMatchCount();
+}
+function _inxMatchSel(mode) {
+  document.querySelectorAll("#inx-match-dlg .inx-m-cb").forEach(cb => { const p = _inxMatchData.pairs[+cb.dataset.i]; cb.checked = mode === "all" || mode === "auto" && p.score >= INX_MATCH_AUTO; });
+  _inxMatchCount();
+}
+function _inxMatchCount() {
+  const n = document.querySelectorAll("#inx-match-dlg .inx-m-cb:checked").length, el = document.getElementById("inx-match-cnt");
+  if (el) el.textContent = n + " " + t3("seçili", "selected", "مختار");
+}
+function _inxLoad(id, kind) { return new Promise(res => _loadDocFileData("question", id, kind, res)); }
+function _inxSave(id, kind, du) { return new Promise(res => _saveDocFileData("question", id, kind, du, res)); }
+async function _inxCopyEvidence(from, to) {
+  let copied = 0;
+  for (let sl = 1; sl <= QUESTION_PHOTO_MAX_SLOTS; sl++) {
+    const k = _qPhotoSlotKeys(sl);
+    if (to[k.hasPhotoField] || to[k.mediaTypeField] === "office") continue;
+    if (from[k.mediaTypeField] === "office") {
+      const sid = from.id + (sl === 1 ? "" : "_s" + sl), did = to.id + (sl === 1 ? "" : "_s" + sl);
+      const du = await _inxLoad(sid, "officefile");
+      if (!du || !(await _inxSave(did, "officefile", du))) continue;
+      to[k.mediaTypeField] = "office"; to[k.officeExtField] = from[k.officeExtField]; to[k.officeFileNameField] = from[k.officeFileNameField]; delete to[k.hasPhotoField]; copied++;
+    } else if (from[k.hasPhotoField]) {
+      const du = await _inxLoad(from.id, k.photoKind);
+      if (!du || !(await _inxSave(to.id, k.photoKind, du))) continue;
+      to[k.hasPhotoField] = true; to[k.mediaTypeField] = from[k.mediaTypeField] || "image"; copied++;
+    }
+  }
+  return copied;
+}
+async function applyInditexMatches() {
+  if (currentUserRole !== "admin" || !_inxMatchData) return;
+  const picked = Array.from(document.querySelectorAll("#inx-match-dlg .inx-m-cb:checked")).map(cb => _inxMatchData.pairs[+cb.dataset.i]);
+  if (!picked.length) { alert(t3("Önce en az bir eşleşme seçin.", "Select at least one match first.", "اختار مطابقة واحدة على الأقل الأول.")); return; }
+  const btn = document.getElementById("inx-match-go");
+  if (btn) { btn.disabled = true; btn.style.opacity = ".6"; }
+  const cnt = document.getElementById("inx-match-cnt");
+  let ok = 0, fail = 0, i = 0;
+  for (const pr of picked) {
+    i++;
+    if (cnt) cnt.textContent = "⏳ " + i + "/" + picked.length;
+    try {
+      const n = await _inxCopyEvidence(pr.holder, pr.inq);
+      if (!n && !(_qPhotoFilledCount(pr.inq) > 0)) { fail++; continue; }
+      pr.inq.status = "compliant"; pr.inq.evFrom = pr.src.id;
+      _custFindingsOfQ("inditex", pr.inq).forEach(x => { x.f.status = Q_TO_FINDING_STATUS.compliant; });
+      ok++;
+    } catch (e) { console.warn("[Inditex eşleşme / match]", e); fail++; }
+  }
+  try { _saveQuestionsOnly(); } catch (e) {}
+  try { _saveCustomerAuditsOnly(); } catch (e) {}
+  try { calcMetrics(); } catch (e) {}
+  closeInditexMatchDialog();
+  try { if (typeof showSuccessToast === "function") showSuccessToast("✅ " + ok + " " + t3("Inditex sorusu Tamamlandı yapıldı", "Inditex questions set to Completed", "سؤال إنديتكس بقى مكتمل") + (fail ? " · ⚠️ " + fail + " " + t3("atlandı (kanıt kopyalanamadı)", "skipped (evidence could not be copied)", "اتخطّى (الإثبات ما اتنسخش)") : "")); } catch (e) {}
+  setTimeout(() => { try { renderCustomerKPIs(); renderCustomerCategories(); renderCustomerTable(); renderCustomerSwitch(); renderCustomerTopDashboard(); renderAuditFindingsTable(); refreshAllDashboards(); } catch (e) {} }, 0);
 }
 function _applyAuditFindingsFile(d) {
   if (currentUserRole !== "admin") return 0;
@@ -83910,7 +84036,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-14 13:39";
+const EMS_BUILD = "2026-11-14 14:23";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
