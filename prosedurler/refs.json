@@ -2341,5 +2341,18 @@
   "EMS.SA.PRO.04.03",
   "EMS.ÜR.FRM.05.08",
   "EMS.İS.TL.18.05"
+ ],
+ "EMS.SO.PRO.23.17": [
+  "EMS.GR.PRO.14.01",
+  "EMS.OR.PRO.21.02",
+  "EMS.SO.PRO.23.04",
+  "EMS.SO.PRO.23.09",
+  "EMS.SO.PRO.23.10",
+  "EMS.SO.PRO.23.12",
+  "EMS.SO.PRO.23.13",
+  "EMS.ÜR.PRO.05.07",
+  "EMS.ÜR.PRO.05.09",
+  "EMS.ÜR.TL.05.02",
+  "EMS.ÜR.TL.05.03"
  ]
 }
