@@ -65644,7 +65644,7 @@ function _addFindingBtnHtml() {
 }
 function _importFindingsBtnHtml() {
   if (currentUserRole !== "admin") return "";
-  return `<button type="button" onclick="importAuditFindingsFile()" title="${t3("Denetim raporu bulgularını hazır dosyadan toplu yükle", "Bulk-load audit report findings from a prepared file", "حمّل نتايج تقرير التدقيق من ملف جاهز")}" style="display:inline-flex; align-items:center; gap:6px; background:#1A3660; color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">📥 ${t3("Bulguları Dosyadan Yükle", "Load Findings From File", "حمّل النتايج من ملف")}</button>`;
+  return `<button type="button" onclick="importAuditFindingsFile()" title="${t3("Denetim raporu bulgularını ve fotoğraflarını hazır dosyadan toplu yükle", "Bulk-load audit report findings and photos from a prepared file", "حمّل نتايج تقرير التدقيق وصورها من ملف جاهز")}" style="display:inline-flex; align-items:center; gap:6px; background:#1A3660; color:#fff; border:none; border-radius:9px; padding:8px 13px; font:inherit; font-size:12px; font-weight:800; cursor:pointer;">📥 ${t3("Bulguları Dosyadan Yükle", "Load Findings From File", "حمّل النتايج من ملف")}</button>`;
 }
 // ── BULGULARI DOSYADAN YÜKLE (yalnız yönetici): denetim raporu bulguları gizlidir, site koduna gömülmez; yönetici hazır dosyayı bir kez seçer, kayıtlar buluta yazılır /
 // ── LOAD FINDINGS FROM A FILE (admin only): audit report findings are confidential and are not embedded in the site code; the admin picks the prepared file once and the records go to the cloud
@@ -65693,28 +65693,67 @@ function _applyAuditFindingsFile(d) {
     if (x.linkedQuestionId != null && qIds.has(x.linkedQuestionId)) { f.linkedQuestionId = x.linkedQuestionId; f.qAutoLinked = true; }
     fresh.push(f); added++;
   });
-  if (!added) {
-    alert(t3("Bu dosyadaki bulguların hepsi zaten yüklü.", "All findings in this file are already loaded.", "كل النتايج اللي في الملف ده متحمّلة قبل كده."));
+  // Fotoğraflar: dosyadaki "pics" listesi, "images" tablosundaki resimlere bakar; fotoğrafı olan bulguya dokunulmaz /
+  // Photos: the file's "pics" list points into the "images" table; a finding that already has a photo is left alone
+  const photoJobs = [];
+  const hasAnyPhoto = f => [ 1, 2, 3 ].some(sl => { const kk = _findPhotoSlotKeys(sl); return f[kk.hasPhotoField] || f[kk.officeFileNameField] || f[kk.hasPendingPhotoField]; });
+  if (d.images && typeof d.images === "object") {
+    d.findings.forEach(x => {
+      if (!x || !Array.isArray(x.pics) || !x.pics.length) return;
+      const en = str(x.findingEn), tr = str(x.findingTr);
+      const target = fresh.find(f => f.findingEn === (en || tr)) || audit.findings.find(f => f && f.findingEn === (en || tr));
+      if (!target || hasAnyPhoto(target)) return;
+      x.pics.slice(0, 3).forEach((pn, i) => { const du = d.images[String(pn)]; if (typeof du === "string" && /^data:image\//.test(du)) photoJobs.push({ f: target, slot: i + 1, du: du }); });
+    });
+  }
+  if (!added && !photoJobs.length) {
+    alert(t3("Bu dosyadaki bulguların ve fotoğrafların hepsi zaten yüklü.", "All findings and photos in this file are already loaded.", "كل النتايج والصور اللي في الملف ده متحمّلة قبل كده."));
     return 0;
   }
   // Bulut belgesi 1 MB sınırını aşmasın / Keep the cloud document under the 1 MB limit
   const size = new Blob([ JSON.stringify(customerAudits) + JSON.stringify(fresh) ]).size;
-  if (size > 900000) {
+  if (added && size > 900000) {
     alert(t3("Yüklenemedi: denetim kayıtları belgesi sınıra çok yakın (", "Not loaded: the audits document is too close to its limit (", "ما اتحمّلش: مستند التدقيقات قرب من الحد (") + Math.round(size / 1024) + " KB).");
     return 0;
   }
-  if (isNew) customerAudits.push(audit);
+  if (isNew && added) customerAudits.push(audit);
   fresh.forEach(f => audit.findings.push(f));
   if (audit.capStatus === "closed") audit.capStatus = "open";
   const cnt = c => audit.findings.filter(f => f && f.category === c).length;
   audit.cat6 = cnt("CAT 6"); audit.cat5 = cnt("CAT 5"); audit.major = cnt("Major"); audit.minor = cnt("Minor");
   const _qBefore = auditQuestions.length;
   try { _linkFindingsToQuestions(audit); } catch (e) { console.warn(e); }
-  _saveCustomerAuditsOnly();
+  const _firstSave = added ? _saveCustomerAuditsOnly() : null;
   if (auditQuestions.length !== _qBefore) { _saveQuestionsOnly(); calcMetrics(); }
-  try { if (typeof showSuccessToast === "function") showSuccessToast("✅ " + added + " " + t3("bulgu yüklendi.", "findings loaded.", "نتيجة اتحمّلت.")); } catch (e) {}
+  try { if (added && typeof showSuccessToast === "function") showSuccessToast("✅ " + added + " " + t3("bulgu yüklendi.", "findings loaded.", "نتيجة اتحمّلت.")); } catch (e) {}
   try { renderCustomerProfileAudits(key); renderCustomerFindingsSection(key, audit.id); renderCustomerSwitch(); _custRefreshIfOpen(); } catch (e) { console.warn(e); }
-  return added;
+  if (photoJobs.length) {
+    // Fotoğraflar tek tek, sitenin kendi kaydetme yoluyla yazılır (bulgu kaydı buluta yazıldıktan sonra) /
+    // Photos are written one by one through the site's own save path (after the finding record reached the cloud)
+    const toast = m => { try { if (typeof showEmsToast === "function") showEmsToast(m); } catch (e) {} };
+    let i = 0, okN = 0, failN = 0;
+    const next = () => {
+      if (i >= photoJobs.length) {
+        _saveCustomerAuditsOnly();
+        try { renderCustomerProfileAudits(key); renderCustomerFindingsSection(key, audit.id); _custRefreshIfOpen(); renderCustomerTable(); } catch (e) { console.warn(e); }
+        toast((failN ? "⚠️ " : "✅ ") + okN + " " + t3("fotoğraf yüklendi", "photos loaded", "صورة اتحمّلت") + (failN ? " · " + failN + " " + t3("yüklenemedi, dosyayı tekrar seçin", "failed, select the file again", "ما اتحمّلتش، اختار الملف تاني") : ""));
+        return;
+      }
+      const job = photoJobs[i++];
+      if (i === 1 || i % 8 === 0) toast("📷 " + t3("Fotoğraflar yükleniyor", "Loading photos", "الصور بتتحمّل") + " " + i + "/" + photoJobs.length);
+      const k = _findPhotoSlotKeys(job.slot);
+      _saveDocFileData("finding", audit.id + "_f" + job.f.no, k.photoKind, job.du, ok => {
+        if (ok) {
+          okN++; job.f[k.hasPhotoField] = true;
+          const fno = job.f.no;
+          _findingPatchCloud(audit.id, fno, c => { c[k.hasPhotoField] = true; delete c[k.mediaTypeField]; delete c[k.officeExtField]; delete c[k.officeFileNameField]; });
+        } else failN++;
+        setTimeout(next, 0);
+      });
+    };
+    Promise.resolve(_firstSave).catch(() => {}).then(next);
+  }
+  return added + photoJobs.length;
 }
 function openAddFindingForm() {
   if (!roleGuard("customer_audits")) return;
@@ -83871,7 +83910,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-14 11:06";
+const EMS_BUILD = "2026-11-14 11:24";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
