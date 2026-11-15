@@ -82159,6 +82159,153 @@ html:not(.zz) body .page-section-title:not(#site-announcement-popup *):not(#ann-
   </div>
   <div class="qa-dept-overlay-body" id="visitor-body"><div class="qa-dept-overlay-inner" id="visitor-inner"></div></div>
 </div>
+<script>
+(function(){try{var q=location.search.match(/[?&]gorunum=(yeni|eski)/);if(q)localStorage.setItem("ems_ui_yeni2",q[1]==="yeni"?"1":"0");if(localStorage.getItem("ems_ui_yeni2")==="1")document.documentElement.classList.add("ems-yeni");}catch(e){}})();
+</script>
+<style id="yeni-gorunum-css">
+/* ═══ YENİ ANASAYFA GÖRÜNÜMÜ (15.11.2026) — yalnız yönetici, yalnız bu tarayıcıda; html.ems-yeni. Eski görünüm silinmedi: üst çubuktaki düğme veya ?gorunum=eski ═══ */
+.yg-tg { display:none; align-items:center; gap:8px; border:1.5px solid #1A3660; background:#fff; color:#1A3660; border-radius:99px; padding:8px 15px; font-weight:700; font-size:13px; line-height:1; font-family:inherit; cursor:pointer; white-space:nowrap; }
+.yg-tg:hover { background:#EEF2FA; }
+body.yg-admin .yg-tg { display:inline-flex; }
+html.ems-yeni .yg-tg { background:#1A3660; color:#fff; }
+#yg-hero, #yg-lists, #yg-kpis { display:none; }
+html.ems-yeni.ems-sade body #view-dashboard > .kpi-grid.yg-kg { display:none !important; }
+html.ems-yeni #yg-kpis { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:16px; margin-bottom:20px; }
+.yg-k4 { background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:16px 18px; text-align:start; cursor:pointer; font:inherit; color:inherit; }
+.yg-k4:hover { border-color:#1A3660; }
+.yg-k4 .yg-kl { display:block; font-size:13px; font-weight:600; color:#6B7280; }
+.yg-k4 .yg-kv { display:block; margin-top:8px; font:900 52px/1 'Archivo','Inter Tight',system-ui,sans-serif; font-stretch:80%; letter-spacing:-.04em; color:#111827; }
+.yg-k4 .yg-kd { display:block; margin-top:8px; font-size:12.5px; font-weight:600; color:#6B7280; }
+.yg-k4.r .yg-kd { color:#C8102E; }
+html.ems-yeni #yg-hero { display:grid; }
+html.ems-yeni #yg-lists { display:grid; }
+html.ems-yeni #ring-dashboard-grid, html.ems-yeni #yg-lists + .page-section-title { display:none !important; }
+#yg-hero { grid-template-columns:auto 1fr; gap:34px; align-items:center; background:#1A3660; color:#fff; border-radius:18px; padding:26px 30px; margin-bottom:18px; }
+#yg-hero .yg-big { font:900 150px/.82 'Archivo','Inter Tight',system-ui,sans-serif; font-stretch:80%; letter-spacing:-.04em; white-space:nowrap; }
+#yg-hero .yg-big sup { font-size:56px; vertical-align:top; margin-inline-end:4px; letter-spacing:0; }
+#yg-hero .yg-t { font-size:28px; font-weight:700; line-height:1.2; letter-spacing:-.01em; }
+#yg-hero .yg-t em { font-style:normal; background:#C8102E; padding:0 8px; border-radius:6px; white-space:nowrap; }
+#yg-hero p { margin:10px 0 0; font-size:15px; color:#C9D6EE; max-width:52ch; line-height:1.4; }
+#yg-lists { grid-template-columns:minmax(0,1fr) 340px; gap:20px; align-items:start; margin-bottom:22px; }
+.yg-card { background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:20px 22px; }
+.yg-card h2 { font-size:16px; font-weight:700; margin:0; }
+.yg-card .yg-s { font-size:13px; color:#6B7280; margin-top:2px; }
+.yg-r { display:grid; grid-template-columns:1fr auto; align-items:center; gap:6px 16px; padding:13px 0; border-top:1px solid #EEF0F4; cursor:pointer; }
+.yg-card h2 + .yg-s + .yg-r { margin-top:10px; }
+.yg-r:hover .yg-nm { text-decoration:underline; }
+.yg-nm { font-size:17px; font-weight:700; letter-spacing:-.01em; }
+.yg-nm small { display:block; font-size:12.5px; font-weight:500; color:#6B7280; margin-top:3px; letter-spacing:0; }
+.yg-p { font:900 34px/1 'Archivo','Inter Tight',system-ui,sans-serif; font-stretch:80%; letter-spacing:-.04em; text-align:end; color:#1A3660; min-width:90px; }
+.yg-r.lo .yg-p { color:#C8102E; }
+.yg-bar { grid-column:1/3; height:7px; background:#EEF0F4; border-radius:99px; overflow:hidden; }
+.yg-bar i { display:block; height:100%; background:#1A3660; border-radius:99px; }
+.yg-r.lo .yg-bar i { background:#C8102E; }
+.yg-side { display:flex; flex-direction:column; gap:14px; }
+.yg-side h2 { font-size:16px; font-weight:700; margin:0 0 -2px; }
+.yg-c { background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:16px 18px; display:grid; grid-template-columns:auto 1fr; gap:4px 16px; align-items:center; cursor:pointer; text-align:start; font:inherit; color:inherit; width:100%; }
+.yg-c.y { background:#FFF3C4; border-color:#F0DC82; }
+.yg-c .yg-k { font:900 56px/1 'Archivo','Inter Tight',system-ui,sans-serif; font-stretch:80%; letter-spacing:-.04em; grid-row:1/3; }
+.yg-c .yg-l { font-size:15px; font-weight:700; }
+.yg-c .yg-a { font-size:13px; font-weight:600; color:#1A3660; }
+.yg-ok { background:#ECFDF3; border:1px solid #A7E3BE; color:#166534; border-radius:14px; padding:16px 18px; font-weight:700; font-size:15px; }
+@media (max-width:980px) { html.ems-yeni #yg-kpis { grid-template-columns:1fr 1fr; gap:12px; } .yg-k4 .yg-kv { font-size:40px; } #yg-hero { grid-template-columns:1fr; gap:14px; padding:20px; } #yg-hero .yg-big { font-size:120px; } #yg-hero .yg-t { font-size:22px; } #yg-lists { grid-template-columns:1fr; } .yg-nm { font-size:16px; } .yg-p { font-size:28px; min-width:0; } }
+</style>
+<script id="yeni-gorunum">
+(function () {
+  "use strict";
+  var T = function (a, b, c) { try { return t3(a, b, c); } catch (e) { return a; } };
+  var E = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var num = function (id) { var e = document.getElementById(id); var n = e ? parseInt(String(e.textContent).replace(/[^\d]/g, ""), 10) : NaN; return isNaN(n) ? 0 : n; };
+  function isAdmin() { try { return currentUserRole === "admin"; } catch (e) { return false; } }
+  function pref() { try { return localStorage.getItem("ems_ui_yeni2") === "1"; } catch (e) { return false; } }
+  function toggle() {
+    var on = !pref();
+    try { localStorage.setItem("ems_ui_yeni2", on ? "1" : "0"); } catch (e) {}
+    sync(); render();
+  }
+  window.toggleYeniGorunum = toggle;
+  function sync() {
+    var adm = isAdmin();
+    document.body.classList.toggle("yg-admin", adm);
+    document.documentElement.classList.toggle("ems-yeni", adm && pref());
+    var b = document.getElementById("yg-toggle");
+    if (b) b.textContent = pref() ? "↩ " + T("Eski görünüme dön", "Back to old view", "الرجوع للشكل القديم") : "✨ " + T("Yeni görünüm", "New view", "الشكل الجديد");
+  }
+  function ensureNodes() {
+    var dash = document.getElementById("view-dashboard"), kg = dash && dash.querySelector(".kpi-grid"), rg = document.getElementById("ring-dashboard-grid");
+    if (!dash || !kg || !rg) return false;
+    kg.classList.add("yg-kg");
+    if (!document.getElementById("yg-hero")) { var h = document.createElement("div"); h.id = "yg-hero"; dash.insertBefore(h, kg); }
+    if (!document.getElementById("yg-kpis")) { var k4 = document.createElement("div"); k4.id = "yg-kpis"; dash.insertBefore(k4, kg); }
+    if (!document.getElementById("yg-lists")) {
+      var l = document.createElement("div"); l.id = "yg-lists";
+      var title = rg.previousElementSibling && rg.previousElementSibling.classList.contains("page-section-title") ? rg.previousElementSibling : rg;
+      dash.insertBefore(l, title);
+    }
+    var tb = document.querySelector(".main-content .topbar");
+    if (tb && !document.getElementById("yg-toggle")) {
+      var b = document.createElement("button"); b.type = "button"; b.id = "yg-toggle"; b.className = "yg-tg"; b.onclick = toggle;
+      tb.appendChild(b);
+    }
+    return true;
+  }
+  function openIfFn(name) { try { window[name](); } catch (e) {} }
+  var timer = null;
+  function render() {
+    if (!isAdmin() || !ensureNodes()) { sync(); return; }
+    sync();
+    if (!pref()) return;
+    var pct = (document.getElementById("kpi-cert-ring") || {}).textContent;
+    pct = parseInt(String(pct || "").replace(/[^\d]/g, ""), 10);
+    var total = num("kpi-total"), comp = num("kpi-comp-val"), notStarted = num("kpi-crit-val");
+    if (isNaN(pct)) pct = total ? Math.round(comp / total * 100) : 0;
+    document.getElementById("yg-hero").innerHTML =
+      '<div class="yg-big"><sup>%</sup>' + pct + '</div><div><div class="yg-t">' + E(T("Genel uyum oranı.", "Overall compliance rate.", "نسبة الالتزام العامة.")) + '<br><em>' + notStarted.toLocaleString("tr-TR") + ' ' + E(T("soru", "questions", "سؤال")) + '</em> ' + E(T("henüz başlanmadı.", "not started yet.", "لسه ما بدأش.")) + '</div><p>' + E(T("Bölüm listesi en geride olandan başlar. Satıra basınca o bölümün soruları açılır.", "The section list starts with the one furthest behind. Click a row to open that section.", "قائمة الأقسام بتبدأ بالأكثر تأخرًا. اضغط على الصف لفتح القسم.")) + '</p></div>';
+    var kd = [ ["kpi-all", "kpi-total", T("Tüm denetim soruları", "All audit questions", "كل أسئلة التدقيق"), ""], ["kpi-comp", "kpi-comp-val", T("Tamamlananlar", "Completed", "المكتملة"), ""], ["kpi-min", "kpi-min-val", T("Devam edenler", "In progress", "الجارية"), ""], ["kpi-crit", "kpi-crit-val", T("Başlanmayanlar", "Not started", "لم تبدأ"), "r"] ];
+    var k4h = document.getElementById("yg-kpis");
+    k4h.innerHTML = kd.map(function (d, i) { return '<button type="button" class="yg-k4 ' + d[3] + '" data-k="' + i + '"><span class="yg-kl">' + E(d[2]) + '</span><span class="yg-kv">' + num(d[1]).toLocaleString("tr-TR") + '</span><span class="yg-kd">' + E(T("Süz →", "Filter →", "تصفية ←")) + '</span></button>'; }).join("");
+    k4h.querySelectorAll(".yg-k4").forEach(function (el) { el.onclick = function () { var c = document.getElementById(kd[+el.dataset.k][0]); if (c) c.click(); }; });
+    // Bölümler: mevcut halka kartlarından üretilir; satıra basınca asıl kart tıklanır / rows are built from the existing ring cards and click the original card
+    var rows = [];
+    document.querySelectorAll("#ring-dashboard-grid .ring-card").forEach(function (card) {
+      var nm = (card.querySelector(".ring-card-title") || {}).textContent || "";
+      var tx = card.querySelector(".donut3 text");
+      var p = tx ? parseInt(String(tx.textContent).replace(/[^\d]/g, ""), 10) : 0;
+      var b = card.querySelectorAll(".sl-row b");
+      var d = [0, 1, 2].map(function (i) { return b[i] ? (parseInt(String(b[i].textContent).replace(/[^\d]/g, ""), 10) || 0) : 0; });
+      rows.push({ nm: nm.trim(), p: isNaN(p) ? 0 : p, d: d, card: card });
+    });
+    rows.sort(function (a, b) { return a.p - b.p; });
+    var lbl = [T("tamam", "done", "تم"), T("devam", "in progress", "جاري"), T("başlanmadı", "not started", "لم يبدأ")];
+    var listHtml = '<div class="yg-card"><h2>' + E(T("Bölümler", "Sections", "الأقسام")) + '</h2><div class="yg-s">' + E(T("En geride olandan başlar", "Starts with the furthest behind", "تبدأ بالأكثر تأخرًا")) + '</div>' +
+      rows.map(function (r, i) { return '<div class="yg-r' + (r.p < 25 ? " lo" : "") + '" data-i="' + i + '" role="button" tabindex="0"><div class="yg-nm">' + E(r.nm) + '<small>' + r.d[0] + ' ' + lbl[0] + ' · ' + r.d[1] + ' ' + lbl[1] + ' · ' + r.d[2] + ' ' + lbl[2] + '</small></div><div class="yg-p">%' + r.p + '</div><div class="yg-bar"><i style="width:' + Math.max(0, Math.min(100, r.p)) + '%"></i></div></div>'; }).join("") + '</div>';
+    // Bugün yapılacaklar: mevcut uyarı verilerinden / from the existing alert data
+    var todo = [];
+    try { var fg = _fxFindingGroups(); var n = fg.overdue.length + fg.soon.length; if (n) todo.push({ k: n, l: T("Termini gelen veya geçen bulgu", "Findings due or overdue", "ملاحظات حان موعدها أو متأخرة"), a: T("Aç →", "Open →", "افتح ←"), f: function () { openIfFn("openMgmtSummary"); }, y: true }); } catch (e) {}
+    try { var n2 = (pendingApprovals || []).length; if (n2) todo.push({ k: n2, l: T("Onay bekleyen kayıt", "Records awaiting approval", "سجلات في انتظار الموافقة"), a: T("Onayla →", "Approve →", "وافق ←"), f: function () { var m = document.getElementById("pending-approvals-modal"); if (m) { m.classList.add("open"); try { renderPendingApprovalsModal(); } catch (e) {} } } }); } catch (e) {}
+    try { var cg = _fxCertGroups(); var n3 = cg.expired.length + cg.soon.length; if (n3) todo.push({ k: n3, l: T("Süresi dolan veya dolmak üzere sertifika", "Certificates expired or expiring", "شهادات منتهية أو قاربت على الانتهاء"), a: T("Aç →", "Open →", "افتح ←"), f: function () { openIfFn("openCertHub"); } }); } catch (e) {}
+    try { var n4 = _fxChemGroups().low.length; if (n4) todo.push({ k: n4, l: T("Kritik stokta kimyasal", "Chemicals at low stock", "مواد كيميائية بمخزون حرج"), a: T("Aç →", "Open →", "افتح ←"), f: function () { openIfFn("openMgmtSummary"); } }); } catch (e) {}
+    var sideHtml = '<div class="yg-side"><h2>' + E(T("Bugün yapılacaklar", "To do today", "المطلوب اليوم")) + '</h2>' +
+      (todo.length ? todo.slice(0, 4).map(function (x, i) { return '<button type="button" class="yg-c' + (x.y ? " y" : "") + '" data-t="' + i + '"><span class="yg-k">' + x.k + '</span><span class="yg-l">' + E(x.l) + '</span><span class="yg-a">' + E(x.a) + '</span></button>'; }).join("") : '<div class="yg-ok">✅ ' + E(T("Acil iş yok.", "Nothing urgent.", "مفيش حاجة عاجلة.")) + '</div>') + '</div>';
+    var host = document.getElementById("yg-lists");
+    host.innerHTML = listHtml + sideHtml;
+    host.querySelectorAll(".yg-r").forEach(function (el) {
+      var go = function () { var r = rows[+el.dataset.i]; if (r && r.card) r.card.click(); };
+      el.onclick = go; el.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
+    });
+    host.querySelectorAll(".yg-c").forEach(function (el) { el.onclick = function () { var x = todo[+el.dataset.t]; if (x) x.f(); }; });
+  }
+  function later() { clearTimeout(timer); timer = setTimeout(render, 200); }
+  function start() {
+    sync(); later();
+    var mo = new MutationObserver(later);
+    ["ring-dashboard-grid", "kpi-total", "kpi-comp-val", "kpi-crit-val", "kpi-cert-ring"].forEach(function (id) { var e = document.getElementById(id); if (e) mo.observe(e, { childList: true, subtree: true, characterData: true }); });
+    setInterval(function () { var adm = isAdmin(); if (adm !== document.body.classList.contains("yg-admin")) later(); }, 800);
+    document.addEventListener("click", function (e) { if (e.target && e.target.closest && e.target.closest("[data-lang],.lang-btn,.lang-switch")) setTimeout(render, 400); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();
+</script>
 <script id="visitor-module">
 // ═══ ZİYARETÇİ KAYIT — ziyaretçi/tedarikçi güvenlik bilgilendirme formunun sitede doldurulması (27.10.2026) ═══
 // Veri: bulutta AYLIK belgeler "visitors_YYYY_MM" (alan: visits) — her belge 1 MB sınırı altında kalır; imza küçük çizgi dizisi olarak saklanır (resim değil).
@@ -84113,7 +84260,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-15 12:13";
+const EMS_BUILD = "2026-11-15 21:35";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
