@@ -7131,6 +7131,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
           </div>
         </div>
       </div>
+      <div id="daily-audit-addq-bar" class="no-report" style="margin-bottom:12px;"></div>
       <div id="daily-audit-questions-container" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;"></div>
       <div style="background:#fafbfd; padding:16px; border-radius:12px; border:1.5px solid var(--border); margin-bottom:18px; text-align:center;">
         <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:8px;" data-i18n="daily_audit_lbl_sig">Dijital Onay İmzası / Digital Approval Signature</label>
@@ -27409,6 +27410,7 @@ function renderDailyAuditDeptReport() {
     <select onchange="setDailyAuditDeptReport(undefined, this.value)" style="${selStyle}">
       ${months.map(m => `<option value="${m}" ${m === month ? "selected" : ""}>${escHtml(_dailyAuditMonthLabel(m))}</option>`).join("")}
     </select>
+    ${_dadrDept ? _daAddQBtnHtml(_dadrDept) : ""}
     ${_dadrDept ? `<button onclick="downloadDailyAuditDeptReportPDF()" style="margin-inline-start:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #E2C26A, #C8A44A); color:#142B4F; border:none; padding:10px 18px; border-radius:12px; font-size:13px; font-weight:900; cursor:pointer;">📄 ${t3("PDF Rapor İndir", "Download PDF Report", "تنزيل تقرير PDF")}</button>` : ""}
   </div>`;
   if (!_dadrDept) {
@@ -28746,6 +28748,79 @@ function renderDailyAuditQuestionBank() {
   const rowsHtml = questions.length === 0 ? `\n    <tr><td colspan="4" style="text-align:center; color:var(--muted); padding:30px; font-style:italic;">${t3("Bu departman için henüz soru yok.", "No questions for this department yet.", "مفيش أسئلة للقسم ده لسه.")}</td></tr>\n  ` : questions.map((q, idx) => `\n    <tr style="border-top:1px solid var(--border);">\n      <td style="padding:10px 12px; font-weight:800;">${idx + 1}</td>\n      <td style="padding:10px 12px; font-weight:700;">${t3(q.textTr, q.textEn, q.textAr)}</td>\n      <td style="padding:10px 12px;"><span style="display:inline-block; padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:800; color:#fff; background:${q.isCustom ? "var(--success)" : q.isEdited ? "var(--warning, #d97706)" : "var(--muted)"};">${q.isCustom ? t3("Eklendi", "Added", "مضاف") : q.isEdited ? t3("Düzenlendi", "Edited", "معدَّل") : t3("Temel", "Base", "أساسي")}</span></td>\n      <td style="padding:10px 12px; white-space:nowrap;">\n        ${currentUserRole === "admin" ? `\n        <button class="btn-edit" onclick="openEditDailyAuditQuestionBank('${q.dept || currentDailyAuditDept}', '${q.id}', ${!!q.isCustom})" title="${t3("Düzenle", "Edit", "تعديل")}" style="padding:4px; background:none; border:none; cursor:pointer; color:var(--primary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>\n        <button class="btn-del" onclick="deleteDailyAuditQuestionBank('${q.dept || currentDailyAuditDept}', '${q.id}', ${!!q.isCustom})" title="${t3("Sil", "Delete", "حذف")}" style="padding:4px; background:none; border:none; cursor:pointer; color:var(--danger);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span class="btn-del-label">${t3("Sil", "Delete", "حذف")}</span></button>\n        ` : ""}\n      </td>\n    </tr>`).join("");
   panel.innerHTML = `\n    <strong style="display:block; margin-bottom:12px; color:var(--text); font-size:14px;">${t3("Soru Bankası", "Question Bank", "بنك الأسئلة")} (${questions.length})</strong>\n    ${addFormHtml}\n    <div style="overflow-x:auto; border:1px solid var(--border); border-radius:10px; max-height:340px; overflow-y:auto;">\n      <table style="width:100%; min-width:500px; border-collapse:collapse; font-size:13px;">\n        <thead>\n          <tr style="background:#F1F5F9; text-align:start;">\n            <th style="padding:10px 12px; font-size:11px; color:var(--muted);">#</th>\n            <th style="padding:10px 12px; font-size:11px; color:var(--muted);">${t3("Soru", "Question", "السؤال")}</th>\n            <th style="padding:10px 12px; font-size:11px; color:var(--muted);">${t3("Kaynak", "Source", "المصدر")}</th>\n            <th style="padding:10px 12px; font-size:11px; color:var(--muted);"></th>\n          </tr>\n        </thead>\n        <tbody>${rowsHtml}</tbody>\n      </table>\n    </div>`;
 }
+// ── BÖLÜMLERİN İÇİNDEN YENİ SORU EKLE (yalnız yönetici; Soru Bankası'ndaki formla aynı kayıt) ──
+// ── ADD A NEW QUESTION FROM INSIDE THE SECTIONS (admin only; same record as the Question Bank form) ──
+function _daAddQBtnHtml(deptKey) {
+  if (currentUserRole !== "admin" || !deptKey) return "";
+  return `<button type="button" class="no-report" onclick="openDailyAuditAddQuestion('${deptKey}')" style="display:inline-flex; align-items:center; gap:8px; background:#16A34A; color:#fff; border:none; border-radius:10px; padding:9px 14px; font:inherit; font-size:13px; font-weight:800; cursor:pointer;">➕ ${t3("Yeni Soru Ekle", "Add New Question", "ضيف سؤال جديد")}</button>`;
+}
+function closeDailyAuditAddQuestion() { const d = document.getElementById("da-addq-dlg"); if (d) d.remove(); document.removeEventListener("keydown", _daAddQEsc, true); }
+function _daAddQEsc(e) { if (e.key === "Escape") { e.stopPropagation(); closeDailyAuditAddQuestion(); } }
+function openDailyAuditAddQuestion(deptKey) {
+  if (currentUserRole !== "admin") return;
+  closeDailyAuditAddQuestion();
+  const d = document.createElement("div");
+  d.id = "da-addq-dlg";
+  d.style.cssText = "position:fixed; inset:0; z-index:30000; background:rgba(15,23,42,.55); display:flex; align-items:center; justify-content:center; padding:12px;";
+  d.onclick = e => { if (e.target === d) closeDailyAuditAddQuestion(); };
+  const opts = DAILY_AUDIT_DEPARTMENTS.map(x => `<option value="${x.key}" ${x.key === deptKey ? "selected" : ""}>${x.icon} ${escHtml(dailyAuditDeptLabel(x))}</option>`).join("");
+  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:560px; max-height:92vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.35); padding:18px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;"><h3 style="margin:0; font-size:17px; color:#1A3660;">➕ ${t3("Yeni Soru Ekle", "Add New Question", "ضيف سؤال جديد")}</h3><button type="button" onclick="closeDailyAuditAddQuestion()" style="border:none; background:#f1f5f9; border-radius:8px; width:34px; height:34px; font-size:18px; cursor:pointer;">✕</button></div>
+    <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:4px;">${t3("Bölüm", "Section", "القسم")}</label>
+    <select id="da-addq-dept" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font:inherit; font-size:14px; margin-bottom:12px;">${opts}</select>
+    <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:4px;">${t3("Soru metni", "Question text", "نص السؤال")}</label>
+    <textarea id="da-addq-text" rows="3" placeholder="${t3("Soruyu yazın (Türkçe, İngilizce veya Arapça). Diğer dillere otomatik çevrilir.", "Write the question (Turkish, English or Arabic). It is translated automatically.", "اكتب السؤال (تركي أو إنجليزي أو عربي). بيتترجم تلقائيًا.")}" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font:inherit; font-size:14px; resize:vertical;"></textarea>
+    <div style="font-size:12px; color:#475569; margin-top:8px; line-height:1.5;">${t3("Soru bu bölümün soru listesine eklenir; bundan sonraki denetimlerde sorulur. Geçmiş denetim kayıtları değişmez.", "The question is added to this section's question list and is asked in later audits. Past audit records do not change.", "السؤال بيتضاف لقائمة أسئلة القسم وبيتسأل في التدقيقات الجاية. سجلات التدقيق القديمة ما بتتغيّرش.")}</div>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap;"><button type="button" class="fx-btn" onclick="closeDailyAuditAddQuestion()">${t3("Vazgeç", "Cancel", "إلغاء")}</button><button type="button" id="da-addq-go" onclick="submitDailyAuditAddQuestion()" style="background:#16A34A; color:#fff; border:none; border-radius:9px; padding:9px 18px; font:inherit; font-size:13px; font-weight:800; cursor:pointer;">✅ ${t3("Ekle", "Add", "ضيف")}</button></div></div>`;
+  document.body.appendChild(d);
+  document.addEventListener("keydown", _daAddQEsc, true);
+  setTimeout(() => { const t = document.getElementById("da-addq-text"); if (t) t.focus(); }, 50);
+}
+async function _daqbCreateQuestion(targetDept, rawText) {
+  const isArabic = /[\u0600-\u06FF]/.test(rawText);
+  const sourceLang = isArabic ? "ar" : currentLang === "ar" ? "tr" : currentLang;
+  let textTr = sourceLang === "tr" ? rawText : "", textEn = sourceLang === "en" ? rawText : "", textAr = sourceLang === "ar" ? rawText : "";
+  try {
+    if (!textTr) textTr = await translateTextFree(rawText, sourceLang, "tr");
+    if (!textEn) textEn = await translateTextFree(rawText, sourceLang, "en");
+    if (!textAr) textAr = await translateTextFree(rawText, sourceLang, "ar");
+  } catch (e) { console.error("Otomatik çeviri hatası / Auto-translate error:", e); }
+  if (!textTr) textTr = rawText;
+  if (!textEn) textEn = rawText;
+  if (!textAr) textAr = rawText;
+  const dept = DAILY_AUDIT_DEPARTMENTS.find(d => d.key === targetDept);
+  const newQ = { id: "QC" + Date.now(), dept: targetDept, catTr: dept ? dept.labelTr : "", catEn: dept ? dept.labelEn : "", catAr: dept ? dept.labelAr : "", textTr: textTr, textEn: textEn, textAr: textAr, isCustom: true };
+  dailyAuditCustomQuestions.push(newQ);
+  if (FIREBASE_ENABLED && fbDb) _safeArrayMutate(fbDb.collection("ems_csr").doc("dailyAuditRecords"), "dailyAuditCustomQuestions", newQ, "union", "dailyAuditCustomQuestions");
+  _saveDailyAuditRecordsOnly();
+  return newQ;
+}
+async function submitDailyAuditAddQuestion() {
+  if (currentUserRole !== "admin") return;
+  const deptEl = document.getElementById("da-addq-dept"), textEl = document.getElementById("da-addq-text"), btn = document.getElementById("da-addq-go");
+  const dept = deptEl ? deptEl.value : "", raw = textEl ? textEl.value.trim() : "";
+  if (!raw) { alert(t3("Lütfen soru metnini girin.", "Please enter the question text.", "من فضلك اكتب نص السؤال.")); return; }
+  if (!roleGuard(dept)) return;
+  // Aynı bölümde çok benzer soru var mı? / Is there a very similar question in the same section?
+  try {
+    const have = getDailyAuditQuestionsForDept(dept).map(q => ({ id: q.id, text: (q.textTr || "") + " / " + (q.textEn || "") }));
+    const probe = { id: "__new", text: raw + " / " + raw };
+    const rows = _simRows(have.concat([ probe ]));
+    const me = rows[rows.length - 1];
+    let best = null, bs = 0;
+    rows.slice(0, -1).forEach(r => { const sc = Math.max(_simCos(me.ve, r.ve), _simCos(me.vt, r.vt)); if (sc > bs) { bs = sc; best = r; } });
+    if (best && bs >= 0.8 && !confirm(t3("Bu bölümde çok benzer bir soru zaten var:\n\n", "A very similar question already exists in this section:\n\n", "في سؤال شبه ده موجود في القسم ده:\n\n") + best.q.text.split(" / ")[0] + t3("\n\nYine de eklensin mi?", "\n\nAdd it anyway?", "\n\nتضيفه برضو؟"))) return;
+  } catch (e) { console.warn(e); }
+  if (btn) { btn.disabled = true; btn.style.opacity = ".6"; btn.textContent = t3("Çevriliyor…", "Translating…", "بنترجم...") ; }
+  await _daqbCreateQuestion(dept, raw);
+  closeDailyAuditAddQuestion();
+  try { if (typeof showSuccessToast === "function") showSuccessToast("✅ " + t3("Soru eklendi.", "Question added.", "السؤال اتضاف.")); } catch (e) {}
+  try {
+    const open = id => { const m = document.getElementById(id); return !!(m && m.classList.contains("open")); };
+    if (open("daily-audit-list-modal")) renderDailyAuditQuestionBank();
+    if (open("daily-audit-form-modal") && dept === currentDailyAuditDept) renderDailyAuditQuestions();
+  } catch (e) { console.warn(e); }
+}
 let _daqbEditingTarget = null;
 async function addDailyAuditQuestionBank() {
   if (!roleGuard(currentDailyAuditDept)) return;
@@ -28961,7 +29036,7 @@ function renderDailyAuditList() {
     const scoreTxt = st.n ? `<div style="font-size:30px; font-weight:900; color:${st.pct >= 80 ? "var(--success)" : st.pct >= 50 ? "var(--warning)" : "var(--danger)"}; line-height:1;">${fmtPct(st.pct)}</div><div style="font-size:11.5px; font-weight:800; color:var(--muted); margin-top:4px;">${st.n} ${t3("denetim · ay ortalaması", "audit(s) · monthly average", "تدقيق · متوسط الشهر")}</div>` : `<div style="font-size:15px; font-weight:900; color:var(--muted);">⏳ ${t3("Bu ay henüz denetlenmedi", "Not audited this month yet", "لسه ما اتدققش الشهر ده")}</div>`;
     top.innerHTML = `<div style="display:flex; flex-direction:column; gap:14px; align-items:center; background:#fafbfd; border:1.5px solid var(--border); border-radius:16px; padding:18px;">
       ${_dailyAuditMonthPicker("setDailyAuditHubMonth")}
-      <div style="display:flex; align-items:center; justify-content:center; gap:28px; flex-wrap:wrap;"><div style="text-align:center;">${scoreTxt}</div>${startBtn}</div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:28px; flex-wrap:wrap;"><div style="text-align:center;">${scoreTxt}</div>${startBtn}${_daAddQBtnHtml(d.key)}</div>
     </div>`;
     applyScopedElementVisibility(top);
   }
@@ -29013,6 +29088,8 @@ function closeDailyAuditFormBg(e) {
 function renderDailyAuditQuestions() {
   const questions = getDailyAuditQuestionsForDept(currentDailyAuditDept);
   const container = document.getElementById("daily-audit-questions-container");
+  const _aqBar = document.getElementById("daily-audit-addq-bar");
+  if (_aqBar) _aqBar.innerHTML = _daAddQBtnHtml(currentDailyAuditDept);
   container.innerHTML = questions.map((q, idx) => `\n    <div style="background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px;">\n      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px;">\n        <div style="display:flex; align-items:center; gap:10px; flex:1;">\n          <span style="background:#EEF0FF; color:var(--primary); font-weight:900; font-size:13px; width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${idx + 1}</span>\n          <div>\n            <span style="font-size:10px; font-weight:800; text-transform:uppercase; color:var(--muted); display:block; letter-spacing:.04em;">📌 ${escHtml(t3(q.catTr, q.catEn, q.catAr))}${q.isCustom ? " · " + t3("Eklendi", "Added", "مضاف") : ""}</span>\n            <p style="font-weight:700; color:var(--text); font-size:13.5px; margin:2px 0 0;">${escHtml(t3(q.textTr, q.textEn, q.textAr))}</p>\n          </div>\n        </div>\n        <select id="daq-status-${q.id}" onchange="handleDailyAuditStatusChange('${q.id}', this.value)" style="padding:9px 11px; font-size:12px; font-weight:800; border:1.5px solid var(--border-h); border-radius:9px; background:#fafbfd; cursor:pointer; min-width:170px;">\n          <option value="">-- ${t3("Durum", "Status", "الحالة")} --</option>\n          <option value="OK">🟢 OK (${t3("Uygun", "Compliant", "مطابق")})</option>\n          <option value="NOK">🔴 NOK (${t3("Uygunsuz", "Non-conforming", "غير مطابق")})</option>\n          <option value="NA">⚪ N/A (${t3("Kapsam Dışı", "Out of Scope", "خارج النطاق")})</option>\n        </select>\n      </div>\n      \x3c!-- ═══ YENİ ═══ Her soru için kanıt fotoğrafı ZORUNLUDUR — sadece NOK'ta değil, tüm\n           durumlarda görünür ve doldurulmadan durum kaydedilmez. Yanlış fotoğraf eklenirse\n           "Değiştir" ile yenisi seçilebilir, "Kaldır" ile tamamen silinebilir. /\n           ═══ NEW ═══ Evidence photo is MANDATORY for every question — visible for all statuses\n           (not just NOK), and the status won't register until it's filled in. If the wrong photo\n           was added, "Change" lets you pick a new one, "Remove" deletes it entirely. --\x3e\n      <div id="daq-photo-row-${q.id}" style="display:flex; align-items:center; gap:10px; margin-top:12px; padding:10px 12px; border-radius:9px; border:1.5px dashed var(--border-h); background:#fafbfd;">\n        <label for="daq-photo-input-${q.id}" style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1; min-width:0;">\n          <span id="daq-preview-${q.id}" style="display:none; flex-shrink:0;"><img loading="lazy" decoding="async" id="daq-preview-img-${q.id}" onerror="this.style.visibility='hidden'" style="width:38px; height:38px; object-fit:cover; border-radius:8px; border:1px solid var(--border-h); background:#eef0f4;" alt=""></span>\n          <span id="daq-photo-label-${q.id}" style="font-size:12px; font-weight:800; color:var(--danger); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📷 ${t3("Kanıt Fotoğrafı Ekle (Zorunlu)", "Add Evidence Photo (Required)", "ضيف صورة الدليل (إلزامي)")}</span>\n        </label>\n        <div id="daq-photo-actions-${q.id}" style="display:none; align-items:center; gap:6px; flex-shrink:0;">\n          <button type="button" onclick="document.getElementById('daq-photo-input-${q.id}').click();" title="${t3("Fotoğrafı Değiştir", "Change Photo", "تغيير الصورة")}" style="background:#fff; border:1px solid var(--border-h); border-radius:7px; padding:6px; cursor:pointer; color:var(--primary); display:flex;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg></button>\n          <button type="button" onclick="removeDailyAuditPhoto('${q.id}')" title="${t3("Fotoğrafı Kaldır", "Remove Photo", "مسح الصورة")}" style="background:#fff; border:1px solid var(--border-h); border-radius:7px; padding:6px; cursor:pointer; color:var(--danger); display:flex;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>\n        </div>\n        <input type="file" id="daq-photo-input-${q.id}" accept="image/*" onchange="handleDailyAuditPhotoFileChange(event, '${q.id}')" style="display:none;">\n      </div>\n      <div id="daq-details-${q.id}" style="display:none; margin-top:12px; background:#FEF2F2; padding:14px; border-radius:10px; border:1.5px solid #FECACA;">\n        <div style="margin-bottom:10px;">\n          <label style="display:block; font-size:11px; font-weight:700; color:var(--text); margin-bottom:4px;">⚠️ ${t3("Risk Derecesi", "Risk Level", "درجة الخطورة")}</label>\n          <select id="daq-risk-${q.id}" onchange="if(_dailyAuditDraft){ if(!_dailyAuditDraft.answers['${q.id}']) _dailyAuditDraft.answers['${q.id}']={}; _dailyAuditDraft.answers['${q.id}'].risk=this.value; }" style="width:100%; padding:8px; font-size:11px; font-weight:700; background:#fff; border:1px solid var(--border-h); border-radius:8px;">\n            <option value="Düşük">🟡 ${t3("Düşük Risk", "Low Risk", "خطورة منخفضة")}</option>\n            <option value="Orta">🟠 ${t3("Orta Risk", "Medium Risk", "خطورة متوسطة")}</option>\n            <option value="Kritik">🔴 ${t3("Kritik · Acil", "Critical · Urgent", "حرجة · عاجلة")}</option>\n          </select>\n        </div>\n        <textarea id="daq-note-${q.id}" oninput="if(_dailyAuditDraft){ if(!_dailyAuditDraft.answers['${q.id}']) _dailyAuditDraft.answers['${q.id}']={}; _dailyAuditDraft.answers['${q.id}'].note=this.value; }" rows="2" placeholder="${t3("* Zorunlu — Saha tespit notu ve yapılması gereken aksiyon...", "* Required — Field finding note and required action...", "* إلزامي - اكتب الملاحظة الميدانية والإجراء المطلوب...")}" style="width:100%; padding:10px; font-size:12px; border:1px solid var(--border-h); border-radius:8px; background:#fff;"></textarea>\n      </div>\n    </div>`).join("");
   if (_dailyAuditDraft && _dailyAuditDraft.answers) {
     Object.keys(_dailyAuditDraft.answers).forEach(qid => {
@@ -30552,7 +30629,7 @@ function renderDailyAuditDetail() {
     const icon = a.status === "OK" ? "🟢" : a.status === "NOK" ? "🔴" : "⚪";
     return `\n      <div style="border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:8px;">\n        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">\n          <div style="flex:1;">\n            <span style="font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase;">${t3(q.catTr, q.catEn, q.catAr)}</span>\n            <p style="font-weight:700; font-size:13px; margin:2px 0 0;">${t3(q.textTr, q.textEn, q.textAr)}</p>\n          </div>\n          <span style="font-weight:800; color:${color}; font-size:12px; white-space:nowrap;">${icon} ${a.status}</span>\n        </div>\n        ${a.status === "NOK" ? `\n          <div style="margin-top:8px; background:#FEF2F2; border-radius:8px; padding:10px; font-size:12px;">\n            <div><strong>${t3("Risk", "Risk", "الخطورة")}:</strong> ${a.risk || "-"}</div>\n            <div><strong>${t3("Not", "Note", "ملاحظة")}:</strong> ${a.note ? escHtml(_dyn(a.note)) : "-"}</div>\n            ${a.hasPhoto ? `<img loading="lazy" decoding="async" id="daq-detail-photo-${a.id}" onerror="this.style.visibility='hidden'" style="width:80px; height:80px; object-fit:cover; border-radius:8px; margin-top:6px; border:1px solid var(--border-h); cursor:pointer; background:#eef0f4;" onclick="openDailyAuditPhotoLightbox(${r.id}, '${a.id}')" alt="">` : ""}\n          </div>` : a.hasPhoto ? `\n          <div style="margin-top:8px;">\n            <img loading="lazy" decoding="async" id="daq-detail-photo-${a.id}" onerror="this.style.visibility='hidden'" style="width:60px; height:60px; object-fit:cover; border-radius:8px; border:1px solid var(--border-h); cursor:pointer; background:#eef0f4;" onclick="openDailyAuditPhotoLightbox(${r.id}, '${a.id}')" alt="">\n          </div>` : ""}\n      </div>`;
   }).join("");
-  document.getElementById("daily-audit-detail-body").innerHTML = `\n    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:10px; margin-bottom:16px;">\n      <div class="customer-kpi" style="color:var(--primary);"><div class="customer-kpi-label">${t3("DENETÇİ", "INSPECTOR", "المفتش")}</div><div class="customer-kpi-val" style="font-size:14px;">${escHtml(r.inspectorName)}</div></div>\n      <div class="customer-kpi" style="color:var(--success);"><div class="customer-kpi-label">${t3("UYGUN", "OK", "مطابق")}</div><div class="customer-kpi-val">${r.okCount}</div></div>\n      <div class="customer-kpi" style="color:var(--danger);"><div class="customer-kpi-label">${t3("UYGUNSUZ", "NOK", "غير مطابق")}</div><div class="customer-kpi-val">${r.nokCount}</div></div>\n      <div class="customer-kpi" style="color:var(--primary);"><div class="customer-kpi-label">${t3("SKOR", "SCORE", "النتيجة")}</div><div class="customer-kpi-val">${fmtPct(r.score)}</div></div>\n    </div>\n    ${rows}\n    <div style="margin-top:16px; text-align:center;">\n      <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:6px;">${t3("İMZA", "SIGNATURE", "التوقيع")}</label>\n      <img loading="lazy" decoding="async" id="daily-audit-detail-sig-img" style="max-width:260px; border:1px solid var(--border-h); border-radius:8px; background:#fff;" alt="">\n    </div>`;
+  document.getElementById("daily-audit-detail-body").innerHTML = `\n    <div class="no-report" style="margin-bottom:12px;">${_daAddQBtnHtml(r.dept)}</div>\n    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:10px; margin-bottom:16px;">\n      <div class="customer-kpi" style="color:var(--primary);"><div class="customer-kpi-label">${t3("DENETÇİ", "INSPECTOR", "المفتش")}</div><div class="customer-kpi-val" style="font-size:14px;">${escHtml(r.inspectorName)}</div></div>\n      <div class="customer-kpi" style="color:var(--success);"><div class="customer-kpi-label">${t3("UYGUN", "OK", "مطابق")}</div><div class="customer-kpi-val">${r.okCount}</div></div>\n      <div class="customer-kpi" style="color:var(--danger);"><div class="customer-kpi-label">${t3("UYGUNSUZ", "NOK", "غير مطابق")}</div><div class="customer-kpi-val">${r.nokCount}</div></div>\n      <div class="customer-kpi" style="color:var(--primary);"><div class="customer-kpi-label">${t3("SKOR", "SCORE", "النتيجة")}</div><div class="customer-kpi-val">${fmtPct(r.score)}</div></div>\n    </div>\n    ${rows}\n    <div style="margin-top:16px; text-align:center;">\n      <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:6px;">${t3("İMZA", "SIGNATURE", "التوقيع")}</label>\n      <img loading="lazy" decoding="async" id="daily-audit-detail-sig-img" style="max-width:260px; border:1px solid var(--border-h); border-radius:8px; background:#fff;" alt="">\n    </div>`;
   _loadDocFileData("daily_audit_sig", r.id, "sig", dataUrl => {
     const img = document.getElementById("daily-audit-detail-sig-img");
     if (img && dataUrl) img.src = dataUrl;
@@ -84036,7 +84113,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-14 14:23";
+const EMS_BUILD = "2026-11-15 12:13";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
