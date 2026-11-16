@@ -3000,6 +3000,9 @@ button.tvd-c.on { background:#15803d; color:#fff; border-color:#15803d; }
 .cov-aud { display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--border); cursor:pointer; }
 .cov-aud:first-of-type { border-top:none; }
 .cov-aud:hover .cov-aud-t { color:var(--primary); }
+.cov-box .cov-aud.cov-aud-feat { border:2px solid #E11D2E; background:#FFF5F5; box-shadow:0 6px 18px -10px rgba(225,29,46,.55); }
+.cov-aud-badge { display:inline-block; font-size:10px; font-weight:900; letter-spacing:.04em; color:#fff; background:#E11D2E; border-radius:99px; padding:2px 8px; margin-inline-end:6px; vertical-align:1px; }
+.cov-aud.cov-aud-feat .cov-aud-t { white-space:normal; }
 .cov-aud-t { flex:1; min-width:0; font-size:12.5px; font-weight:800; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .cov-aud-d { font-size:11px; font-weight:700; color:var(--muted); }
 .cdl { position:relative; width:84px; height:48px; border:1px solid #d9dce1; border-radius:10px; background:#fff; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; flex:none; }
@@ -65669,6 +65672,14 @@ function renderCustomerTopDashboard() {
     card("all", t3("GENEL UYUM ORANI", "OVERALL COMPLIANCE", "نسبة الالتزام العامة"), _donut3Svg([ cu, mu, xu ], P3[0]), row(DK, lblC, cu, 0) + row(MID, lblM, mu, 1) + row(RD, lblX, xu, 2))
   ].join("");
 }
+// Öne çıkan denetim: kayıtta featured işareti veya H&M CAP Onay Raporu (kullanıcı isteği); listede en üstte vurgulanır /
+// Featured audit: the featured flag or the H&M CAP Acknowledgement Report (user request); shown first and highlighted
+function _audFeatured(a) {
+  return !!(a && (a.featured === true || (a.customerKey === "hm" && /CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || "")))));
+}
+function _audFeatSort(list) {
+  return list.map((a, i) => ({ a: a, i: i })).sort((x, y) => (_audFeatured(y.a) ? 1 : 0) - (_audFeatured(x.a) ? 1 : 0) || x.i - y.i).map(x => x.a);
+}
 // Denetçi adı: kayıttaki alan, yoksa nottan / Auditor name: record field, else parsed from the note
 function _custAuditor(a) {
   if (a && a.auditor) return String(a.auditor);
@@ -65693,9 +65704,9 @@ function renderCustomerOverview() {
   const fBox = `<div class="cov-box"><h4>🕵️ ${t3("Bulgu Dağılımı", "Findings Breakdown", "توزيع النتائج")}</h4>${items.length ? `<table class="cov-tbl"><thead><tr><th>${t3("Kategori", "Category", "الفئة")}</th><th>${t3("Açık", "Open", "مفتوح")}</th><th>${t3("Devam", "In Prog.", "قيد التنفيذ")}</th><th>${t3("Kapandı", "Closed", "مغلق")}</th><th>${t3("Toplam", "Total", "الإجمالي")}</th><th></th></tr></thead><tbody>${rows}</tbody></table>` : `<div style="color:var(--muted); font-size:12.5px;">${t3("Bu marka için henüz bulgu yok.", "No findings for this brand yet.", "لسه مفيش نتائج للعلامة دي.")}</div>`}</div>`;
   const capCol = st => st === "closed" ? "var(--success)" : st === "in_progress" ? "var(--warning)" : "var(--danger)";
   const capTxt = st => st === "closed" ? t3("Kapandı", "Closed", "مغلق") : st === "in_progress" ? t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : t3("Açık", "Open", "مفتوح");
-  const aBox = `<div class="cov-box"><h4>🗓️ ${t3("Denetim Geçmişi", "Audit History", "سجل التدقيقات")}</h4>${d.audits.length ? d.audits.map(a => {
+  const aBox = `<div class="cov-box"><h4>🗓️ ${t3("Denetim Geçmişi", "Audit History", "سجل التدقيقات")}</h4>${d.audits.length ? _audFeatSort(d.audits).map(a => {
     const aud = _custAuditor(a), nt = biText(a.note || "").replace(/\s*[—–-]\s*(Denetçi|Auditor)\b.*$/i, "").replace(aud ? new RegExp("\\s*[—–-]\\s*" + aud.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i") : /$^/, "").trim();
-    return `<div class="cov-aud" style="cursor:${Array.isArray(a.findings) && a.findings.length ? "pointer" : "default"};"${Array.isArray(a.findings) && a.findings.length ? ` onclick="openAuditFindings(${JSON.stringify(a.id).replace(/"/g, "&quot;")})" title="${escHtml(t3("Bu denetimin bulgularını aç", "Open this audit's findings", "افتح نتائج التدقيق ده"))}"` : ""}><div style="min-width:0; flex:1;"><div class="cov-aud-t">${escHtml(nt || t3("Denetim", "Audit", "تدقيق"))}</div><div class="cov-aud-d">📅 ${a.date ? new Date(a.date).toLocaleDateString(_dLoc()) : "-"} · 👤 ${escHtml(aud || "—")}</div></div></div>`;
+    return `<div class="cov-aud${_audFeatured(a) ? " cov-aud-feat" : ""}" style="cursor:${Array.isArray(a.findings) && a.findings.length ? "pointer" : "default"};"${Array.isArray(a.findings) && a.findings.length ? ` onclick="openAuditFindings(${JSON.stringify(a.id).replace(/"/g, "&quot;")})" title="${escHtml(t3("Bu denetimin bulgularını aç", "Open this audit's findings", "افتح نتائج التدقيق ده"))}"` : ""}><div style="min-width:0; flex:1;"><div class="cov-aud-t">${_audFeatured(a) ? `<span class="cov-aud-badge">⭐ ${t3("ÖNE ÇIKAN", "FEATURED", "مميّز")}</span> ` : ""}${escHtml(nt || t3("Denetim", "Audit", "تدقيق"))}</div><div class="cov-aud-d">📅 ${a.date ? new Date(a.date).toLocaleDateString(_dLoc()) : "-"} · 👤 ${escHtml(aud || "—")}</div></div></div>`;
   }).join("") : `<div style="color:var(--muted); font-size:12.5px;">${t3("Henüz denetim kaydı yok.", "No audit records yet.", "لسه مفيش سجلات تدقيق.")}</div>`}</div>`;
   box.innerHTML = `<div class="cov-grid">${fBox}${aBox}</div>`;
 }
@@ -84113,7 +84124,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-15 21:48";
+const EMS_BUILD = "2026-11-16 11:30";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
