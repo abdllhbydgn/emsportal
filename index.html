@@ -3003,6 +3003,10 @@ button.tvd-c.on { background:#15803d; color:#fff; border-color:#15803d; }
 .cov-box .cov-aud.cov-aud-feat { border:2px solid #E11D2E; background:#FFF5F5; box-shadow:0 6px 18px -10px rgba(225,29,46,.55); }
 .cov-aud-del { flex:none; border:1.5px solid #FCA5A5; background:#FEF2F2; color:#B91C1C; border-radius:8px; padding:5px 8px; font-size:13px; cursor:pointer; }
 .cov-aud-del:hover { background:#FEE2E2; }
+.cust-flags { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:6px 0 4px; }
+.cust-flag { display:inline-block; border:1.5px solid; border-radius:99px; padding:3px 10px; font-size:11px; font-weight:800; font-family:inherit; line-height:1.3; }
+button.cust-flag { cursor:pointer; }
+button.cust-flag:hover { filter:brightness(.96); }
 .cov-aud-badge { display:inline-block; font-size:10px; font-weight:900; letter-spacing:.04em; color:#fff; background:#E11D2E; border-radius:99px; padding:2px 8px; margin-inline-end:6px; vertical-align:1px; }
 .cov-aud.cov-aud-feat .cov-aud-t { white-space:normal; }
 .cov-aud-t { flex:1; min-width:0; font-size:12.5px; font-weight:800; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -28309,7 +28313,7 @@ function _pdfAddCanvasA4(pdf, jsPDFLib, canvas, el, opts) {
     newPage();
     let w = W, h = canvas.height * W / canvas.width;
     if (h > H) { h = H; w = canvas.width * H / canvas.height; }
-    pdf.addImage(canvas.toDataURL("image/jpeg", _PDF_JPEG_Q), "JPEG", M + (W - w) / 2, M, w, h);
+    pdf.addImage(canvas.toDataURL("image/jpeg", (opts.jpegQ || _PDF_JPEG_Q)), "JPEG", M + (W - w) / 2, M, w, h);
     return pdf;
   }
   const pxPerMm = canvas.width / W;
@@ -28330,7 +28334,7 @@ function _pdfAddCanvasA4(pdf, jsPDFLib, canvas, el, opts) {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, tmp.width, tmp.height);
     ctx.drawImage(canvas, 0, srcY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-    pdf.addImage(tmp.toDataURL("image/jpeg", _PDF_JPEG_Q), "JPEG", M, M, W, sliceH / pxPerMm);
+    pdf.addImage(tmp.toDataURL("image/jpeg", (opts.jpegQ || _PDF_JPEG_Q)), "JPEG", M, M, W, sliceH / pxPerMm);
     srcY += sliceH;
   }
   return pdf;
@@ -48497,6 +48501,26 @@ function postProcessData() {
       color: "#0F7B4F"
     });
   }
+  // Primark: onay süreci devam ediyor (kullanıcı bilgisi, 16.11.2026; bir kez; sonra yönetici kartlardan değiştirir) / Primark: approval in progress (one-time)
+  if (Array.isArray(customersList) && _sg("cust:appr-primark-pend-20261116", customersList.some(c => (c.key === "primark" || /^\s*primark\b/i.test(c.name || "")) && c.appr !== "pend"))) {
+    customersList.forEach(c => { if ((c.key === "primark" || /^\s*primark\b/i.test(c.name || "")) && c.appr !== "yes") c.appr = "pend"; });
+    _ppSeeded++;
+  }
+  // U.S. Polo Assn. müşterisi yoksa eklenir ve onaylı işaretlenir (kullanıcı bilgisi, 16.11.2026; bir kez; kayıtlı bir Polo müşterisi varsa o kullanılır) /
+  // Adds the U.S. Polo Assn. customer when missing and marks it approved (one-time; an existing Polo customer is reused)
+  if (Array.isArray(customersList) && _sg("cust:uspolo-20261116", true)) {
+    const _po = customersList.find(c => /polo/i.test((c.key || "") + " " + (c.name || "")));
+    if (_po) { _po.appr = "yes"; _po.ord = "yes"; } else customersList.push({ key: "uspolo", name: "U.S. Polo Assn.", init: "US", color: "#0B2A6F", appr: "yes", ord: "yes" });
+    _ppSeeded++;
+  }
+  // Onaylı müşteriler (kullanıcı bilgisi, 16.11.2026; bir kez; sonra yönetici kartlardan değiştirir): H&M, George, Next, VS, LC Waikiki, Koton, Mavi, Kiğılı, U.S. Polo. Siparişi olanlar: VS, LC Waikiki, U.S. Polo. /
+  // Approved customers (one-time; the admin changes them on the cards afterwards): H&M, George, Next, VS, LC Waikiki, Koton, Mavi. With orders: VS, LC Waikiki.
+  const _custIs = (c, re) => re.test(String(c.key || "")) || re.test(String(c.name || ""));
+  const _reAppr = /^\s*(hm|h\s*&\s*m|george|next|vs|victoria|lcwaikiki|lc\s*waikiki|koton|mavi|kigili|kiğılı)\b/i, _reOrd = /^\s*(vs|victoria|lcwaikiki|lc\s*waikiki)\b/i;
+  if (Array.isArray(customersList) && _sg("cust:appr-ord-20261116", customersList.some(c => _custIs(c, _reAppr) && c.appr !== "yes"))) {
+    customersList.forEach(c => { if (_custIs(c, _reAppr)) c.appr = "yes"; if (_custIs(c, _reOrd)) c.ord = "yes"; });
+    _ppSeeded++;
+  }
   // Kiğılı müşterisi kayıtlı listede yoksa eklenir / Adds the Kiğılı customer when missing
   if (Array.isArray(customersList) && _sg("cust:kigili", !customersList.some(c => _isKigiliCustomer(c.key)))) {
     customersList.push({ key: customersList.some(c => c.key === "kigili") ? "kigili_2" : "kigili", name: "Kiğılı", init: "KG", color: "#1F3A5F" });
@@ -66226,13 +66250,46 @@ function _custPickerSummaryHtml() {
   </style>`;
 }
 const AWAITING_AUDIT_KEYS = [];
+// ═══ MÜŞTERİ ONAY VE SİPARİŞ DURUMU (16.11.2026, kullanıcı isteği) ═══ c.appr: "yes" Onaylı | "pend" Onay devam ediyor | "no" Onay yok (varsayılan); c.ord: "yes" Sipariş var | "no" Siparişi yok (varsayılan).
+// Yönetici müşteri kartındaki etiketlere tıklayarak değiştirir. / Customer approval and order status; the admin clicks the tags on the customer card to change them.
+function _custAppr(c) { return c && (c.appr === "yes" || c.appr === "pend") ? c.appr : "no"; }
+function _custOrd(c) { return c && c.ord === "yes" ? "yes" : "no"; }
+function _custApprLabel(v) { return v === "yes" ? t3("Denetimden onaylı", "Approved after audit", "معتمد بعد التدقيق") : v === "pend" ? t3("Onay devam ediyor", "Approval in progress", "الاعتماد جاري") : t3("Onay yok", "Not approved", "مش معتمد"); }
+function _custOrdLabel(v) { return v === "yes" ? t3("Sipariş var", "Has orders", "عنده أوردرات") : t3("Siparişi yok", "No orders", "مفيش أوردرات"); }
+// Denetime gelmiş: denetim kaydı var VEYA denetimden gelen soru/bulgu seti var (ör. Inditex: kayıt yok ama 102 denetim sorusu var) / audited: has an audit record OR a question/finding set that comes from an audit
+function _custHasAudit(c) {
+  if (AWAITING_AUDIT_KEYS.includes(c.key)) return false;
+  if ((customerAudits || []).some(a => a.customerKey === c.key)) return true;
+  try { return calcCustomerStats(c.key).total > 0; } catch (e) { return false; }
+}
+function _custFlagsHtml(c) {
+  const adm = currentUserRole === "admin", ap = _custAppr(c), od = _custOrd(c);
+  const col = (ok, mid) => ok ? "background:#DCFCE7; color:#166534; border-color:#86EFAC;" : mid ? "background:#FEF3C7; color:#92400E; border-color:#FCD34D;" : "background:#F1F5F9; color:#475569; border-color:#CBD5E1;";
+  const tag = (txt, st, act) => adm ? `<button type="button" class="cust-flag" style="${st}" title="${escHtml(t3("Değiştirmek için tıklayın", "Click to change", "اضغط للتغيير"))}" onclick="event.stopPropagation(); ${act}">${txt}</button>` : `<span class="cust-flag" style="${st}">${txt}</span>`;
+  const aud = _custHasAudit(c) ? "" : `<span class="cust-flag" style="background:#F1F5F9; color:#475569; border-color:#CBD5E1;">🕐 ${escHtml(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`;
+  return `<div class="cust-flags">${aud}${tag((ap === "yes" ? "✅ " : ap === "pend" ? "⏳ " : "⛔ ") + escHtml(_custApprLabel(ap)), col(ap === "yes", ap === "pend"), `_custFlagCycle('${c.key}','appr')`)}${tag("📦 " + escHtml(_custOrdLabel(od)), col(od === "yes", false), `_custFlagCycle('${c.key}','ord')`)}</div>`;
+}
+function _custFlagCycle(key, what) {
+  if (currentUserRole !== "admin") return;
+  const c = (customersList || []).find(x => x.key === key);
+  if (!c) return;
+  if (what === "appr") c.appr = { no: "pend", pend: "yes", yes: "no" }[_custAppr(c)]; else c.ord = _custOrd(c) === "yes" ? "no" : "yes";
+  try { _saveCustomersListOnly(); } catch (e) { console.warn(e); }
+  openCustomerPicker();
+}
+function _custFlagSummaryHtml() {
+  const list = customersList || [];
+  const appr = list.filter(c => _custAppr(c) === "yes").length, pend = list.filter(c => _custAppr(c) === "pend").length, aud = list.filter(_custHasAudit).length, ord = list.filter(c => _custOrd(c) === "yes").length;
+  const box = (v, l, sub, col) => `<div style="flex:1 1 150px; min-width:130px; background:#fff; border:1.5px solid var(--border); border-inline-start:5px solid ${col}; border-radius:12px; padding:12px 14px;"><div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;">${l}</div><div style="font-size:30px; font-weight:900; line-height:1.1; margin-top:2px;">${v}</div><div style="font-size:11.5px; color:var(--muted); font-weight:600;">${sub}</div></div>`;
+  return `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">${box(list.length, t3("Müşteri", "Customers", "العملاء"), t3("Toplam", "Total", "الإجمالي"), "#1A3660")}${box(appr, t3("Onaylı", "Approved", "معتمد"), pend ? pend + " " + t3("onay devam ediyor", "approval in progress", "اعتماد جاري") : t3("Denetim sonucu onaylayan", "Approved us after audit", "اعتمدونا بعد التدقيق"), "#16A34A")}${box(aud, t3("Denetime gelmiş", "Audited", "تم تدقيقهم"), t3("Denetim kaydı var", "Has an audit record", "عنده سجل تدقيق"), "#F59E0B")}${box(ord, t3("Siparişi olan", "With orders", "عندهم أوردرات"), (list.length - ord) + " " + t3("müşterinin siparişi yok", "customers have no orders", "عملاء مفيش أوردرات"), "#6366F1")}</div>`;
+}
 function openCustomerPicker() {
   saveLastView("customerPicker");
   try { const _rl = document.getElementById("cust-status-report-lbl"); if (_rl) _rl.textContent = t3("Müşteri Durum Raporu (PDF)", "Customer Status Report (PDF)", "تقرير حالة العملاء (PDF)"); } catch (e) {}
   try {
     const chartBox = document.getElementById("customer-picker-bar-chart");
     if (chartBox) {
-      chartBox.innerHTML = _custPickerSummaryHtml();
+      chartBox.innerHTML = _custFlagSummaryHtml() + _custPickerSummaryHtml();
     }
   } catch (e) {
     console.error("[Müşteri Portalı] Grafik hatası / Chart error:", e);
@@ -66346,6 +66403,7 @@ function openCustomerPicker() {
     const ringColor = c.color || "#6366F1";
     const cursorStyle = neverAudited ? "" : "cursor:pointer;";
     return `<div class="ring-card sec-donut-card cust-card" ${onclickAttr} style="${cursorStyle}--ring-c1:${ringColor}; --ring-c2:${st.text}; --ring-glow:${ringColor};">\n      <button type="button" class="customer-card-delete-btn admin-only-el" style="display:none; z-index:3;" title="${escHtml(c.name)} — ${t3("Müşteriyi Sil", "Delete Customer", "امسح العميل")}" onclick="event.stopPropagation(); deleteCustomer('${c.key}')">\n        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>\n      </button>\n      <div class="ring-card-icon-badge" id="customer-logo-${c.key}" style="overflow:hidden;">\n        <button type="button" class="customer-card-photo-btn admin-only-el" style="display:none;" title="${escHtml(c.name)} — ${t3("Fotoğraf Ekle", "Add Photo", "إضافة صورة")}" onclick="event.stopPropagation(); triggerCustomerLogoUpload('${c.key}')">\n          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>\n        </button>\n        <span style="font-size:20px; color:#fff; font-weight:900;">${escHtml(c.init || c.name.slice(0, 2).toUpperCase())}</span>\n      </div>\n      <div class="ring-card-title">${escHtml(c.name)}</div>
+      ${_custFlagsHtml(c)}
       ${_pgDonut(pctForSort, neverAudited ? t3("BEKLİYOR", "WAITING", "في الانتظار") : t3("UYUM", "SCORE", "الالتزام"))}
       <div class="ring-card-count sec-legend">${_pgLegend([ [ "#2b2d31", t3("Tamamlanan", "Completed", "مكتمل"), qs.total ? qs.comp + "/" + qs.total : "—" ], [ "#9aa1ac", t3("Devam eden", "In progress", "قيد التنفيذ"), qs.total ? String(qs.min) : "—" ], [ "#E11D2E", t3("Başlanmayan", "Not started", "لسه ما بدأش"), qs.total ? String(qs.crit) : "—" ] ])}</div>
     </div>`;
@@ -68386,38 +68444,42 @@ async function downloadCustomersStatusPDF() {
     const rows = [];
     (customersList || []).forEach(c => {
       let d; try { d = _custSwitchData(c.key); } catch (e) { return; }
-      if (!d.q.t && !d.f.t && !d.audits.length) return;
       const last = (d.audits || [])[0] || null;
       const tot = d.q.t + d.f.t, cmp = d.q.comp + d.f.comp, openF = d.f.crit + d.f.min;
       rows.push({ c: c, d: d, last: last, tot: tot, cmp: cmp, pct: tot ? Math.round(cmp * 100 / tot) : 0, openF: openF });
     });
     if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
-    rows.sort((a, b) => a.pct - b.pct || b.openF - a.openF);
+    // Önce denetimi/verisi olanlar (en geride olan en üstte), sonra denetime gelmemişler (alfabetik) / audited customers first (furthest behind on top), then the not-yet-audited ones (alphabetical)
+    rows.forEach(r => { r.has = _custHasAudit(r.c); });
+    rows.sort((a, b) => (b.has ? 1 : 0) - (a.has ? 1 : 0) || (a.has ? a.pct - b.pct || b.openF - a.openF : String(a.c.name).localeCompare(String(b.c.name), locale)));
     const T = { q: { t: 0, c: 0, m: 0, x: 0 }, f: { t: 0, c: 0, m: 0, x: 0 }, aud: 0 };
     rows.forEach(r => { T.q.t += r.d.q.t; T.q.c += r.d.q.comp; T.q.m += r.d.q.min; T.q.x += r.d.q.crit; T.f.t += r.d.f.t; T.f.c += r.d.f.comp; T.f.m += r.d.f.min; T.f.x += r.d.f.crit; T.aud += r.d.audits.length; });
     const pc = (n, t) => t ? Math.round(n * 100 / t) : 0, P = n => fmtPct(n);
+    const nAppr = rows.filter(r => _custAppr(r.c) === "yes").length, nAud = (customersList || []).filter(_custHasAudit).length, nOrd = (customersList || []).filter(c => _custOrd(c) === "yes").length, nAll = (customersList || []).length;
     const kpi = _pdfKpiBandHtml([
-      { label: t3("Müşteri", "Customers", "العملاء"), val: rows.length, sub: t3("Aktif denetim panosu", "Active audit dashboards", "لوحات تدقيق نشطة"), bar: 100 },
-      { label: t3("Denetim", "Audits", "التدقيقات"), val: T.aud, sub: t3("Kayıtlı denetim", "Recorded audits", "تدقيقات مسجلة"), bar: 100, color: "#93C5FD" },
-      { label: t3("Soru Uyumu", "Question Compliance", "امتثال الأسئلة"), val: P(pc(T.q.c, T.q.t)), sub: T.q.c + " / " + T.q.t, bar: pc(T.q.c, T.q.t), color: "#10B981" },
-      { label: t3("Bulgu Kapanışı", "Finding Closure", "إغلاق النتائج"), val: P(pc(T.f.c, T.f.t)), sub: T.f.c + " / " + T.f.t, bar: pc(T.f.c, T.f.t), color: "#F59E0B" },
+      { label: t3("Müşteri", "Customers", "العملاء"), val: nAll, sub: t3("Toplam müşteri", "Total customers", "إجمالي العملاء"), bar: 100 },
+      { label: t3("Onaylı", "Approved", "معتمد"), val: nAppr, sub: t3("Denetim sonucu onaylayan", "Approved us after audit", "اعتمدونا بعد التدقيق"), bar: pc(nAppr, nAll), color: "#10B981" },
+      { label: t3("Denetime Gelmiş", "Audited", "تم تدقيقهم"), val: nAud, sub: nAll ? P(pc(nAud, nAll)) : "", bar: pc(nAud, nAll), color: "#F59E0B" },
+      { label: t3("Siparişi Olan", "With Orders", "عندهم أوردرات"), val: nOrd, sub: (nAll - nOrd) + " " + t3("müşterinin siparişi yok", "have no orders", "مفيش أوردرات"), bar: pc(nOrd, nAll), color: "#93C5FD" },
       { label: t3("Açık Bulgu", "Open Findings", "نتائج مفتوحة"), val: T.f.x + T.f.m, sub: T.f.x + " " + t3("başlanmadı", "not started", "لسه ما بدأش"), bar: pc(T.f.x + T.f.m, T.f.t), color: "#EF4444", gold: true }
-    ], { narrow: true });
+    ], { scale: .78 });
     const h2 = (ic, x) => `<div style="display:flex; align-items:center; gap:10px; margin:24px 0 12px;"><span style="width:30px; height:30px; border-radius:9px; background:${N}; color:#fff; display:grid; place-items:center; font-size:15px;">${ic}</span><span style="font-size:15px; font-weight:900; color:#0F172A; letter-spacing:.02em; text-transform:uppercase;">${x}</span></div>`;
     const th = `padding:9px 10px; text-align:start; font-size:10.5px; font-weight:800; color:#fff; background:${N}; letter-spacing:.03em;`;
     const td = "padding:9px 10px; font-size:11.5px; border-bottom:1px solid #E2E8F0; vertical-align:middle; color:#1E293B;";
-    const bar = (c, m, x, t) => t ? `<div style="display:flex; height:10px; border-radius:99px; overflow:hidden; background:#F1F5F9; min-width:120px;"><div style="width:${c * 100 / t}%; background:#16A34A;"></div><div style="width:${m * 100 / t}%; background:#F59E0B;"></div><div style="width:${x * 100 / t}%; background:#EF4444;"></div></div>` : `<div style="color:#94A3B8; font-size:10.5px;">—</div>`;
+    const bar = (c, m, x, t) => t ? `<div style="display:flex; height:10px; border-radius:99px; overflow:hidden; background:#F1F5F9; min-width:90px;"><div style="width:${c * 100 / t}%; background:#16A34A;"></div><div style="width:${m * 100 / t}%; background:#F59E0B;"></div><div style="width:${x * 100 / t}%; background:#EF4444;"></div></div>` : `<div style="color:#94A3B8; font-size:10.5px;">—</div>`;
     const cnt = (c, m, x) => `<span style="color:#16A34A; font-weight:800;">${c}</span> · <span style="color:#D97706; font-weight:800;">${m}</span> · <span style="color:#DC2626; font-weight:800;">${x}</span>`;
     const pctCol = p => p >= 80 ? "#16A34A" : p >= 50 ? "#D97706" : "#DC2626";
     const capTxt = st => st === "closed" ? t3("Kapandı", "Closed", "مغلق") : st === "in_progress" ? t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : t3("Açık", "Open", "مفتوح");
     const capCol = st => st === "closed" ? "#16A34A" : st === "in_progress" ? "#D97706" : "#DC2626";
-    const statusRows = rows.map((r, i) => `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} width:30px; font-weight:800; color:${N};">${i + 1}</td>
+    const statusRowsArr = rows.map((r, i) => `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} width:40px; white-space:nowrap; font-weight:800; color:${N};">${i + 1}</td>
       <td style="${td}"><div style="display:flex; align-items:center; gap:9px;"><span style="flex:none; width:28px; height:28px; border-radius:50%; background:${r.c.color || N}; color:#fff; font-size:10px; font-weight:900; display:grid; place-items:center;">${esc(r.c.init || String(r.c.name).slice(0, 2).toUpperCase())}</span><b>${esc(r.c.name)}</b></div></td>
+      <td style="${td} font-weight:800; color:${_custAppr(r.c) === "yes" ? "#16A34A" : _custAppr(r.c) === "pend" ? "#D97706" : "#64748B"};">${esc(_custApprLabel(_custAppr(r.c)))}</td>
+      <td style="${td} font-weight:800; color:${_custOrd(r.c) === "yes" ? "#16A34A" : "#64748B"};">${esc(_custOrdLabel(_custOrd(r.c)))}</td>
       <td style="${td} text-align:center;">${r.d.audits.length}</td>
       <td style="${td}">${r.last ? fmtD(r.last.date) : "—"}${r.last ? `<div style="font-size:10px; font-weight:800; color:${capCol(r.last.capStatus)};">${esc(capTxt(r.last.capStatus))}</div>` : ""}</td>
       <td style="${td}">${r.d.q.t ? bar(r.d.q.comp, r.d.q.min, r.d.q.crit, r.d.q.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.q.comp, r.d.q.min, r.d.q.crit)} / ${r.d.q.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
       <td style="${td}">${r.d.f.t ? bar(r.d.f.comp, r.d.f.min, r.d.f.crit, r.d.f.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.f.comp, r.d.f.min, r.d.f.crit)} / ${r.d.f.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
-      <td style="${td} text-align:end; font-size:16px; font-weight:900; color:${pctCol(r.pct)};">${P(r.pct)}</td></tr>`).join("");
+      <td style="${td} text-align:end; font-size:16px; font-weight:900; color:${r.has ? pctCol(r.pct) : "#94A3B8"};">${r.has ? P(r.pct) : "—"}</td></tr>`);
     const legend = `<div style="display:flex; gap:16px; margin-top:8px; font-size:10.5px; color:#475569; font-weight:700;"><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#16A34A; margin-inline-end:5px;"></i>${t3("Tamamlandı / Kapandı", "Completed / Closed", "مكتمل / مغلق")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#F59E0B; margin-inline-end:5px;"></i>${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#EF4444; margin-inline-end:5px;"></i>${t3("Başlanmadı / Açık", "Not Started / Open", "لسه ما بدأش / مفتوح")}</span></div>`;
     const attn = rows.filter(r => r.openF > 0).sort((a, b) => b.openF - a.openF).slice(0, 5);
     const attnHtml = attn.length ? `<div style="display:grid; grid-template-columns:repeat(${Math.min(5, attn.length)},minmax(0,1fr)); gap:12px;">${attn.map(r => `<div style="border:1.5px solid #FECACA; background:#FEF2F2; border-radius:12px; padding:12px 14px;"><div style="font-size:12px; font-weight:900; color:#0F172A;">${esc(r.c.name)}</div><div style="font-size:30px; font-weight:900; color:#DC2626; line-height:1.1; margin-top:4px;">${r.openF}</div><div style="font-size:10.5px; font-weight:700; color:#7F1D1D;">${t3("açık bulgu", "open findings", "نتائج مفتوحة")}</div></div>`).join("")}</div>` : `<div style="font-size:12px; color:#16A34A; font-weight:800;">✅ ${t3("Açık bulgu yok.", "No open findings.", "مفيش نتائج مفتوحة.")}</div>`;
@@ -68428,20 +68490,30 @@ async function downloadCustomersStatusPDF() {
       return `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} white-space:nowrap;">${fmtD(x.a.date)}</td><td style="${td} font-weight:800;">${esc(x.c.name)}</td><td style="${td}">${esc(nt || "—")}</td><td style="${td}">${esc(aud || "—")}</td><td style="${td} text-align:center;">${n}</td><td style="${td} font-weight:800; color:${capCol(x.a.capStatus)};">${esc(capTxt(x.a.capStatus))}</td></tr>`; }).join("");
     const title = _reportTitle("Müşteri Durum Raporu", "Customer Status Report", "تقرير حالة العملاء");
     const wrap = document.createElement("div");
-    wrap.style.cssText = 'position:fixed; left:-99999px; top:0; width:900px; background:#fff; font-family:"Plus Jakarta Sans",Arial,sans-serif; padding:36px; box-sizing:border-box;' + (currentLang === "ar" ? " direction:rtl;" : "");
-    wrap.innerHTML = `${_pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", icon: "🏢", title: esc(title), titleText: title, sub: "EMS Eroğlu Manufacturing Studio · 📅 " + new Date().toLocaleDateString(locale) })}
-      ${kpi}
-      ${h2("📊", t3("Müşteri Bazlı Durum", "Status by Customer", "الحالة حسب العميل"))}
-      <table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">#</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th} text-align:center;">${t3("Denetim", "Audits", "تدقيقات")}</th><th style="${th}">${t3("Son Denetim", "Last Audit", "آخر تدقيق")}</th><th style="${th}">${t3("Denetim Soruları", "Audit Questions", "أسئلة التدقيق")}</th><th style="${th}">${t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق")}</th><th style="${th} text-align:end;">${t3("Uyum", "Compliance", "الامتثال")}</th></tr></thead><tbody>${statusRows}</tbody></table>${legend}
-      ${h2("🎯", t3("Dikkat Gerektirenler", "Needs Attention", "تحتاج انتباه"))}${attnHtml}
-      ${audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : ""}
-      <div style="margin-top:16px; padding-top:10px; border-top:2px solid ${N}; font-size:9.5px; color:#64748B; text-align:center;">EMS — Eroğlu Manufacturing Studio · ${esc(t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was generated automatically by the system", "التقرير ده اتعمل أوتوماتيك من النظام"))}</div>`;
+    wrap.style.cssText = 'position:fixed; left:-99999px; top:0; width:1120px; background:#fff; font-family:"Plus Jakarta Sans",Arial,sans-serif; padding:36px; box-sizing:border-box;' + (currentLang === "ar" ? " direction:rtl;" : "");
+    const headHtml = _pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", icon: "🏢", title: esc(title), titleText: title, sub: "EMS Eroğlu Manufacturing Studio · 📅 " + new Date().toLocaleDateString(locale) });
+    const tblHead = `<thead><tr><th style="${th}">#</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Onay", "Approval", "الاعتماد")}</th><th style="${th}">${t3("Sipariş", "Orders", "الأوردرات")}</th><th style="${th} text-align:center;">${t3("Denetim", "Audits", "تدقيقات")}</th><th style="${th}">${t3("Son Denetim", "Last Audit", "آخر تدقيق")}</th><th style="${th}">${t3("Denetim Soruları", "Audit Questions", "أسئلة التدقيق")}</th><th style="${th}">${t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق")}</th><th style="${th} text-align:end;">${t3("Uyum", "Compliance", "الامتثال")}</th></tr></thead>`;
+    const tbl = arr => `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;">${tblHead}<tbody>${arr.join("")}</tbody></table>`;
+    const footHtml = `<div style="margin-top:16px; padding-top:10px; border-top:2px solid ${N}; font-size:9.5px; color:#64748B; text-align:center;">EMS — Eroğlu Manufacturing Studio · ${esc(t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was generated automatically by the system", "التقرير ده اتعمل أوتوماتيك من النظام"))}</div>`;
+    // Sayfa sayfa üretilir: hiçbir tablo satırı, başlık veya kutu sayfa sınırında kesilmez / built page by page so no row, heading or box is cut at a page edge
+    const chunks = [ statusRowsArr.slice(0, 7) ];
+    for (let k = 7; k < statusRowsArr.length; k += 13) chunks.push(statusRowsArr.slice(k, k + 13));
+    const slim = `<div style="display:flex; justify-content:space-between; align-items:center; padding:0 0 10px; margin:0 0 14px; border-bottom:2px solid #C8102E; font-size:13px; font-weight:900; color:#0F172A;"><span>${esc(title)}</span><span style="font-size:11px; color:#64748B; font-weight:700;">${t3("devam", "continued", "تابع")}</span></div>`;
+    const pagesHtml = chunks.map((arr, i) => i === 0 ? headHtml + kpi + h2("📊", t3("Müşteri Bazlı Durum", "Status by Customer", "الحالة حسب العميل")) + tbl(arr) : slim + tbl(arr));
+    pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + legend + h2("🎯", t3("Dikkat Gerektirenler", "Needs Attention", "تحتاج انتباه")) + attnHtml
+      + (audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : "") + footHtml);
     document.body.appendChild(wrap);
     let pdf = null;
     try {
-      await waitForImagesReady(wrap);
-      const canvas = await _h2c(wrap, { scale: _pdfCanvasScale(), backgroundColor: "#ffffff", useCORS: true });
-      pdf = _pdfStampPages(_pdfAddCanvasA4(null, jsPDFLib, canvas, wrap, { scale: _pdfCanvasScale(), orientation: "landscape" }));
+      // Net çıktı: yüksek çözünürlük (≈300 ppi) ve yüksek JPEG kalitesi / sharp output: high resolution and high JPEG quality
+      const _sc = (window.innerWidth || 1024) <= 768 ? 2.2 : 3;
+      for (let pi = 0; pi < pagesHtml.length; pi++) {
+        wrap.innerHTML = pagesHtml[pi];
+        await waitForImagesReady(wrap);
+        const canvas = await _h2c(wrap, { scale: _sc, backgroundColor: "#ffffff", useCORS: true });
+        pdf = _pdfAddCanvasA4(pdf, jsPDFLib, canvas, wrap, { scale: _sc, orientation: "landscape", fit: true, jpegQ: .93 });
+      }
+      pdf = _pdfStampPages(pdf);
       try { _pdfAddSignature(pdf); } catch (e) { console.warn("[imza]", e); }
     } finally { document.body.removeChild(wrap); }
     if (pdf) pdf.save("EMS_Musteri_Durum_Raporu_" + _localISODate() + ".pdf");
@@ -84280,7 +84352,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:09";
+const EMS_BUILD = "2026-11-16 12:28";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
