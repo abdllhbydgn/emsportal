@@ -48510,13 +48510,13 @@ function postProcessData() {
   // Adds the U.S. Polo Assn. customer when missing and marks it approved (one-time; an existing Polo customer is reused)
   if (Array.isArray(customersList) && _sg("cust:uspolo-20261116", true)) {
     const _po = customersList.find(c => /polo/i.test((c.key || "") + " " + (c.name || "")));
-    if (_po) _po.appr = "yes"; else customersList.push({ key: "uspolo", name: "U.S. Polo Assn.", init: "US", color: "#0B2A6F", appr: "yes" });
+    if (_po) { _po.appr = "yes"; _po.ord = "yes"; } else customersList.push({ key: "uspolo", name: "U.S. Polo Assn.", init: "US", color: "#0B2A6F", appr: "yes", ord: "yes" });
     _ppSeeded++;
   }
-  // Onaylı müşteriler (kullanıcı bilgisi, 16.11.2026; bir kez; sonra yönetici kartlardan değiştirir): H&M, George, Next, VS, LC Waikiki, Koton, Mavi. Siparişi olanlar: VS, LC Waikiki. /
+  // Onaylı müşteriler (kullanıcı bilgisi, 16.11.2026; bir kez; sonra yönetici kartlardan değiştirir): H&M, George, Next, VS, LC Waikiki, Koton, Mavi, Kiğılı, U.S. Polo. Siparişi olanlar: VS, LC Waikiki, U.S. Polo. /
   // Approved customers (one-time; the admin changes them on the cards afterwards): H&M, George, Next, VS, LC Waikiki, Koton, Mavi. With orders: VS, LC Waikiki.
   const _custIs = (c, re) => re.test(String(c.key || "")) || re.test(String(c.name || ""));
-  const _reAppr = /^\s*(hm|h\s*&\s*m|george|next|vs|victoria|lcwaikiki|lc\s*waikiki|koton|mavi)\b/i, _reOrd = /^\s*(vs|victoria|lcwaikiki|lc\s*waikiki)\b/i;
+  const _reAppr = /^\s*(hm|h\s*&\s*m|george|next|vs|victoria|lcwaikiki|lc\s*waikiki|koton|mavi|kigili|kiğılı)\b/i, _reOrd = /^\s*(vs|victoria|lcwaikiki|lc\s*waikiki)\b/i;
   if (Array.isArray(customersList) && _sg("cust:appr-ord-20261116", customersList.some(c => _custIs(c, _reAppr) && c.appr !== "yes"))) {
     customersList.forEach(c => { if (_custIs(c, _reAppr)) c.appr = "yes"; if (_custIs(c, _reOrd)) c.ord = "yes"; });
     _ppSeeded++;
