@@ -48513,6 +48513,12 @@ function postProcessData() {
     customersList.forEach(c => { if ((_rePend2.test(String(c.key || "")) || _rePend2.test(String(c.name || ""))) && c.appr !== "yes") c.appr = "pend"; });
     _ppSeeded++;
   }
+  // Carrefour ve U.S. Polo kartları her açılışta listede olur (bulut kaydı gecikse veya yazılamasa da görünür); yönetici girişindeki bir sonraki kayıtta buluta işlenir /
+  // The Carrefour and U.S. Polo cards are present on every load (visible even if the cloud write lags or fails); persisted on the next admin save
+  if (Array.isArray(customersList)) {
+    if (!customersList.some(c => /carrefour/i.test((c.key || "") + " " + (c.name || "")))) customersList.push({ key: "carrefour", name: "Carrefour", init: "CF", color: "#0B5CAD", appr: "yes", ord: "yes" });
+    if (!customersList.some(c => /polo/i.test((c.key || "") + " " + (c.name || "")))) customersList.push({ key: "uspolo", name: "U.S. Polo Assn.", init: "US", color: "#0B2A6F", appr: "yes", ord: "yes" });
+  }
   // Carrefour müşterisi yoksa eklenir (kullanıcı isteği, 16.11.2026; bir kez; kayıtlı bir Carrefour varsa o kullanılır). Kullanıcı bilgisi: onaylı, siparişi var, denetime gelmedi (denetim kaydı yok) /
   // Adds the Carrefour customer when missing (one-time; an existing Carrefour is reused). User info: approved, has orders, not audited yet (no audit record)
   if (Array.isArray(customersList) && _sg("cust:carrefour-20261116", !customersList.some(c => /carrefour/i.test((c.key || "") + " " + (c.name || ""))))) {
@@ -66282,6 +66288,12 @@ function _custFlagsHtml(c) {
   const aud = _custHasAudit(c) ? "" : `<span class="cust-flag" style="background:#F1F5F9; color:#475569; border-color:#CBD5E1;">🕐 ${escHtml(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`;
   return `<div class="cust-flags">${aud}${tag((ap === "yes" ? "✅ " : ap === "pend" ? "⏳ " : "⛔ ") + escHtml(_custApprLabel(ap)), col(ap === "yes", ap === "pend"), `_custFlagCycle('${c.key}','appr')`)}${tag("📦 " + escHtml(_custOrdLabel(od)), col(od === "yes", false), `_custFlagCycle('${c.key}','ord')`)}</div>`;
 }
+// Müşteri sırası (kartlar ve rapor ortak): 0 denetimden onaylı ve denetime gelmiş; 1 denetime gelmemiş ama siparişi var; 2 denetime gelmiş diğerleri (onayı devam edenler önce); 3 denetime gelmemiş ve siparişi yok (en altta) /
+// Customer order (cards and report): 0 approved and audited; 1 not audited but has orders; 2 other audited (approval in progress first); 3 not audited and no orders (very bottom)
+function _custRank(c) {
+  const has = _custHasAudit(c);
+  return has && _custAppr(c) === "yes" ? 0 : !has && _custOrd(c) === "yes" ? 1 : has ? (_custAppr(c) === "pend" ? 2 : 2.5) : 3;
+}
 function _custFlagCycle(key, what) {
   if (currentUserRole !== "admin") return;
   const c = (customersList || []).find(x => x.key === key);
@@ -66409,6 +66421,10 @@ function openCustomerPicker() {
   });
   // Sabit sıra: NEXT en üstte, hemen ardından H&M, sonra Inditex / Fixed order: NEXT first, then H&M, then Inditex
   [ "inditex", "hm", "next" ].forEach(k => { const i = cardData.findIndex(x => x.c.key === k); if (i > 0) cardData.unshift(cardData.splice(i, 1)[0]); });
+  // Kullanıcı isteği (16.11.2026): kartlar rapordaki sıraya göre gruplanır (onaylı ve denetimli, denetime gelmemiş ama siparişli, diğer denetimliler, denetime gelmemiş ve siparişsiz en altta); grup içinde önceki sıra korunur /
+  // Cards are grouped like the report; the previous order is kept inside each group
+  cardData.forEach((x, i) => { x._i = i; });
+  cardData.sort((x, y) => _custRank(x.c) - _custRank(y.c) || x._i - y._i);
   grid.innerHTML = cardData.map(({c: c, neverAudited: neverAudited, subtitle: subtitle, shortSub: shortSub, statusKey: statusKey, pctForSort: pctForSort, fT: fT, fC: fC, stWord: stWord, qs: qs}) => {
     const st = STATUS_STYLES[statusKey];
     const clickFn = `openCustomerDashboard('${c.key}')`;
@@ -68463,7 +68479,10 @@ async function downloadCustomersStatusPDF() {
     if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
     // Önce denetimi/verisi olanlar (en geride olan en üstte), sonra denetime gelmemişler (alfabetik) / audited customers first (furthest behind on top), then the not-yet-audited ones (alphabetical)
     rows.forEach(r => { r.has = _custHasAudit(r.c); });
-    rows.sort((a, b) => (b.has ? 1 : 0) - (a.has ? 1 : 0) || (a.has ? a.pct - b.pct || b.openF - a.openF : String(a.c.name).localeCompare(String(b.c.name), locale)));
+    // Sıra: 1) denetimden onaylı ve denetime gelmiş, 2) denetime gelmemiş ama siparişi olanlar, 3) denetime gelmiş diğerleri (önce onayı devam edenler), 4) denetime gelmemiş ve siparişi olmayanlar EN ALTTA /
+    // order: 1) audited and approved, 2) not audited but with orders, 3) other audited ones (approval in progress first), 4) not audited and without orders at the very bottom
+    const _aRank = r => _custRank(r.c);
+    rows.sort((a, b) => _aRank(a) - _aRank(b) || (a.has ? a.pct - b.pct || b.openF - a.openF : String(a.c.name).localeCompare(String(b.c.name), locale)));
     const T = { q: { t: 0, c: 0, m: 0, x: 0 }, f: { t: 0, c: 0, m: 0, x: 0 }, aud: 0 };
     rows.forEach(r => { T.q.t += r.d.q.t; T.q.c += r.d.q.comp; T.q.m += r.d.q.min; T.q.x += r.d.q.crit; T.f.t += r.d.f.t; T.f.c += r.d.f.comp; T.f.m += r.d.f.min; T.f.x += r.d.f.crit; T.aud += r.d.audits.length; });
     const pc = (n, t) => t ? Math.round(n * 100 / t) : 0, P = n => fmtPct(n);
@@ -68514,12 +68533,15 @@ async function downloadCustomersStatusPDF() {
     const pagesHtml = chunks.map((arr, i) => i === 0 ? headHtml + kpi + h2("📊", t3("Müşteri Bazlı Durum", "Status by Customer", "الحالة حسب العميل")) + tbl(arr) : slim + tbl(arr));
     // Onay, sipariş ve denetim özeti: kullanıcının verdiği bilgiler isim isim / approval, order and audit summary: the information given by the user, by name
     const listOf = f => rows.filter(f).map(r => r.c.name).sort((x, y) => String(x).localeCompare(String(y), locale));
-    const sumBox = (ttl, names, col, bg) => `<div style="border:1.5px solid ${col}55; background:${bg}; border-radius:14px; padding:14px 16px;"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px;"><div style="font-size:12px; font-weight:900; color:${col}; text-transform:uppercase; letter-spacing:.04em;">${ttl}</div><div style="font-size:30px; font-weight:900; color:${col}; line-height:1;">${names.length}</div></div><div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">${names.length ? names.map(n => `<span style="background:#fff; border:1px solid ${col}44; color:#0F172A; font-size:12px; font-weight:700; padding:4px 10px; border-radius:99px;">${esc(n)}</span>`).join("") : `<span style="color:#94A3B8; font-size:12px;">—</span>`}</div></div>`;
+    const ordTag = r => _custOrd(r.c) === "yes" ? `<b style="color:#15803D;">${esc(_custOrdLabel("yes"))}</b>` : `<span style="color:#64748B;">${esc(_custOrdLabel("no"))}</span>`;
+    const listOrd = f => rows.filter(f).sort((x, y) => (_custOrd(y.c) === "yes" ? 1 : 0) - (_custOrd(x.c) === "yes" ? 1 : 0) || String(x.c.name).localeCompare(String(y.c.name), locale)).map(r => ({ n: r.c.name, h: `${esc(r.c.name)} <span style="color:#94A3B8;">·</span> ${ordTag(r)}` }));
+    const sumBox = (ttl, names, col, bg) => `<div style="border:1.5px solid ${col}55; background:${bg}; border-radius:14px; padding:14px 16px;"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px;"><div style="font-size:12px; font-weight:900; color:${col}; text-transform:uppercase; letter-spacing:.04em;">${ttl}</div><div style="font-size:30px; font-weight:900; color:${col}; line-height:1;">${names.length}</div></div><div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">${names.length ? names.map(n => `<span style="background:#fff; border:1px solid ${col}44; color:#0F172A; font-size:12px; font-weight:700; padding:4px 10px; border-radius:99px;">${typeof n === "string" ? esc(n) : n.h}</span>`).join("") : `<span style="color:#94A3B8; font-size:12px;">—</span>`}</div></div>`;
     pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + h2("✅", t3("Onay, Sipariş ve Denetim Özeti", "Approval, Orders and Audit Summary", "ملخص الاعتماد والأوردرات والتدقيق"))
       + `<div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;">`
-      + sumBox(t3("Denetim sonucu onaylayan", "Approved us after audit", "اعتمدونا بعد التدقيق"), listOf(r => _custAppr(r.c) === "yes"), "#15803D", "#F0FDF4")
-      + sumBox(t3("Onay devam ediyor", "Approval in progress", "الاعتماد جاري"), listOf(r => _custAppr(r.c) === "pend"), "#B45309", "#FFFBEB")
+      + sumBox(t3("Denetim sonucu onaylayan", "Approved us after audit", "اعتمدونا بعد التدقيق"), listOrd(r => _custAppr(r.c) === "yes"), "#15803D", "#F0FDF4")
+      + sumBox(t3("Onay devam ediyor", "Approval in progress", "الاعتماد جاري"), listOrd(r => _custAppr(r.c) === "pend"), "#B45309", "#FFFBEB")
       + sumBox(t3("Onay yok", "Not approved", "مش معتمد"), listOf(r => _custAppr(r.c) === "no"), "#475569", "#F8FAFC")
+      + sumBox(t3("Denetime gelmedi, siparişi var", "Not audited yet, has orders", "لسه ما اتدققوش وعندهم أوردرات"), listOf(r => !r.has && _custOrd(r.c) === "yes"), "#7C3AED", "#F5F3FF")
       + sumBox(t3("Siparişi olan", "With orders", "عندهم أوردرات"), listOf(r => _custOrd(r.c) === "yes"), "#1D4ED8", "#EFF6FF")
       + sumBox(t3("Siparişi olmayan", "Without orders", "من غير أوردرات"), listOf(r => _custOrd(r.c) !== "yes"), "#475569", "#F8FAFC")
       + sumBox(t3("Denetime gelmeyen", "Not audited yet", "لسه ما اتدققوش"), listOf(r => !r.has), "#B91C1C", "#FEF2F2")
@@ -84376,7 +84398,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:43";
+const EMS_BUILD = "2026-11-16 12:46";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
