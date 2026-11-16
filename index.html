@@ -68481,7 +68481,7 @@ async function downloadCustomersStatusPDF() {
       <td style="${td} font-weight:800; color:${_custAppr(r.c) === "yes" ? "#16A34A" : _custAppr(r.c) === "pend" ? "#D97706" : "#64748B"};">${esc(_custApprLabel(_custAppr(r.c)))}</td>
       <td style="${td} font-weight:800; color:${_custOrd(r.c) === "yes" ? "#16A34A" : "#64748B"};">${esc(_custOrdLabel(_custOrd(r.c)))}</td>
       <td style="${td} text-align:center;">${r.d.audits.length}</td>
-      <td style="${td}">${r.last ? fmtD(r.last.date) : "—"}${r.last ? `<div style="font-size:10px; font-weight:800; color:${capCol(r.last.capStatus)};">${esc(capTxt(r.last.capStatus))}</div>` : ""}</td>
+      <td style="${td}">${r.last ? fmtD(r.last.date) : r.has ? "—" : `<span style="font-weight:800; color:#64748B;">${esc(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`}${r.last ? `<div style="font-size:10px; font-weight:800; color:${capCol(r.last.capStatus)};">${esc(capTxt(r.last.capStatus))}</div>` : ""}</td>
       <td style="${td}">${r.d.q.t ? bar(r.d.q.comp, r.d.q.min, r.d.q.crit, r.d.q.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.q.comp, r.d.q.min, r.d.q.crit)} / ${r.d.q.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
       <td style="${td}">${r.d.f.t ? bar(r.d.f.comp, r.d.f.min, r.d.f.crit, r.d.f.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.f.comp, r.d.f.min, r.d.f.crit)} / ${r.d.f.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
       <td style="${td} text-align:end; font-size:16px; font-weight:900; color:${r.has ? pctCol(r.pct) : "#94A3B8"};">${r.has ? P(r.pct) : "—"}</td></tr>`);
@@ -68505,6 +68505,18 @@ async function downloadCustomersStatusPDF() {
     for (let k = 7; k < statusRowsArr.length; k += 13) chunks.push(statusRowsArr.slice(k, k + 13));
     const slim = `<div style="display:flex; justify-content:space-between; align-items:center; padding:0 0 10px; margin:0 0 14px; border-bottom:2px solid #C8102E; font-size:13px; font-weight:900; color:#0F172A;"><span>${esc(title)}</span><span style="font-size:11px; color:#64748B; font-weight:700;">${t3("devam", "continued", "تابع")}</span></div>`;
     const pagesHtml = chunks.map((arr, i) => i === 0 ? headHtml + kpi + h2("📊", t3("Müşteri Bazlı Durum", "Status by Customer", "الحالة حسب العميل")) + tbl(arr) : slim + tbl(arr));
+    // Onay, sipariş ve denetim özeti: kullanıcının verdiği bilgiler isim isim / approval, order and audit summary: the information given by the user, by name
+    const listOf = f => rows.filter(f).map(r => r.c.name).sort((x, y) => String(x).localeCompare(String(y), locale));
+    const sumBox = (ttl, names, col, bg) => `<div style="border:1.5px solid ${col}55; background:${bg}; border-radius:14px; padding:14px 16px;"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px;"><div style="font-size:12px; font-weight:900; color:${col}; text-transform:uppercase; letter-spacing:.04em;">${ttl}</div><div style="font-size:30px; font-weight:900; color:${col}; line-height:1;">${names.length}</div></div><div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">${names.length ? names.map(n => `<span style="background:#fff; border:1px solid ${col}44; color:#0F172A; font-size:12px; font-weight:700; padding:4px 10px; border-radius:99px;">${esc(n)}</span>`).join("") : `<span style="color:#94A3B8; font-size:12px;">—</span>`}</div></div>`;
+    pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + h2("✅", t3("Onay, Sipariş ve Denetim Özeti", "Approval, Orders and Audit Summary", "ملخص الاعتماد والأوردرات والتدقيق"))
+      + `<div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;">`
+      + sumBox(t3("Denetim sonucu onaylayan", "Approved us after audit", "اعتمدونا بعد التدقيق"), listOf(r => _custAppr(r.c) === "yes"), "#15803D", "#F0FDF4")
+      + sumBox(t3("Onay devam ediyor", "Approval in progress", "الاعتماد جاري"), listOf(r => _custAppr(r.c) === "pend"), "#B45309", "#FFFBEB")
+      + sumBox(t3("Onay yok", "Not approved", "مش معتمد"), listOf(r => _custAppr(r.c) === "no"), "#475569", "#F8FAFC")
+      + sumBox(t3("Siparişi olan", "With orders", "عندهم أوردرات"), listOf(r => _custOrd(r.c) === "yes"), "#1D4ED8", "#EFF6FF")
+      + sumBox(t3("Siparişi olmayan", "Without orders", "من غير أوردرات"), listOf(r => _custOrd(r.c) !== "yes"), "#475569", "#F8FAFC")
+      + sumBox(t3("Denetime gelmeyen", "Not audited yet", "لسه ما اتدققوش"), listOf(r => !r.has), "#B91C1C", "#FEF2F2")
+      + `</div>` + footHtml);
     pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + legend + h2("🎯", t3("Dikkat Gerektirenler", "Needs Attention", "تحتاج انتباه")) + attnHtml
       + (audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : "") + footHtml);
     document.body.appendChild(wrap);
@@ -84357,7 +84369,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:39";
+const EMS_BUILD = "2026-11-16 12:40";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
