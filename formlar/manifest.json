@@ -6,7 +6,7 @@
   "folder": "Ön Hazırlık ve Risk Analizi",
   "order": 0,
   "ext": "xlsx",
-  "rev": "6b7668f6"
+  "rev": "6b7668f6-nscs"
  },
  {
   "code": "0. Ön Hazırlık ve Risk Analizi/EMS.QA.FRM.00.02. Risk Analiz Tutanağı.xlsx",
@@ -15,7 +15,7 @@
   "folder": "Ön Hazırlık ve Risk Analizi",
   "order": 0,
   "ext": "xlsx",
-  "rev": "a46652fd"
+  "rev": "a46652fd-nscs"
  },
  {
   "code": "1. Aksesuar Kontrol Bölümü/EMS.QA.FRM.01.04. Malzeme Kartelası (Trim Card).xlsx",
@@ -24,7 +24,7 @@
   "folder": "Aksesuar Kontrol Bölümü",
   "order": 1,
   "ext": "xlsx",
-  "rev": "df88a108"
+  "rev": "df88a108-nscs"
  },
  {
   "code": "1. Aksesuar Kontrol Bölümü/EMS.QA.FRM.01.05. Aksesuar Kalite Kontrol Formu.xlsx",
@@ -33,7 +33,7 @@
   "folder": "Aksesuar Kontrol Bölümü",
   "order": 1,
   "ext": "xlsx",
-  "rev": "9fa842ab"
+  "rev": "9fa842ab-nscs"
  },
  {
   "code": "2-Kumaş Kontrol Bölümü/EMS.QA.FRM.01.01. Kumaş Dinlendirme Formu.xlsx",
@@ -42,7 +42,7 @@
   "folder": "Kumaş Kontrol Bölümü",
   "order": 2,
   "ext": "xlsx",
-  "rev": "5d3e7dec"
+  "rev": "5d3e7dec-nscs"
  },
  {
   "code": "2-Kumaş Kontrol Bölümü/EMS.QA.FRM.01.02. Kumaş Test Sonuç Formu.xlsx",
@@ -51,7 +51,7 @@
   "folder": "Kumaş Kontrol Bölümü",
   "order": 2,
   "ext": "xlsx",
-  "rev": "29598b2a"
+  "rev": "29598b2a-nscs"
  },
  {
   "code": "EMS.QA.FRM.01.03. Kumaş Kontrol Formu.xlsx",
@@ -60,7 +60,7 @@
   "folder": "Kumaş Kontrol Bölümü",
   "order": 2,
   "ext": "xlsx",
-  "rev": "7dd4433d"
+  "rev": "7dd4433d-nscs"
  },
  {
   "code": "2-Kumaş Kontrol Bölümü/EMS.WH.FRM.01.01. Kumaş Kabul Formu.xlsx",
@@ -69,7 +69,7 @@
   "folder": "Kumaş Kontrol Bölümü",
   "order": 2,
   "ext": "xlsx",
-  "rev": "754a918d"
+  "rev": "754a918d-nscs"
  },
  {
   "code": "3. Kesimhane Bölümü/EMS.QA.FRM.02.01. Kesimhane Kontrol Formu.xlsx",
@@ -78,7 +78,7 @@
   "folder": "Kesimhane Bölümü",
   "order": 3,
   "ext": "xlsx",
-  "rev": "f2a734d8"
+  "rev": "f2a734d8-nscs"
  },
  {
   "code": "3. Kesimhane Bölümü/EMS.QA.FRM.02.02. Kesimhane Tasnif Hata Formu.xlsx",
@@ -87,7 +87,7 @@
   "folder": "Kesimhane Bölümü",
   "order": 3,
   "ext": "xlsx",
-  "rev": "85360b1d"
+  "rev": "85360b1d-nscs"
  },
  {
   "code": "EMS.QA.FRM.03.01. QA_Dikim Proses Kontrol Formu (ortak).xlsx",
@@ -96,7 +96,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "c090b9a6"
+  "rev": "c090b9a6-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.QA.FRM.03.02. QA_Kırık İğne Takip Formu.xlsx",
@@ -105,7 +105,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "bf6e3a91"
+  "rev": "bf6e3a91-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.QA.FRM.03.03. QA_Dikim Cep Hata Analiz Formu.xlsx",
@@ -114,7 +114,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "9fc5e49f"
+  "rev": "9fc5e49f-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.QA.FRM.03.04. QA_Baskı Nakış Kalite Kontrol Formu (ortak).xlsx",
@@ -123,7 +123,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "1ad7312a"
+  "rev": "1ad7312a-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.QA.FRM.03.05. QA_Baskı Nakış Onay Formu.xlsx",
@@ -132,7 +132,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "kodduzelt-2026-10-27"
+  "rev": "kodduzelt-2026-10-27-nscs"
  },
  {
   "code": "EMS.QA.FRM.03.11. QA_Tela Proses Kontrol Formu (ortak).xlsx",
@@ -141,7 +141,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "renum-2026-10-15"
+  "rev": "renum-2026-10-15-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.QA.FRM.03.06. Metal Dedektör Karantina Kutusu Kayıt Formu.xlsx",
@@ -150,7 +150,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "161621a1"
+  "rev": "161621a1-nscs"
  },
  {
   "code": "EMS.QA.FRM.03.12. Metal Dedektörü Günlük Kalibrasyon Kartı.xlsx",
@@ -159,7 +159,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "renum-2026-10-15"
+  "rev": "renum-2026-10-15-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.QA.FRM.03.07. Metal Dedektörü Günlük Kalibrasyon Raporu.xlsx",
@@ -168,7 +168,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "642edec3"
+  "rev": "642edec3-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.QA.FRM.03.09. Metalden Arındırılmış Bölge Giriş-Çıkış Formu.xlsx",
@@ -177,7 +177,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "69794706"
+  "rev": "69794706-nscs"
  },
  {
   "code": "EMS.QA.FRM.03.10. Operasyon Özellikleri Formu (MockUp).xlsx",
@@ -186,7 +186,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "9ef844ff"
+  "rev": "9ef844ff-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.SW.FRM.03.01. SW_Dikim Proses Kontrol Formu (ortak).xlsx",
@@ -195,7 +195,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "52c7424c"
+  "rev": "52c7424c-nscs"
  },
  {
   "code": "EMS.SW.FRM.03.02. SW_Baskı Nakış Kalite Kontrol Formu (ortak).xlsx",
@@ -204,7 +204,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "669159c0"
+  "rev": "669159c0-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.SW.FRM.03.03. SW_Tela Proses Kontrol Formu (ortak).xlsx",
@@ -213,7 +213,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "0b5f3c69"
+  "rev": "0b5f3c69-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.QA.FRM.05.01. Bitmiş Ürün Kontrol Hata Dağılımı Takip Formu.xlsx",
@@ -222,7 +222,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "b228dc6c"
+  "rev": "b228dc6c-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.QA.FRM.05.02. Kalite Güvence Ölçüm Formu.xlsx",
@@ -231,7 +231,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "00e92e29"
+  "rev": "00e92e29-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.QA.FRM.05.03. Kalite Kontrol Raporu.xlsx",
@@ -240,7 +240,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "d3a618f6"
+  "rev": "d3a618f6-nscs"
  },
  {
   "code": "6. Makine Bakım Bölümü/EMS.QA.FRM.06.01. Makine Bakım Kartı.xlsx",
@@ -249,7 +249,7 @@
   "folder": "Makine Bakım Bölümü",
   "order": 6,
   "ext": "xlsx",
-  "rev": "e55e2b2b"
+  "rev": "e55e2b2b-nscs"
  },
  {
   "code": "6. Makine Bakım Bölümü/EMS.QA.FRM.06.02 Günlük Arıza Bakım İş Kaydı.xlsx",
@@ -258,7 +258,7 @@
   "folder": "Makine Bakım Bölümü",
   "order": 6,
   "ext": "xlsx",
-  "rev": "85b6c8e5"
+  "rev": "85b6c8e5-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.01. Açık En Sanfor Üretim Formu.xlsx",
@@ -267,7 +267,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "f3f7d0d8"
+  "rev": "f3f7d0d8-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.02. Balon Sıkma Üretim Formu.xlsx",
@@ -276,7 +276,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "c257a0f9"
+  "rev": "c257a0f9-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.03. Gaze Üretim Formu.xlsx",
@@ -285,7 +285,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "c8f4e5e6"
+  "rev": "c8f4e5e6-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.04. Fikse Çekmezlik Formu.xlsx",
@@ -294,7 +294,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "429dcdf4"
+  "rev": "429dcdf4-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.05. Kalite Kontrol Hata Çizelgesi.xlsx",
@@ -303,7 +303,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "afff94a6"
+  "rev": "afff94a6-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.06. Kalite Kontrol Üretim Formu.xlsx",
@@ -312,7 +312,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "6c44943d"
+  "rev": "6c44943d-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.07. Kurutma Üretim Takip Formu.xlsx",
@@ -321,7 +321,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "4a38ec86"
+  "rev": "4a38ec86-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.08. Ram Önü Yıkama Üretim Formu.xlsx",
@@ -330,7 +330,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "6d21c89c"
+  "rev": "6d21c89c-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.09. Ram Üretim Takip Formu.xlsx",
@@ -339,7 +339,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "8a489a66"
+  "rev": "8a489a66-nscs"
  },
  {
   "code": "EMS.QA.FRM.07.10. Şardon Üretim Formu.xlsx",
@@ -348,7 +348,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "1adbe553"
+  "rev": "1adbe553-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.11 TEST RAPORU.xlsx",
@@ -357,7 +357,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "712e4c0a"
+  "rev": "712e4c0a-nscs"
  },
  {
   "code": "EMS.QA.FRM.07.12. Top Açma Üretim Formu.xlsx",
@@ -366,7 +366,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "8cdd3e43"
+  "rev": "8cdd3e43-nscs"
  },
  {
   "code": "EMS.QA.FRM.07.13. Tumbler Üretim Formu.xlsx",
@@ -375,7 +375,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "bd6d3736"
+  "rev": "bd6d3736-nscs"
  },
  {
   "code": "EMS.QA.FRM.07.14. Tüp Kesme Üretim Formu.xlsx",
@@ -384,7 +384,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "c229ac11"
+  "rev": "c229ac11-nscs"
  },
  {
   "code": "EMS.QA.FRM.07.15. Tüp Sanfor Üretim Formu.xlsx",
@@ -393,7 +393,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "ce754d37"
+  "rev": "ce754d37-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.16. Laboratuvar Renk Çalışması Formu.xlsx",
@@ -402,7 +402,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "b4e5c0b9"
+  "rev": "b4e5c0b9-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.17. Ürge Çalışma Test Raporu.xlsx",
@@ -411,7 +411,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "af9869b0"
+  "rev": "af9869b0-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.18. Makine Bakım Formu.xlsx",
@@ -420,7 +420,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "e6d92ee2"
+  "rev": "e6d92ee2-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.19. İplik Muayene Girdi Kontrol ve Tedarikçi Değerlendirme Formu.xlsx",
@@ -429,7 +429,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "65757964"
+  "rev": "65757964-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.20 Günlük Arıza Bakım İş Kaydı.xlsx",
@@ -438,7 +438,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "4622d9f1"
+  "rev": "4622d9f1-nscs"
  },
  {
   "code": "7. Boyahane Bölümü/EMS.QA.FRM.07.21. Ham Kumaş Kontrol Formu.xlsx",
@@ -447,7 +447,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "xlsx",
-  "rev": "57f54365"
+  "rev": "57f54365-nscs"
  },
  {
   "code": "EMS.QA.KRT.07.01. Renk Arşiv Kartelası.docx",
@@ -456,7 +456,7 @@
   "folder": "Boyahane Bölümü",
   "order": 7,
   "ext": "docx",
-  "rev": "4dbd7eec"
+  "rev": "4dbd7eec-nscs"
  },
  {
   "code": "EMS.QA.FRM.08.01. İplik Bölümü Vardiya Rapor Formu.xlsx",
@@ -465,7 +465,7 @@
   "folder": "İplik Bölümü",
   "order": 8,
   "ext": "xlsx",
-  "rev": "dd656f06"
+  "rev": "dd656f06-nscs"
  },
  {
   "code": "EMS.QA.FRM.08.02. İplik Bölümü Sipariş Takip Formu.xlsx",
@@ -474,7 +474,7 @@
   "folder": "İplik Bölümü",
   "order": 8,
   "ext": "xlsx",
-  "rev": "0cd6f235"
+  "rev": "0cd6f235-nscs"
  },
  {
   "code": "EMS.QA.FRM.08.03. İplik Bölümü Numune Formu.xlsx",
@@ -483,7 +483,7 @@
   "folder": "İplik Bölümü",
   "order": 8,
   "ext": "xlsx",
-  "rev": "dad7d6fa"
+  "rev": "dad7d6fa-nscs"
  },
  {
   "code": "EMS.QA.FRM.08.04. İplik Bölümü Makine Bakım Formu.xlsx",
@@ -492,7 +492,7 @@
   "folder": "İplik Bölümü",
   "order": 8,
   "ext": "xlsx",
-  "rev": "a86ac1ec"
+  "rev": "a86ac1ec-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.QA.FRM.04.01. Yıkama Öncesi Mal Kabul Kontrol Formu.xlsx",
@@ -501,7 +501,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "afd068ba"
+  "rev": "afd068ba-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.QA.FRM.04.02. İlk Kazan Kontrol Formu.xlsx",
@@ -510,7 +510,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "9a58d9e4"
+  "rev": "9a58d9e4-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.QA.FRM.04.03. Kuru İşlem Kontrol Formu.xlsx",
@@ -519,7 +519,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "d6d7e464"
+  "rev": "d6d7e464-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.QA.FRM.04.04. Islak İşlem Kontrol Formu.xlsx",
@@ -528,7 +528,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "d668cd99"
+  "rev": "d668cd99-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.QA.FRM.04.05. Sprey İşlem Kontrol Formu.xlsx",
@@ -537,7 +537,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "68c9e925"
+  "rev": "68c9e925-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.QA.FRM.04.06. Paketleme Mal Kabul Kontrol Formu.xlsx",
@@ -546,7 +546,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "016d0eab"
+  "rev": "016d0eab-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.WS.RPR.04.01. Kuru işlem Günlük Üretim Raporu.xlsx",
@@ -555,7 +555,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "685a037f"
+  "rev": "685a037f-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.WS.RPR.04.02. Islak İşlem Günlük Üretim Raporu.xlsx",
@@ -564,7 +564,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "9d77d696"
+  "rev": "9d77d696-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.WS.RPR.04.03. Sprey İşlem Günlük Üretim Raporu.xlsx",
@@ -573,7 +573,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "ca0dca06"
+  "rev": "ca0dca06-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.WS.RPR.04.04. Yıkama Bölümü Genel Günlük Üretim Raporu.xlsx",
@@ -582,7 +582,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "4aaeb984"
+  "rev": "4aaeb984-nscs"
  },
  {
   "code": "4. Yıkama Bölümü (ERTELENDİ)/EMS.WS.RPR.04.05 Boyama Laboratuvarı Daldırma Formu.xlsx",
@@ -591,7 +591,7 @@
   "folder": "Yıkama Bölümü (ERTELENDİ)",
   "order": 9,
   "ext": "xlsx",
-  "rev": "kodduzelt-2026-10-27"
+  "rev": "kodduzelt-2026-10-27-nscs"
  },
  {
   "code": "0. Ön Hazırlık ve Risk Analizi/EMS.ÜR.FRM.05.01. Sipariş Gözden Geçirme Formu.xlsx",
@@ -600,7 +600,7 @@
   "folder": "Ön Hazırlık ve Risk Analizi",
   "order": 0,
   "ext": "xlsx",
-  "rev": "83a91d6f"
+  "rev": "83a91d6f-nscs"
  },
  {
   "code": "0. Ön Hazırlık ve Risk Analizi/EMS.ÜR.FRM.05.02. Üretime Devir Formu.xlsx",
@@ -609,7 +609,7 @@
   "folder": "Ön Hazırlık ve Risk Analizi",
   "order": 0,
   "ext": "xlsx",
-  "rev": "f4be2b7d"
+  "rev": "f4be2b7d-nscs"
  },
  {
   "code": "9. Satın Alma ve Tedarikçi/EMS.SA.FRM.04.01. Tedarikçi Değerlendirme Formu.xlsx",
@@ -618,7 +618,7 @@
   "folder": "Satın Alma ve Tedarikçi",
   "order": 9,
   "ext": "xlsx",
-  "rev": "3081e34b"
+  "rev": "3081e34b-nscs"
  },
  {
   "code": "9. Satın Alma ve Tedarikçi/EMS.SA.FRM.04.02. Satın Alma Talep ve Sipariş Formu.xlsx",
@@ -627,7 +627,7 @@
   "folder": "Satın Alma ve Tedarikçi",
   "order": 9,
   "ext": "xlsx",
-  "rev": "48993881"
+  "rev": "48993881-nscs"
  },
  {
   "code": "9. Satın Alma ve Tedarikçi/EMS.SA.FRM.04.03. Sipariş Teyit ve Termin Takip Formu.xlsx",
@@ -636,7 +636,7 @@
   "folder": "Satın Alma ve Tedarikçi",
   "order": 9,
   "ext": "xlsx",
-  "rev": "d8aca4e9"
+  "rev": "d8aca4e9-nscs"
  },
  {
   "code": "9. Satın Alma ve Tedarikçi/EMS.SA.FRM.04.04. Tedarikçi Performans Formu.xlsx",
@@ -645,7 +645,7 @@
   "folder": "Satın Alma ve Tedarikçi",
   "order": 9,
   "ext": "xlsx",
-  "rev": "4de37eec"
+  "rev": "4de37eec-nscs"
  },
  {
   "code": "9. Satın Alma ve Tedarikçi/EMS.SA.FRM.04.05. Onaylı Tedarikçi Listesi.xlsx",
@@ -654,7 +654,7 @@
   "folder": "Satın Alma ve Tedarikçi",
   "order": 9,
   "ext": "xlsx",
-  "rev": "815a57a3"
+  "rev": "815a57a3-nscs"
  },
  {
   "code": "9. Satın Alma ve Tedarikçi/EMS.SA.FRM.04.06. Tedarikçi DÖF Talep Formu.xlsx",
@@ -663,7 +663,7 @@
   "folder": "Satın Alma ve Tedarikçi",
   "order": 9,
   "ext": "xlsx",
-  "rev": "d0bf33db"
+  "rev": "d0bf33db-nscs"
  },
  {
   "code": "10. Depo ve Sevkiyat/EMS.DP.FRM.08.01. Mal Kabul Kayıt Formu.xlsx",
@@ -672,7 +672,7 @@
   "folder": "Depo ve Sevkiyat",
   "order": 10,
   "ext": "xlsx",
-  "rev": "424ebad8"
+  "rev": "424ebad8-nscs"
  },
  {
   "code": "10. Depo ve Sevkiyat/EMS.DP.FRM.08.02. Uygunsuz Malzeme Bildirim Formu.xlsx",
@@ -681,7 +681,7 @@
   "folder": "Depo ve Sevkiyat",
   "order": 10,
   "ext": "xlsx",
-  "rev": "a7947024"
+  "rev": "a7947024-nscs"
  },
  {
   "code": "10. Depo ve Sevkiyat/EMS.DP.FRM.08.03. Stok Sayım Formu.xlsx",
@@ -690,7 +690,7 @@
   "folder": "Depo ve Sevkiyat",
   "order": 10,
   "ext": "xlsx",
-  "rev": "1b744707"
+  "rev": "1b744707-nscs"
  },
  {
   "code": "10. Depo ve Sevkiyat/EMS.DP.FRM.08.04. Yükleme Kontrol Formu.xlsx",
@@ -699,7 +699,7 @@
   "folder": "Depo ve Sevkiyat",
   "order": 10,
   "ext": "xlsx",
-  "rev": "d5eb06c9"
+  "rev": "d5eb06c9-nscs"
  },
  {
   "code": "10. Depo ve Sevkiyat/EMS.DP.FRM.08.05. Sevk Çıkış Formu.xlsx",
@@ -708,7 +708,7 @@
   "folder": "Depo ve Sevkiyat",
   "order": 10,
   "ext": "xlsx",
-  "rev": "2022a4ea"
+  "rev": "2022a4ea-nscs"
  },
  {
   "code": "10. Depo ve Sevkiyat/EMS.DP.FRM.08.06. İzlenebilirlik Kayıt Formu.xlsx",
@@ -717,7 +717,7 @@
   "folder": "Depo ve Sevkiyat",
   "order": 10,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "11. Laboratuvar ve Kalibrasyon/EMS.LB.FRM.09.01. Numune Kayıt Formu.xlsx",
@@ -726,7 +726,7 @@
   "folder": "Laboratuvar ve Kalibrasyon",
   "order": 11,
   "ext": "xlsx",
-  "rev": "a6bd3e73"
+  "rev": "a6bd3e73-nscs"
  },
  {
   "code": "11. Laboratuvar ve Kalibrasyon/EMS.LB.FRM.09.02. RSL Test Sonuç Formu.xlsx",
@@ -735,7 +735,7 @@
   "folder": "Laboratuvar ve Kalibrasyon",
   "order": 11,
   "ext": "xlsx",
-  "rev": "c54aacba"
+  "rev": "c54aacba-nscs"
  },
  {
   "code": "11. Laboratuvar ve Kalibrasyon/EMS.LB.FRM.09.03. Parti Karar Formu.xlsx",
@@ -744,7 +744,7 @@
   "folder": "Laboratuvar ve Kalibrasyon",
   "order": 11,
   "ext": "xlsx",
-  "rev": "fe3b6d4a"
+  "rev": "fe3b6d4a-nscs"
  },
  {
   "code": "11. Laboratuvar ve Kalibrasyon/EMS.LB.FRM.09.04. Ölçü Cihazı Envanteri.xlsx",
@@ -753,7 +753,7 @@
   "folder": "Laboratuvar ve Kalibrasyon",
   "order": 11,
   "ext": "xlsx",
-  "rev": "2315be2c"
+  "rev": "2315be2c-nscs"
  },
  {
   "code": "11. Laboratuvar ve Kalibrasyon/EMS.LB.FRM.09.05. Kalibrasyon Sertifika Kaydı.xlsx",
@@ -762,7 +762,7 @@
   "folder": "Laboratuvar ve Kalibrasyon",
   "order": 11,
   "ext": "xlsx",
-  "rev": "d98bed85"
+  "rev": "d98bed85-nscs"
  },
  {
   "code": "12. Örme Dokuma Bölümü/EMS.ÜR.FRM.05.03. Üretim Emri ve İplik Lot Formu.xlsx",
@@ -771,7 +771,7 @@
   "folder": "Örme Dokuma Bölümü",
   "order": 12,
   "ext": "xlsx",
-  "rev": "98c242d7"
+  "rev": "98c242d7-nscs"
  },
  {
   "code": "12. Örme Dokuma Bölümü/EMS.ÜR.FRM.05.04. İlk Numune Onay Formu.xlsx",
@@ -780,7 +780,7 @@
   "folder": "Örme Dokuma Bölümü",
   "order": 12,
   "ext": "xlsx",
-  "rev": "4fbeced2"
+  "rev": "4fbeced2-nscs"
  },
  {
   "code": "12. Örme Dokuma Bölümü/EMS.ÜR.FRM.05.05. Top Sevk Listesi.xlsx",
@@ -789,7 +789,7 @@
   "folder": "Örme Dokuma Bölümü",
   "order": 12,
   "ext": "xlsx",
-  "rev": "ba35f1a7"
+  "rev": "ba35f1a7-nscs"
  },
  {
   "code": "4. Dikimhane Bölümü/EMS.ÜR.FRM.05.06. Tamir Takip Formu.xlsx",
@@ -798,7 +798,7 @@
   "folder": "Dikimhane Bölümü",
   "order": 4,
   "ext": "xlsx",
-  "rev": "a3b1b96c"
+  "rev": "a3b1b96c-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.ÜR.FRM.05.07. Paketleme Kontrol Formu.xlsx",
@@ -807,7 +807,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "315ad292"
+  "rev": "315ad292-nscs"
  },
  {
   "code": "1. Aksesuar Kontrol Bölümü/EMS.ÜR.FRM.05.08. Aksesuar Dağıtım Formu.xlsx",
@@ -816,7 +816,7 @@
   "folder": "Aksesuar Kontrol Bölümü",
   "order": 1,
   "ext": "xlsx",
-  "rev": "075417f6"
+  "rev": "075417f6-nscs"
  },
  {
   "code": "6. Makine Bakım Bölümü/EMS.BK.FRM.07.01. Yedek Parça Talep Formu.xlsx",
@@ -825,7 +825,7 @@
   "folder": "Makine Bakım Bölümü",
   "order": 6,
   "ext": "xlsx",
-  "rev": "928b4000"
+  "rev": "928b4000-nscs"
  },
  {
   "code": "13. Eğitim ve Yetkinlik/EMS.EG.FRM.12.01. Yetkinlik Matrisi.xlsx",
@@ -834,7 +834,7 @@
   "folder": "Eğitim ve Yetkinlik",
   "order": 13,
   "ext": "xlsx",
-  "rev": "b8db649e"
+  "rev": "b8db649e-nscs"
  },
  {
   "code": "13. Eğitim ve Yetkinlik/EMS.EG.FRM.12.02. Eğitim Katılım Formu.xlsx",
@@ -843,7 +843,7 @@
   "folder": "Eğitim ve Yetkinlik",
   "order": 13,
   "ext": "xlsx",
-  "rev": "8e8a3d40"
+  "rev": "8e8a3d40-nscs"
  },
  {
   "code": "14. Müşteri Şikâyeti/EMS.QA.FRM.10.01. Müşteri Şikâyet Formu.xlsx",
@@ -852,7 +852,7 @@
   "folder": "Müşteri Şikâyeti",
   "order": 14,
   "ext": "xlsx",
-  "rev": "572a0ca2"
+  "rev": "572a0ca2-nscs"
  },
  {
   "code": "14. Müşteri Şikâyeti/EMS.QA.FRM.10.02. Kök Neden Analiz Formu.xlsx",
@@ -861,7 +861,7 @@
   "folder": "Müşteri Şikâyeti",
   "order": 14,
   "ext": "xlsx",
-  "rev": "7ab6792b"
+  "rev": "7ab6792b-nscs"
  },
  {
   "code": "14. Müşteri Şikâyeti/EMS.QA.FRM.10.03. Şikâyet Kapanış Formu.xlsx",
@@ -870,7 +870,7 @@
   "folder": "Müşteri Şikâyeti",
   "order": 14,
   "ext": "xlsx",
-  "rev": "0a4988fa"
+  "rev": "0a4988fa-nscs"
  },
  {
   "code": "15. İç Denetim ve Yönetim Gözden Geçirme/EMS.YS.FRM.11.01. Yıllık İç Denetim Planı.xlsx",
@@ -879,7 +879,7 @@
   "folder": "İç Denetim ve Yönetim Gözden Geçirme",
   "order": 15,
   "ext": "xlsx",
-  "rev": "c8c5fe92"
+  "rev": "c8c5fe92-nscs"
  },
  {
   "code": "15. İç Denetim ve Yönetim Gözden Geçirme/EMS.YS.FRM.11.02. İç Denetim Raporu.xlsx",
@@ -888,7 +888,7 @@
   "folder": "İç Denetim ve Yönetim Gözden Geçirme",
   "order": 15,
   "ext": "xlsx",
-  "rev": "fbcd5c33"
+  "rev": "fbcd5c33-nscs"
  },
  {
   "code": "15. İç Denetim ve Yönetim Gözden Geçirme/EMS.YS.FRM.11.03. Bulgu Takip Formu.xlsx",
@@ -897,7 +897,7 @@
   "folder": "İç Denetim ve Yönetim Gözden Geçirme",
   "order": 15,
   "ext": "xlsx",
-  "rev": "c544a715"
+  "rev": "c544a715-nscs"
  },
  {
   "code": "15. İç Denetim ve Yönetim Gözden Geçirme/EMS.YS.FRM.11.04. Gözden Geçirme Girdi Formu.xlsx",
@@ -906,7 +906,7 @@
   "folder": "İç Denetim ve Yönetim Gözden Geçirme",
   "order": 15,
   "ext": "xlsx",
-  "rev": "55f4a535"
+  "rev": "55f4a535-nscs"
  },
  {
   "code": "15. İç Denetim ve Yönetim Gözden Geçirme/EMS.YS.FRM.11.05. Yönetim Gözden Geçirme Tutanağı.xlsx",
@@ -915,7 +915,7 @@
   "folder": "İç Denetim ve Yönetim Gözden Geçirme",
   "order": 15,
   "ext": "xlsx",
-  "rev": "ab42ae2c"
+  "rev": "ab42ae2c-nscs"
  },
  {
   "code": "15. İç Denetim ve Yönetim Gözden Geçirme/EMS.YS.FRM.11.06. Aksiyon Takip Formu.xlsx",
@@ -924,7 +924,7 @@
   "folder": "İç Denetim ve Yönetim Gözden Geçirme",
   "order": 15,
   "ext": "xlsx",
-  "rev": "1e9debee"
+  "rev": "1e9debee-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.ÜR.FRM.05.09. Ütü Parametre ve Kontrol Formu.xlsx",
@@ -933,7 +933,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "r4-2026-10-14"
+  "rev": "r4-2026-10-14-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.QA.FRM.05.04. Optik Kontrol Formu.xlsx",
@@ -942,7 +942,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "r4-2026-10-14"
+  "rev": "r4-2026-10-14-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.ÜR.FRM.05.10. Lotlama ve Lot Etiket Kayıt Formu.xlsx",
@@ -951,7 +951,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "r4-2026-10-14"
+  "rev": "r4-2026-10-14-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.ÜR.FRM.05.11. Koli Dizilim ve Çeki Listesi Kontrol Formu.xlsx",
@@ -960,7 +960,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "r4-2026-10-14"
+  "rev": "r4-2026-10-14-nscs"
  },
  {
   "code": "5. Ütü Final Kontrol Bölümü/EMS.QA.FRM.05.05. Sevk Öncesi Final Denetim Raporu.xlsx",
@@ -969,7 +969,7 @@
   "folder": "Ütü Final Kontrol Bölümü",
   "order": 5,
   "ext": "xlsx",
-  "rev": "r4-2026-10-14"
+  "rev": "r4-2026-10-14-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.01. Organik Hammadde Kabul ve TC Doğrulama Formu.xlsx",
@@ -978,7 +978,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.02. Organik Lot İzlenebilirlik Kayıt Formu.xlsx",
@@ -987,7 +987,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.03. Organik Alan Geçiş ve Hat Boşaltma Kayıt Formu.xlsx",
@@ -996,7 +996,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.04. Organik Kütle Dengesi Kayıt Formu.xlsx",
@@ -1005,7 +1005,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.05. Organik Etiket Onay ve Sarf Formu.xlsx",
@@ -1014,7 +1014,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.06. Organik Alan Günlük Kontrol Listesi.xlsx",
@@ -1023,7 +1023,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.07. Organik Sevkiyat ve TC Talep Formu.xlsx",
@@ -1032,7 +1032,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.08. Organik Eğitim Katılım Kayıt Formu.xlsx",
@@ -1041,7 +1041,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.09. Organik İplik Deposu Giriş Çıkış Kayıt Formu.xlsx",
@@ -1050,7 +1050,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.10. Organik Örgü Üretim Kayıt Formu.xlsx",
@@ -1059,7 +1059,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.11. Organik Ham Kumaş Bekletme ve Kontrol Kayıt Formu.xlsx",
@@ -1068,7 +1068,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.12. Organik Boya Parti ve Kimyasal Kullanım Kayıt Formu.xlsx",
@@ -1077,7 +1077,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.13. Organik Finiş Kurutma Takip Formu.xlsx",
@@ -1086,7 +1086,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.14. Organik Kalite Kontrol Formu.xlsx",
@@ -1095,7 +1095,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.15. Organik Yarı Mamul Giriş Çıkış Kayıt Formu.xlsx",
@@ -1104,7 +1104,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.16. Organik Kesim Kayıt Formu.xlsx",
@@ -1113,7 +1113,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.17. Organik Dikim Hattı Kayıt Formu.xlsx",
@@ -1122,7 +1122,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.18. Organik Final Kontrol ve Ürün Onay Formu.xlsx",
@@ -1131,7 +1131,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.19. Organik Bitmiş Ürün Deposu Giriş Çıkış ve Sayım Formu.xlsx",
@@ -1140,7 +1140,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.20. Organik Kimyasal Kabul ve Kullanım Kayıt Formu.xlsx",
@@ -1149,7 +1149,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.21. Organik Atık ve Ayrıştırma Kayıt Formu.xlsx",
@@ -1158,7 +1158,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.22. Organik Yükleme Kontrol Formu.xlsx",
@@ -1167,7 +1167,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.23. Organik Uygun Olmayan Ürün ve Bloke Bildirim Formu.xlsx",
@@ -1176,7 +1176,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.24. Organik Ürün Refakat Kartı.xlsx",
@@ -1185,7 +1185,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "16. Organik Üretim/EMS.OR.FRM.21.25. Organik Ürün Taşıma Arabası Kullanım ve Temizlik Kayıt Formu.xlsx",
@@ -1194,7 +1194,7 @@
   "folder": "Organik Üretim",
   "order": 16,
   "ext": "xlsx",
-  "rev": "uclu-2026-10-27"
+  "rev": "uclu-2026-10-27-nscs"
  },
  {
   "code": "15. İç Denetim ve Yönetim Gözden Geçirme/EMS.YS.FRM.11.07. Toplantı Tutanağı Formu.docx",
@@ -1203,7 +1203,7 @@
   "folder": "İç Denetim ve Yönetim Gözden Geçirme",
   "order": 15,
   "ext": "docx",
-  "rev": "yatay-v9-2026-10-28",
+  "rev": "yatay-v9-2026-10-28-nscs",
   "reattach": true
  },
  {
@@ -1213,7 +1213,7 @@
   "folder": "İnsan Kaynakları",
   "order": 17,
   "ext": "docx",
-  "rev": "2688e0b4"
+  "rev": "2688e0b4-nscs"
  },
  {
   "code": "18. İdari İşler ve Güvenlik/EMS.İD.FRM.03.01. Ziyaretçi Tedarikçi Güvenlik Bilgilendirme Formu.docx",
@@ -1222,7 +1222,7 @@
   "folder": "İdari İşler ve Güvenlik",
   "order": 18,
   "ext": "docx",
-  "rev": "6be70046"
+  "rev": "6be70046-nscs"
  },
  {
   "code": "18. İdari İşler ve Güvenlik/EMS.İD.FRM.03.02. Tesis Güvenlik Bilgi Formu.docx",
@@ -1231,6 +1231,6 @@
   "folder": "İdari İşler ve Güvenlik",
   "order": 18,
   "ext": "docx",
-  "rev": "7896ce4a"
+  "rev": "7896ce4a-nscs"
  }
 ]
