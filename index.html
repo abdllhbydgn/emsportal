@@ -4283,7 +4283,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
         <span class="ent-txt"><span class="ent-t" data-i18n="entry_staff_title">Personel Girişi</span><span class="ent-s" data-i18n="entry_staff_sub">Kayıtlı hesabınızla giriş yapın</span></span>
         <span class="ent-arr"><span class="ent-flip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span><span class="ent-sheen" aria-hidden="true"></span>
       </button>
-      <button type="button" class="ent-opt ent-rise ent-admin" onclick="showLoginForm('abdullah.baydogan@eroglums.com')" style="animation-delay:0.56s">
+      <button type="button" class="ent-opt ent-rise ent-admin" onclick="showLoginForm('abdullah.baydogan@nscstr.com')" style="animation-delay:0.56s">
         <span class="ent-tile"><span class="ent-gloss" aria-hidden="true"></span><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8.3-8 9-4.8-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></span>
         <span class="ent-txt"><span class="ent-t" data-i18n="entry_admin_title">Admin Girişi</span><span class="ent-s" data-i18n="entry_admin_sub">Yönetici hesabıyla giriş yapın</span></span>
         <span class="ent-arr"><span class="ent-flip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span><span class="ent-sheen" aria-hidden="true"></span>
@@ -32884,7 +32884,11 @@ const firebaseConfig = {
   appId: "1:95779649376:web:1d2732971a8ebba9229005",
   measurementId: "G-NPQ2TZ8Z2D"
 };
-const ADMIN_EMAIL = "abdullah.baydogan@eroglums.com";
+// Yönetici hesapları: yeni giriş adresi (nscstr.com) ve eski adres BİRLİKTE geçerlidir (geçiş süresinde kilitlenme olmasın); şifre koda yazılmaz.
+// Admin accounts: the new login (nscstr.com) and the old one are BOTH valid during the transition; passwords are never in code.
+const ADMIN_EMAIL = "abdullah.baydogan@nscstr.com";
+const ADMIN_EMAILS = [ "abdullah.baydogan@nscstr.com", "abdullah.baydogan@eroglums.com" ];
+const _isAdminEmail = e => !!e && ADMIN_EMAILS.indexOf(String(e).trim().toLowerCase()) >= 0;
 const FIREBASE_ENABLED = firebaseConfig.apiKey && firebaseConfig.apiKey !== "BURAYA_YAPISTIRIN";
 let fbApp = null, fbAuth = null, fbDb = null;
 if (FIREBASE_ENABLED && typeof firebase !== "undefined") {
@@ -54841,7 +54845,7 @@ if (FIREBASE_ENABLED && fbAuth) {
       location.reload();
       return;
     }
-    if (user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+    if (user && user.email && _isAdminEmail(user.email)) {
       currentUserRole = "admin";
       currentUserDepartments = [];
       currentUserPending = false;
@@ -55243,8 +55247,8 @@ function submitSignup() {
     errEl.innerText = t3("Lütfen geçerli bir e-posta girin.", "Please enter a valid email address.", "من فضلك اكتب بريد إلكتروني صحيح.");
     return;
   }
-  if (!email.endsWith("@eroglums.com")) {
-    errEl.innerText = t3("Mail adresiniz eroglums.com ile bitmeli.", "Your email address must end with eroglums.com.", "لازم بريدك الإلكتروني ينتهي بـ eroglums.com.");
+  if (!/@(eroglums|nscstr)\.com$/.test(email)) {
+    errEl.innerText = t3("Mail adresiniz eroglums.com veya nscstr.com ile bitmeli.", "Your email address must end with eroglums.com or nscstr.com.", "لازم بريدك الإلكتروني ينتهي بـ eroglums.com أو nscstr.com.");
     return;
   }
   if (pw.length < 6) {
@@ -55255,7 +55259,7 @@ function submitSignup() {
     errEl.innerText = t3("Şifreler eşleşmiyor.", "Passwords do not match.", "كلمتين المرور مش متطابقتين.");
     return;
   }
-  if (email === ADMIN_EMAIL.toLowerCase()) {
+  if (_isAdminEmail(email)) {
     errEl.innerText = t3("Bu e-posta adresi kullanılamaz.", "This email address cannot be used.", "البريد الإلكتروني ده مينفعش يتستخدم.");
     return;
   }
@@ -81646,7 +81650,7 @@ function _trecFinish(st) {
 // ── Yönetici ekranı ──
 const _trecUI = { vkey: "", tab: "done", q: "", users: null, loading: false };
 function _trecActiveUsers() {
-  return (_trecUI.users || []).filter(u => u && u.email && String(u.email).toLowerCase() !== String(ADMIN_EMAIL).toLowerCase() && u.disabled !== true && (u.approved === true || Array.isArray(u.departments) && u.departments.length > 0)).map(u => ({ email: String(u.email).toLowerCase(), name: u.displayName || u.email, created: u.createdAt || "", dept: Array.isArray(u.departments) ? u.departments.map(x => typeof x === "string" ? x : (x && (x.name || x.key)) || "").filter(Boolean).join(", ") : "" }));
+  return (_trecUI.users || []).filter(u => u && u.email && !_isAdminEmail(u.email) && u.disabled !== true && (u.approved === true || Array.isArray(u.departments) && u.departments.length > 0)).map(u => ({ email: String(u.email).toLowerCase(), name: u.displayName || u.email, created: u.createdAt || "", dept: Array.isArray(u.departments) ? u.departments.map(x => typeof x === "string" ? x : (x && (x.name || x.key)) || "").filter(Boolean).join(", ") : "" }));
 }
 function openTrainingRecords() {
   if (currentUserRole !== "admin") { try { showEmsToast(t3("Bu ekranı yalnız yönetici görür.", "Only the administrator can see this screen.", "الشاشة دي للمدير بس.")); } catch (e) {} return; }
@@ -81714,7 +81718,7 @@ function _trecRowsAll(vids) {
   });
   // Yönetici (zorunlu eğitimden muaf, kullanıcı kararı 02.11.2026): listede "Tamamlandı · yönetici muaf" olarak görünür; gerçek izleme kaydı OLUŞTURULMAZ /
   // The admin (exempt from mandatory training) shows as "Completed · admin exempt"; no real watch record is created
-  { const _am = (_trecUI.users || []).find(u => u && String(u.email || "").toLowerCase() === String(ADMIN_EMAIL).toLowerCase());
+  { const _am = (_trecUI.users || []).find(u => u && _isAdminEmail(u.email));
     rows.push({ name: (_am && _am.displayName) || String(currentUserName || "Abdullah Baydoğan"), email: String(ADMIN_EMAIL).toLowerCase(), dept: t3("Yönetici", "Admin", "المدير"), start: null, done: vids.length, total: vids.length, missing: [], over: [], part: [], warn: null, need: false, lastAt: "", exempt: true }); }
   rows.sort((a, b) => (b.over.length - a.over.length) || (b.missing.length - a.missing.length) || a.name.localeCompare(b.name, "tr"));
   return { rows: rows, all: rows.filter(r => !r.missing.length), part: rows.filter(r => r.missing.length), over: rows.filter(r => r.over.length), partial: rows.filter(r => r.part.length), need: rows.filter(r => r.need) };
@@ -85177,7 +85181,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 21:30";
+const EMS_BUILD = "2026-11-16 21:32";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
