@@ -20,7 +20,7 @@ service cloud.firestore {
     // Yönetici: e-posta eşleşmeli VE e-posta doğrulanmış olmalı (doğrulanmamış bir hesap yönetici sayılmaz)
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email == "abdullah.baydogan@eroglums.com"
+        && request.auth.token.email == "abdullah.baydogan@nscstr.com"
         && request.auth.token.email_verified == true;
     }
     // "visitor" (Ziyaretçi Kayıt) yetkisi verilmiş kişi: Kullanıcı Yönetimi'nde users/{uid}.departments içinde 'visitor' bulunur.
@@ -84,7 +84,7 @@ service cloud.firestore {
         && request.resource.data.approved == false
         && request.resource.data.departments.size() == 0
         && request.resource.data.createdBy == 'self-signup'
-        && request.auth.token.email.matches('.*@eroglums[.]com$'))
+        && request.auth.token.email.matches('.*@(eroglums|nscstr)[.]com$'))
         || isAdmin();
       // Kullanıcı yalnız kendi "şifre değiştirme zorunlu" işaretini kapatabilir (zorunlu şifre değişikliğinden sonra).
       allow update: if isAdmin()
