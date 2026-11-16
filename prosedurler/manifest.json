@@ -1473,13 +1473,14 @@
   ]
  },
  {
-  "folder": "İK Politikaları",
+  "folder": "Global Security Verification (GSV)",
   "code": "EMS.İD.PRO.03.01.",
-  "name": "EMS.İD.PRO.03.01. Security Services Procedure",
-  "file": "EMS.İD.PRO.03.01. Security Services Procedure.docx",
-  "rev": "imza-2026-10-06",
+  "name": "EMS.İD.PRO.03.01. Facility Security and Reception Protocol",
+  "file": "EMS.İD.PRO.03.01. Facility Security and Reception Protocol.docx",
+  "rev": "r2-2026-11-16",
   "replaces": [
-   "EMS.İD.PRO.03.01. Güvenlik Hizmetleri"
+   "EMS.İD.PRO.03.01. Güvenlik Hizmetleri",
+   "EMS.İD.PRO.03.01. Security Services Procedure"
   ]
  },
  {
