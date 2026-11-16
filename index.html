@@ -48506,6 +48506,12 @@ function postProcessData() {
     customersList.forEach(c => { if ((c.key === "primark" || /^\s*primark\b/i.test(c.name || "")) && c.appr !== "yes") c.appr = "pend"; });
     _ppSeeded++;
   }
+  // Carrefour müşterisi yoksa eklenir (kullanıcı isteği, 16.11.2026; bir kez; kayıtlı bir Carrefour varsa o kullanılır). Kullanıcı bilgisi: onaylı, siparişi var, denetime gelmedi (denetim kaydı yok) /
+  // Adds the Carrefour customer when missing (one-time; an existing Carrefour is reused). User info: approved, has orders, not audited yet (no audit record)
+  if (Array.isArray(customersList) && _sg("cust:carrefour-20261116", !customersList.some(c => /carrefour/i.test((c.key || "") + " " + (c.name || ""))))) {
+    customersList.push({ key: "carrefour", name: "Carrefour", init: "CF", color: "#0B5CAD", appr: "yes", ord: "yes" });
+    _ppSeeded++;
+  }
   // U.S. Polo Assn. müşterisi yoksa eklenir ve onaylı işaretlenir (kullanıcı bilgisi, 16.11.2026; bir kez; kayıtlı bir Polo müşterisi varsa o kullanılır) /
   // Adds the U.S. Polo Assn. customer when missing and marks it approved (one-time; an existing Polo customer is reused)
   if (Array.isArray(customersList) && _sg("cust:uspolo-20261116", true)) {
@@ -84352,7 +84358,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:28";
+const EMS_BUILD = "2026-11-16 12:37";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
