@@ -4488,6 +4488,10 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
         <span class="nav-emoji">🛂</span>
         <span data-i18n="nav_visitor">Ziyaretçi Kayıt</span>
       </button>
+      <button class="side-nav-item" onclick="try{ openAvans(); }catch(e){ console.error('Avans Talebi açma hatası:', e); alert(t3('Hata: ', 'Error: ', 'خطأ: ') + e.message); }">
+        <span class="nav-emoji">💵</span>
+        <span data-i18n="nav_avans">Avans Talebi</span><span class="av-nav-bd" id="av-nav-bd" style="display:none"></span>
+      </button>
       
       <div class="side-nav-section-label" data-i18n="nav_section_production">Üretim Raporları</div>
       <button class="side-nav-item" onclick="try{ openProdGroup('iplik'); }catch(e){ console.error('İplik açma hatası:', e); alert(t3('Hata: ', 'Error: ', 'خطأ: ') + e.message); }">
@@ -8151,6 +8155,11 @@ const UI_TRANSLATIONS = {
     en: "Visitor Log",
     ar: "سجل الزوار"
   },
+  nav_avans: {
+    tr: "Avans Talebi",
+    en: "Advance Request",
+    ar: "طلب سلفة"
+  },
   nav_advisor_meetings: {
     tr: "Danışman Toplantı Tutanakları",
     en: "Consultant Meeting Minutes",
@@ -10802,7 +10811,7 @@ function _teamRerenderForLanguage() {
   const ss = document.getElementById("team-self-service-modal");
   if (ss && ss.classList.contains("open") && typeof renderTeamSelfServiceView === "function") renderTeamSelfServiceView();
 }
-const _LANG_RERENDER_SCREENS = [ [ "about-hub-modal", "openAboutHub" ], [ "cert-hub-modal", "openCertHub" ], [ "urge-modal", "openUrge" ], [ "visitor-modal", "openVisitor" ], [ "meeting-modal", "openMeetings" ], [ "cert-fullpage-overlay", "openCertDetail" ], [ "chemical-consumption-hub-modal", "openChemicalConsumptionHub" ], [ "chemical-dept-report-modal", "openChemicalDeptReport" ], [ "chemical-material-detail-modal", "openChemicalMaterialDetail" ], [ "daily-audit-reports-modal", "openDailyAuditReports" ], [ "daily-audit-dept-report-modal", "renderDailyAuditDeptReport" ], [ "departments-reports-modal", "openDepartmentsReports" ], [ "dept-compliance-chart-modal", "openDeptComplianceChart" ], [ "section-report-picker-modal", "openSectionReportPicker" ], [ "backup-history-modal", "openBackupHistory" ], [ "prod-category-detail-modal", "openProdCategoryDetail" ], [ "qa-dept-info-overlay", "openQADeptInfo" ], [ "privacy-policy-modal", "openPrivacyPolicyModal" ], [ "cookie-policy-modal", "openCookiePolicyModal" ], [ "factory-location-modal", "openFactoryLocationModal" ], [ "production-reports-modal", "openProductionReports" ], [ "mgmt-summary-modal", "openMgmtSummary" ], [ "certx-viewer", "openCertViewer" ], [ "finance-modal", "openFinance" ] ];
+const _LANG_RERENDER_SCREENS = [ [ "about-hub-modal", "openAboutHub" ], [ "cert-hub-modal", "openCertHub" ], [ "urge-modal", "openUrge" ], [ "visitor-modal", "openVisitor" ], [ "avans-modal", "openAvans" ], [ "meeting-modal", "openMeetings" ], [ "cert-fullpage-overlay", "openCertDetail" ], [ "chemical-consumption-hub-modal", "openChemicalConsumptionHub" ], [ "chemical-dept-report-modal", "openChemicalDeptReport" ], [ "chemical-material-detail-modal", "openChemicalMaterialDetail" ], [ "daily-audit-reports-modal", "openDailyAuditReports" ], [ "daily-audit-dept-report-modal", "renderDailyAuditDeptReport" ], [ "departments-reports-modal", "openDepartmentsReports" ], [ "dept-compliance-chart-modal", "openDeptComplianceChart" ], [ "section-report-picker-modal", "openSectionReportPicker" ], [ "backup-history-modal", "openBackupHistory" ], [ "prod-category-detail-modal", "openProdCategoryDetail" ], [ "qa-dept-info-overlay", "openQADeptInfo" ], [ "privacy-policy-modal", "openPrivacyPolicyModal" ], [ "cookie-policy-modal", "openCookiePolicyModal" ], [ "factory-location-modal", "openFactoryLocationModal" ], [ "production-reports-modal", "openProductionReports" ], [ "mgmt-summary-modal", "openMgmtSummary" ], [ "certx-viewer", "openCertViewer" ], [ "finance-modal", "openFinance" ] ];
 const _langLastOpenArgs = {};
 function _langInstallOpenTrackers() {
   _LANG_RERENDER_SCREENS.forEach(([, fn]) => {
@@ -51029,6 +51038,7 @@ function _onCloudDocChange(onReady) {
     setTimeout(() => { try { _nextMergeMaybe(); } catch (e) {} }, 9000);
     setTimeout(() => { try { _inditexCloudPurgeMaybe(); } catch (e) {} }, 11000);
     setTimeout(() => { try { _custMonthlyReportMaybe(); } catch (e) {} }, 9000);
+    setTimeout(() => { try { avInit(); } catch (e) {} }, 6000);
     setTimeout(() => { try { _nextMergeMaybe(); } catch (e) {} }, 30000);
     setTimeout(() => { try { _formsLinkCleanMaybe(); } catch (e) {} }, 14000);
     setTimeout(() => { try { _formsLinkCleanMaybe(); } catch (e) {} }, 40000);
@@ -55454,6 +55464,9 @@ function _applySavedView(saved) {
      case "visitor":
       openVisitor(p.tab);
       break;
+     case "avans":
+      openAvans(p.tab);
+      break;
      case "meetings":
       openMeetings(p.tab);
       break;
@@ -55537,6 +55550,9 @@ function goHome() {
   } catch (e) {}
   try {
     closeVisitor();
+  } catch (e) {}
+  try {
+    closeAvans();
   } catch (e) {}
   try {
     closeCertFullpage();
@@ -70040,12 +70056,12 @@ const _AHUB_ICON = {
 const _ahubSvg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${_AHUB_ICON[k] || ""}</svg>`;
 function _adminHubPendingCounts() {
   const n = id => { const b = document.getElementById(id); return b && b.style.display !== "none" ? (parseInt(b.innerText, 10) || 0) : 0; };
-  return { approvals: n("pending-approvals-badge"), users: n("pending-users-badge") };
+  return { approvals: n("pending-approvals-badge"), users: n("pending-users-badge"), advances: (typeof _avPendingCount === "function" ? _avPendingCount() : 0) };
 }
 function _adminHubBadgeSync() {
   const el = document.getElementById("admin-hub-badge");
   if (!el) return;
-  const c = _adminHubPendingCounts(), total = c.approvals + c.users;
+  const c = _adminHubPendingCounts(), total = c.approvals + c.users + c.advances;
   el.style.display = total > 0 ? "inline-block" : "none";
   el.innerText = total;
   const m = document.getElementById("admin-hub-modal");
@@ -70072,7 +70088,8 @@ const ADMIN_HUB_ACTIONS = {
   dataLog: () => adminHubGo("dataLog"),
   custDash: () => adminHubGo("custDash"),
   track: () => adminHubGo("track"),
-  advisorMeetings: () => openAdvisorMeetings()
+  advisorMeetings: () => openAdvisorMeetings(),
+  advances: () => openAvans('pending')
 };
 function adminHubRun(key, fromNav) {
   if (!_adminHubUnlocked()) return;
@@ -70178,7 +70195,7 @@ function _ahubAttachTool(key, tries) {
     // panel bölümü ve merkez sessizce kapanır, açılan sayfa temiz görünür /
     // If the admin opened another page (footer link, menu…), the tool pane must not stay stuck on top of it: the tool and the hub close quietly
     try {
-      const _pageIds = /^(global-filter-modal|customer-dashboard-modal|customer-picker-modal|audit-findings-modal|departments-hub-modal|department-checklist-modal|daily-audit-[a-z-]+-modal|production-reports-modal|document-library-modal|procedures-modal|cert-hub-modal|about-hub-modal|urge-modal|visitor-modal|meeting-modal|advisor-meeting-modal|chemical-[a-z-]+-modal|company-profile-overlay|dept-audit-modal|mgmt-summary-modal)$/;
+      const _pageIds = /^(global-filter-modal|customer-dashboard-modal|customer-picker-modal|audit-findings-modal|departments-hub-modal|department-checklist-modal|daily-audit-[a-z-]+-modal|production-reports-modal|document-library-modal|procedures-modal|cert-hub-modal|about-hub-modal|urge-modal|visitor-modal|avans-modal|meeting-modal|advisor-meeting-modal|chemical-[a-z-]+-modal|company-profile-overlay|dept-audit-modal|mgmt-summary-modal)$/;
       const _other = Array.from(document.querySelectorAll(".modal-overlay.open, .qa-dept-overlay.open")).find(e => e !== still && _pageIds.test(e.id) && (e._emsOpenedAt || 0) > _ahubAt + 300);
       if (_other) {
         _ahubCloseToolSilent();
@@ -70355,6 +70372,7 @@ function _ahdActionsHtml(pend, cloudOk, bkCls, tdOpen) {
   try {
     const fg = _fxFindingGroups(), cg = _fxCertGroups(), chg = _fxChemGroups();
     if (pend) add("bad", t3(pend + " onay bekliyor", pend + " awaiting approval", pend + " مستني الموافقة"), t3("Personelin değişiklik istekleri", "Change requests from staff", "طلبات التعديل من الموظفين"), "adminHubRun('approvals')", t3("İncele", "Review", "مراجعة"));
+    try { const av = typeof _avPendingCount === "function" ? _avPendingCount() : 0; if (av) add("bad", t3(av + " avans talebi onay bekliyor", av + " advance requests awaiting approval", av + " طلبات سلفة مستنية الموافقة"), t3("Personelin avans talepleri", "Staff advance requests", "طلبات السلفة من الموظفين"), "adminHubRun('advances')", t3("İncele", "Review", "مراجعة")); } catch (e) {}
     if (fg.overdue.length) add("bad", t3(fg.overdue.length + " bulgunun termini geçti", fg.overdue.length + " findings overdue", fg.overdue.length + " ملاحظات متأخرة"), t3("Acil aksiyon gerekli", "Urgent action needed", "محتاج إجراء عاجل"), "adminHubGo('custOpenF')", t3("Listele", "List", "عرض"));
     if (cg.expired.length) add("bad", t3(cg.expired.length + " sertifikanın süresi dolmuş", cg.expired.length + " certificates expired", cg.expired.length + " شهادات منتهية"), t3("Sertifikalar bölümünde yenileyin", "Renew in Certificates", "جدّدها في الشهادات"), "ahubOpenSite('openCertHub')", t3("Aç", "Open", "فتح"));
     if (chg.low.length) add("bad", t3(chg.low.length + " kimyasalın stoğu kritik", chg.low.length + " chemicals low on stock", chg.low.length + " مواد مخزونها حرج"), t3("Kimyasal tüketim ekranı", "Chemical consumption screen", "شاشة استهلاك المواد الكيميائية"), "ahubOpenSite('openChemicalConsumptionHub')", t3("Aç", "Open", "فتح"));
@@ -70466,7 +70484,7 @@ const AHUB_MENU = [
   { sec: "users", ic: "shield", sub: [ "Kimin neyi görüp değiştirebileceği", "Who can see and change what", "مين يقدر يشوف ويعدّل" ], name: [ "Kullanıcılar & Yetki", "Users & Access", "المستخدمين والصلاحيات" ], items: [ "approvals", "users", "contacts" ] },
   { sec: "content", ic: "palette", sub: [ "Yazıları, menüyü ve rapor bilgilerini kendiniz değiştirin — veriler etkilenmez", "Change texts, menu and report details yourself — data is not affected", "غيّر النصوص والقائمة وبيانات التقارير بنفسك" ], name: [ "Site İçeriği", "Site Content", "محتوى الموقع" ], items: [ "texts", "about", "menu", "report", "announcement", "design", "log" ] },
   { sec: "data", ic: "database", sub: [ "Verilerinizi koruma ve geri yükleme", "Protect and restore your data", "احمي بياناتك واستعيدها" ], name: [ "Veri & Yedek", "Data & Backup", "البيانات والنسخ الاحتياطي" ], items: [ "dataLog", "backup", "fullBackup", "backupHistory", "restore" ] },
-  { sec: "fin", ic: "chart", sub: [ "Takip ve paylaşım", "Tracking and sharing", "المتابعة والمشاركة" ], name: [ "Finans & Paylaşım", "Finance & Sharing", "المالية والمشاركة" ], items: [ "finance", "copyLink" ] },
+  { sec: "fin", ic: "chart", sub: [ "Takip ve paylaşım", "Tracking and sharing", "المتابعة والمشاركة" ], name: [ "Finans & Paylaşım", "Finance & Sharing", "المالية والمشاركة" ], items: [ "advances", "finance", "copyLink" ] },
   { sec: "meetings", ic: "file", sub: [ "Danışman ve toplantı tutanakları", "Consultant and meeting minutes", "محاضر الاستشاري والاجتماعات" ], name: [ "Toplantılar", "Meetings", "الاجتماعات" ], items: [ "advisorMeetings" ] }
 ];
 const AHUB_ITEMS = {
@@ -70489,6 +70507,7 @@ const AHUB_ITEMS = {
   restore: { ic: "upload", name: [ "Geri Yükle", "Restore Data", "استعادة البيانات" ], sub: [ "Yedek dosyasından geri dön", "Restore from a backup file", "الاستعادة من ملف نسخة احتياطية" ] },
   finance: { ic: "wallet", name: [ "Gelir & Gider", "Income & Expenses", "الإيرادات والمصروفات" ], sub: [ "Gelir ve gider takibi", "Track income and expenses", "متابعة الإيرادات والمصروفات" ] },
   copyLink: { ic: "link", name: [ "Bağlantıyı Kopyala", "Copy Link", "نسخ الرابط" ], sub: [ "Bu ekranın adresini paylaş", "Share this screen's link", "مشاركة رابط الشاشة دي" ] },
+  advances: { ic: "wallet", name: [ "Avans Talepleri", "Advance Requests", "طلبات السلفة" ], sub: [ "Personelin avans talepleri: onayla, imzala, gönder", "Staff advance requests: approve, sign, send", "طلبات السلفة من الموظفين: وافق ووقّع وابعت" ] },
   advisorMeetings: { ic: "file", name: [ "Danışman Toplantı Tutanakları", "Consultant Meeting Minutes", "محاضر اجتماعات الاستشاري" ], sub: [ "Madde, karar ve termin takibi", "Item, decision and due-date tracking", "متابعة البنود والقرارات والمواعيد" ] }
 };
 // Simge: "n:<ad>" = kabuğun çizgi simgesi (sol menüdekiyle aynı set), yoksa merkezin kendi simgesi
@@ -70517,7 +70536,7 @@ function _ahubSecName(sec, cfg) { const m = AHUB_MENU.find(x => x.sec === sec); 
 function _ahubItemName(k, cfg) { return _ahubL3(((cfg || {}).names || {})[k], AHUB_ITEMS[k].name); }
 function _ahubItemIcon(k, cfg) { const c = ((cfg || {}).icons || {})[k]; return (c && _ahubIco(c)) || _ahubSvg(AHUB_ITEMS[k].ic); }
 function _ahubSideHtml() {
-  const cfg = siteContent.hub || {}, c = _adminHubPendingCounts(), badge = { approvals: c.approvals, users: c.users };
+  const cfg = siteContent.hub || {}, c = _adminHubPendingCounts(), badge = { approvals: c.approvals, users: c.users, advances: c.advances };
   const act = _ahubView === "home" ? "" : String(_ahubView).replace(/^tool:/, "");
   const row = k => `<button type="button" class="ahub-side-it${act === k ? " on" : ""}" onclick="adminHubRun('${k}')" title="${escHtml(t3(AHUB_ITEMS[k].sub[0], AHUB_ITEMS[k].sub[1], AHUB_ITEMS[k].sub[2]))}"><span class="ahub-side-ic">${_ahubItemIcon(k, cfg)}</span><span class="ahub-side-tx">${escHtml(_ahubItemName(k, cfg))}</span>${badge[k] ? `<span class="ahub-side-bd">${badge[k]}</span>` : ""}</button>`;
   return `<nav class="ahub-side" aria-label="${escHtml(t3("Yönetim menüsü", "Admin menu", "قائمة الإدارة"))}"><div class="ahub-side-in">
@@ -80480,6 +80499,7 @@ function _fxInit() {
           "cert-hub-modal": T("Sertifikalar", "Certificates", "الشهادات"),
           "urge-modal": T("Ür-Ge - Ar-Ge Departmanı", "Ür-Ge - Ar-Ge Department", "قسم Ür-Ge - Ar-Ge"),
           "visitor-modal": T("Ziyaretçi Kayıt", "Visitor Log", "سجل الزوار"),
+          "avans-modal": T("Avans Talebi", "Advance Request", "طلب سلفة"),
           "meeting-modal": T("Haftalık Toplantı Raporları", "Weekly Meeting Reports", "تقارير الاجتماعات الأسبوعية"),
           "team-self-service-modal": T("Performans Kartım", "My Performance", "بطاقة أدائي")
         };
@@ -82903,6 +82923,429 @@ async function vzDownloadXlsx() {
   } catch (e) { console.error("[Ziyaretçi Excel]", e); alert(t3("Excel oluşturulurken bir hata oluştu: ", "An error occurred while generating the Excel file: ", "حصل خطأ أثناء إنشاء Excel: ") + e.message); }
 }
 </script>
+<style id="avans-css">
+/* ═══ AVANS TALEBİ (16.11.2026) ═══ */
+#avans-modal .qa-dept-overlay-inner { max-width: 1000px; padding-top: 28px; }
+#avans-modal { font-size: 14px; line-height: 1.5; }
+#side-nav .side-nav-item [data-i18n="nav_avans"] { white-space: normal !important; line-height: 1.2; }
+.av-nav-bd { margin-inline-start: auto; background: #DC2626; color: #fff; border-radius: 99px; font-size: 11px; font-weight: 900; line-height: 1; padding: 3px 7px; flex: none; }
+.av-hero { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.av-new { border: 0; background: linear-gradient(135deg, #1A3660, #2D5A9A); color: #fff; font: inherit; font-weight: 900; font-size: 16px; padding: 14px 24px; border-radius: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(26,54,96,.30); }
+.av-new:hover { filter: brightness(1.08); }
+.av-hint { color: #475569; font-size: 13px; flex: 1 1 260px; }
+.av-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.av-kpi { background: #fff; border: 1px solid var(--border, #DCE3EC); border-top: 4px solid var(--c, #1A3660); border-radius: 14px; padding: 12px 16px; min-width: 0; }
+.av-kpi b { display: block; font-size: 24px; font-weight: 900; color: #0F172A; line-height: 1.15; overflow-wrap: anywhere; }
+.av-kpi span { font-size: 12px; font-weight: 700; color: #64748B; }
+.av-list { display: flex; flex-direction: column; gap: 10px; }
+.av-card { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: #fff; border: 1px solid var(--border, #DCE3EC); border-inline-start: 6px solid var(--c, #B45309); border-radius: 14px; padding: 12px 16px; box-shadow: 0 2px 10px rgba(15,23,42,.05); cursor: pointer; }
+.av-card:hover { box-shadow: 0 8px 20px rgba(15,23,42,.1); }
+.av-card.approved { --c: #16A34A; } .av-card.rejected { --c: #DC2626; } .av-card.cancelled { --c: #94A3B8; background: #FAFBFD; }
+.av-main { flex: 1 1 240px; min-width: 0; }
+.av-main h4 { margin: 0 0 2px; font-size: 16px; font-weight: 900; color: #0F172A; overflow-wrap: anywhere; }
+.av-main small { display: block; color: #475569; font-size: 12.5px; overflow-wrap: anywhere; }
+.av-amt { text-align: end; font-size: 18px; font-weight: 900; color: #1A3660; white-space: nowrap; }
+.av-amt small { display: block; font-size: 11.5px; font-weight: 700; color: #64748B; }
+.av-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px; font-size: 12px; font-weight: 900; white-space: nowrap; }
+.av-note { background: #FFFBEB; border: 1px solid #FCD34D; color: #78350F; border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+.av-kv { width: 100%; min-width: 0 !important; max-width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 12px; }
+.av-kv td { padding: 8px 10px; border-top: 1px solid #EEF2F7; font-size: 13.5px; vertical-align: top; overflow-wrap: anywhere; }
+.av-kv td:first-child { width: 34%; font-weight: 800; color: #475569; background: #F8FAFC; }
+.av-big { font-size: 26px; font-weight: 900; color: #1A3660; }
+.av-reason { max-width: 100%; box-sizing: border-box; white-space: pre-wrap; background: #F8FAFC; border: 1px solid #EEF2F7; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; overflow-wrap: anywhere; }
+.av-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.av-ok { background: #16A34A !important; color: #fff !important; border-color: #16A34A !important; }
+.av-no { background: #fff !important; color: #DC2626 !important; border-color: #DC2626 !important; }
+.av-send { background: #1A3660 !important; color: #fff !important; border-color: #1A3660 !important; }
+#av-alert-card { position: fixed; right: 18px; top: 80px; z-index: 10040; max-width: min(350px, calc(100vw - 36px)); box-sizing: border-box; background: #fff; border: 2px solid #DC2626; border-radius: 14px; padding: 14px 16px; box-shadow: 0 14px 34px rgba(15,23,42,.22); animation: avPop .35s ease; }
+@keyframes avPop { from { transform: translateY(-10px); opacity: 0; } to { transform: none; opacity: 1; } }
+html[dir="rtl"] #av-alert-card { right: auto; left: 18px; }
+@media (max-width: 760px) { .av-kpis { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  #avans-modal .qa-dept-overlay-inner { padding: 18px 12px 80px; }
+  .av-new { width: 100%; }
+  .av-card { padding: 11px 12px; }
+  .av-amt { text-align: start; }
+  #av-alert-card { right: 10px; left: 10px; top: 70px; max-width: none; }
+}
+</style>
+
+<div id="avans-modal" class="qa-dept-overlay">
+  <div class="qa-dept-overlay-header">
+    <img data-dup="dup2" loading="lazy" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="EMS Eroğlu Knitting" class="qa-dept-overlay-logo" onclick="closeAvans(); goHome();" role="button" tabindex="0">
+    <div class="qa-dept-overlay-header-title" id="avans-title">AVANS TALEBİ</div>
+    <div style="display:flex; align-items:center; gap:10px; justify-self:end; position:relative; z-index:1;">
+      <button class="qa-dept-overlay-close" onclick="closeAvans(); goHome();" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="qa-dept-overlay-body" id="avans-body"><div class="qa-dept-overlay-inner" id="avans-inner"></div></div>
+</div>
+<script id="avans-module">
+// ═══ AVANS TALEBİ — personel avans ister, yönetici portalda uyarı alır, onaylar ve imzalar; imzalı kurumsal form alıcıya e-postayla gider (16.11.2026) ═══
+// Veri: bulutta tek "advances" belgesi (items: talepler, settings: alıcı adı/adresi). Alıcı adresi koda gömülmez; yönetici ilk gönderimde bir kez girer.
+// Yetki: giriş yapmış personel yalnız KENDİ taleplerini görür/yazar; yönetici hepsini görür, onaylar/reddeder. E-posta siteden otomatik gitmez: PDF iner + Outlook taslağı açılır (ya da PDF ekli .eml taslağı).
+// Data: single cloud doc "advances" (items + settings). The recipient address is not hard-coded; the admin enters it once. Staff see only their own requests; the admin sees all, approves/rejects.
+let _avItems = [], _avSettings = { toName: "Wael Ezzeldien", toEmail: "", ccEmail: "" }, _avSetDirty = false;
+let _avReady = false, _avWatching = false;
+let _avUI = { tab: "" };
+const _AV_DOC = "advances", _AV_SEEN = "ems_av_seen";
+
+const AV_CURS = [ "EGP", "USD", "EUR", "TRY" ];
+const AV_REPAY = [
+  { k: "next", tr: "Bir sonraki maaştan kesinti", en: "Deduct from next salary", ar: "خصم من المرتب القادم" },
+  { k: "2", tr: "2 aylık maaştan eşit kesinti", en: "Deduct equally over 2 months", ar: "خصم على شهرين بالتساوي" },
+  { k: "3", tr: "3 aylık maaştan eşit kesinti", en: "Deduct equally over 3 months", ar: "خصم على 3 شهور بالتساوي" },
+  { k: "4", tr: "4 aylık maaştan eşit kesinti", en: "Deduct equally over 4 months", ar: "خصم على 4 شهور بالتساوي" }
+];
+const AV_STATUS = {
+  pending: { ic: "🟡", c: "#92400E", bg: "#FEF3C7", tr: "Onay Bekliyor", en: "Awaiting Approval", ar: "مستني الموافقة" },
+  approved: { ic: "✅", c: "#166534", bg: "#DCFCE7", tr: "Onaylandı", en: "Approved", ar: "تمت الموافقة" },
+  rejected: { ic: "❌", c: "#991B1B", bg: "#FEE2E2", tr: "Reddedildi", en: "Rejected", ar: "مرفوض" },
+  cancelled: { ic: "⚪", c: "#475569", bg: "#E2E8F0", tr: "İptal Edildi", en: "Cancelled", ar: "ملغي" }
+};
+const _avIsAdmin = () => { try { return currentUserRole === "admin"; } catch (e) { return false; } };
+const _avMe = () => String(currentUserEmail || (typeof fbAuth !== "undefined" && fbAuth && fbAuth.currentUser && fbAuth.currentUser.email) || "").toLowerCase();
+const _avLoc = () => currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR";
+const _avId = () => "av" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const _avFind = id => _avItems.find(x => x.id === id);
+const _avSt = k => AV_STATUS[k] || AV_STATUS.pending;
+const _avStL = k => { const s = _avSt(k); return t3(s.tr, s.en, s.ar); };
+const _avCanSee = x => _avIsAdmin() || (!!x && String(x.by || "").toLowerCase() === _avMe());
+const _avOk = () => !!(FIREBASE_ENABLED && fbDb) && currentUserIsNamedAccount;
+const _avValidMail = s => /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(String(s || "").trim());
+const _avNum = n => Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const _avMoney = x => _avNum(x.amount) + " " + (x.cur || "EGP");
+const _avDate = iso => { if (!iso) return "—"; const d = new Date(iso); return isNaN(d) ? "—" : d.toLocaleDateString(_avLoc(), { day: "2-digit", month: "2-digit", year: "numeric" }); };
+const _avDateTime = iso => { if (!iso) return "—"; const d = new Date(iso); return isNaN(d) ? "—" : d.toLocaleString(_avLoc(), { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }); };
+const _avRepayL = k => { const r = AV_REPAY.find(x => x.k === k) || AV_REPAY[0]; return t3(r.tr, r.en, r.ar); };
+const _avPending = () => _avItems.filter(x => x.status === "pending");
+const _avPendingCount = () => _avIsAdmin() ? _avPending().length : 0;
+const _avV = id => { const e = document.getElementById(id); return e ? String(e.value || "").trim() : ""; };
+function _avSumByCur(list) {
+  const m = {}; list.forEach(x => { m[x.cur || "EGP"] = (m[x.cur || "EGP"] || 0) + (Number(x.amount) || 0); });
+  const k = Object.keys(m); return k.length ? k.map(c => _avNum(m[c]) + " " + c).join(" · ") : "—";
+}
+function _avSeen() { try { return new Set(JSON.parse(localStorage.getItem(_AV_SEEN) || "[]")); } catch (e) { return new Set(); } }
+function _avMarkSeen() { try { localStorage.setItem(_AV_SEEN, JSON.stringify(Array.from(new Set(_avItems.map(x => x.id))).slice(-400))); } catch (e) {} }
+
+// ── Bulut ──
+function _avWatch() {
+  if (_avWatching) return;
+  if (!(FIREBASE_ENABLED && fbDb)) { _avReady = true; return; }
+  _avWatching = true;
+  fbDb.collection("ems_csr").doc(_AV_DOC).onSnapshot(snap => {
+    const d = snap.exists ? snap.data() : {}, prev = _avItems, first = !_avReady;
+    _avItems = Array.isArray(d.items) ? d.items : [];
+    if (d.settings && typeof d.settings === "object" && !_avSetDirty) _avSettings = Object.assign({ toName: "Wael Ezzeldien", toEmail: "", ccEmail: "" }, d.settings);
+    _snapshotBaseline(_AV_DOC, _avItems);
+    _avReady = true;
+    try { _avOnChange(prev, first); } catch (e) { console.error("[Avans]", e); }
+  }, err => { _avWatching = false; console.error("Firestore okuma hatası (advances):", err); });
+}
+function _avSave() {
+  if (!(FIREBASE_ENABLED && fbDb)) return Promise.resolve(true);
+  if (!_avReady) { showEmsToast(t3("⏳ Veriler buluttan yükleniyor; birkaç saniye sonra tekrar deneyin.", "⏳ Data is loading from the cloud; try again in a few seconds.", "⏳ البيانات بتتحمل من السحابة؛ جرّب كمان كام ثانية.")); return Promise.resolve(false); }
+  if (!_avOk()) return Promise.resolve(false);
+  const setMine = _avSetDirty, mine = _avItems, set = _avSettings;
+  return _transactionalMergeSave(_AV_DOC, cloud => ({ items: _mergeArrayById(cloud.items, mine, _cloudBaselines[_AV_DOC]), settings: setMine ? set : (cloud.settings || set), ..._saveMeta() }));
+}
+function avInit() {
+  if (!currentUserIsNamedAccount) return;
+  _avWatch();
+}
+// Yeni/değişen talepler: yönetici uyarısı, personel durum bildirimi, rozetler, açık sayfanın yenilenmesi
+function _avOnChange(prev, first) {
+  _avBadgeSync();
+  if (_avIsAdmin()) {
+    const seen = _avSeen(), fresh = _avPending().filter(x => !seen.has(x.id));
+    if (!_avIsOpen()) {
+      if (fresh.length) {
+        if (!first) { const x = fresh[fresh.length - 1]; try { showEmsToast("💵 " + t3("Yeni avans talebi: ", "New advance request: ", "طلب سلفة جديد: ") + x.byName + " — " + _avMoney(x), 9000, "#B45309"); } catch (e) {} }
+        _avAlertCard(fresh);
+      } else _avAlertCardOff();
+    } else { _avMarkSeen(); _avAlertCardOff(); }
+  } else if (!first) {
+    const me = _avMe();
+    _avItems.filter(x => String(x.by || "").toLowerCase() === me).forEach(x => {
+      const p = prev.find(z => z.id === x.id);
+      if (p && p.status === "pending" && x.status === "approved") showEmsToast("✅ " + t3("Avans talebiniz onaylandı: ", "Your advance request was approved: ", "طلب السلفة بتاعك اتوافق عليه: ") + _avMoney(x), 9000, "#15803D");
+      else if (p && p.status === "pending" && x.status === "rejected") showEmsToast("❌ " + t3("Avans talebiniz reddedildi: ", "Your advance request was rejected: ", "طلب السلفة بتاعك اترفض: ") + _avMoney(x), 9000, "#B91C1C");
+    });
+  }
+  if (_avIsOpen() && !document.querySelector("[data-av-dlg]")) _avRender(true);
+  else { const dl = document.querySelector("[data-av-dlg][data-av-id]"), nt = document.getElementById("av-note"); if (dl && !(nt && nt.value)) { try { avOpen(dl.getAttribute("data-av-id"), true); } catch (e) {} } }
+}
+function _avBadgeSync() {
+  const n = _avPendingCount(), b = document.getElementById("av-nav-bd");
+  if (b) { b.style.display = n ? "inline-block" : "none"; b.textContent = n; }
+  try { if (typeof _adminHubBadgeSync === "function") _adminHubBadgeSync(); } catch (e) {}
+}
+function _avAlertCardOff() { const el = document.getElementById("av-alert-card"); if (el) el.remove(); }
+function _avAlertCard(list) {
+  _avAlertCardOff();
+  const e = escHtml, el = document.createElement("div"); el.id = "av-alert-card";
+  const rows = list.slice(-3).reverse().map(x => `<div style="font-size:12.5px; color:#334155; margin-top:4px;"><b>${e(x.byName || "")}</b> — ${e(_avMoney(x))}</div>`).join("");
+  el.innerHTML = `<div style="font-size:14px; font-weight:900; color:#B91C1C;">💵 ${e(list.length > 1 ? t3(list.length + " yeni avans talebi", list.length + " new advance requests", list.length + " طلبات سلفة جديدة") : t3("Yeni avans talebi", "New advance request", "طلب سلفة جديد"))}</div>${rows}
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"><button type="button" onclick="openAvans('pending')" style="background:#1A3660; color:#fff; border:0; border-radius:9px; padding:8px 14px; font-weight:800; font-size:12.5px; cursor:pointer;">${e(t3("İncele ve Onayla", "Review and Approve", "راجع ووافق"))}</button><button type="button" onclick="_avAlertCardOff()" style="background:#fff; color:#475569; border:1px solid #CBD5E1; border-radius:9px; padding:8px 12px; font-weight:700; font-size:12.5px; cursor:pointer;">${e(t3("Sonra", "Later", "بعدين"))}</button></div>`;
+  document.body.appendChild(el);
+}
+
+// ── Aç / kapat ──
+const _avIsOpen = () => { const m = document.getElementById("avans-modal"); return !!(m && m.classList.contains("open")); };
+function openAvans(tab) {
+  if (!currentUserIsNamedAccount) {
+    try { showEmsToast(t3("🔒 Avans Talebi için giriş yapmanız gerekiyor.", "🔒 You need to sign in to open Advance Requests.", "🔒 لازم تسجل دخول عشان تفتح طلبات السلفة.")); } catch (e) {}
+    return;
+  }
+  _avWatch();
+  _avUI.tab = tab || (_avIsAdmin() ? (_avUI.tab && _avUI.tab !== "mine" ? _avUI.tab : "pending") : "mine");
+  saveLastView("avans", { tab: _avUI.tab });
+  document.getElementById("avans-modal").classList.add("open");
+  if (_avIsAdmin()) { _avMarkSeen(); _avAlertCardOff(); }
+  _avRender();
+}
+function closeAvans() {
+  const m = document.getElementById("avans-modal");
+  if (m) m.classList.remove("open");
+  document.querySelectorAll("[data-av-dlg]").forEach(o => o.remove());
+}
+function avTab(t) { _avUI.tab = t; saveLastView("avans", { tab: t }); _avRender(); const b = document.getElementById("avans-body"); if (b) b.scrollTop = 0; }
+
+// ── Ana ekran ──
+function _avRender(keepScroll) {
+  const inner = document.getElementById("avans-inner"), body = document.getElementById("avans-body");
+  if (!inner) return;
+  const sc = keepScroll && body ? body.scrollTop : 0, e = escHtml, admin = _avIsAdmin();
+  const ttl = document.getElementById("avans-title"); if (ttl) ttl.textContent = t3("AVANS TALEBİ", "ADVANCE REQUEST", "طلب سلفة");
+  let h = "";
+  if (admin) {
+    const pend = _avPending().length;
+    const tabs = [ [ "pending", "🟡", t3("Bekleyen", "Pending", "المعلقة") + (pend ? " (" + pend + ")" : "") ], [ "all", "🗂️", t3("Tüm Talepler", "All Requests", "كل الطلبات") ], [ "set", "⚙️", t3("Alıcı Ayarı", "Recipient", "المستلم") ] ];
+    if (!tabs.some(x => x[0] === _avUI.tab)) _avUI.tab = "pending";
+    h += `<div class="ug-tabs" role="tablist">${tabs.map(x => `<button type="button" role="tab" class="${_avUI.tab === x[0] ? "on" : ""}" onclick="avTab('${x[0]}')">${x[1]} ${e(x[2])}</button>`).join("")}</div>`;
+    h += _avUI.tab === "set" ? _avSetHtml() : _avAdminListHtml(_avUI.tab);
+  } else {
+    h += `<div class="av-hero"><button type="button" class="av-new" onclick="avNew()">＋ ${e(t3("Yeni Avans Talebi", "New Advance Request", "طلب سلفة جديد"))}</button><div class="av-hint">${e(t3("Talebiniz yöneticiye iletilir. Onaylandığında burada ve ekranda bildirim alırsınız.", "Your request goes to the manager. You will be notified here and on screen once it is approved.", "طلبك بيروح للمدير. هيجيلك إشعار هنا وعلى الشاشة لما يتوافق عليه."))}</div></div>`;
+    const mine = _avItems.filter(_avCanSee).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    h += mine.length ? `<div class="av-list">${mine.map(x => _avCardHtml(x, false)).join("")}</div>` : `<div class="ug-empty big">${e(t3("Henüz avans talebiniz yok.", "You have no advance requests yet.", "لسه معندكش طلبات سلفة."))}</div>`;
+  }
+  inner.innerHTML = h;
+  if (body) body.scrollTop = sc;
+}
+function _avCardHtml(x, admin) {
+  const e = escHtml, s = _avSt(x.status), why = String(x.reason || "").replace(/\s+/g, " ").slice(0, 110);
+  return `<div class="av-card ${x.status}" onclick="avOpen('${x.id}')">
+    <div class="av-main"><h4>${admin ? e(x.byName || x.by || "") : e(_avDate(x.at))}</h4><small>${admin ? e(_avDate(x.at)) + (x.dept ? " · " + e(x.dept) : "") + " · " : ""}${e(why)}${String(x.reason || "").length > 110 ? "…" : ""}</small></div>
+    <div class="av-amt">${e(_avMoney(x))}<small>${e(_avRepayL(x.repay))}</small></div>
+    <span class="av-badge" style="background:${s.bg}; color:${s.c};">${s.ic} ${e(_avStL(x.status))}</span></div>`;
+}
+function _avAdminListHtml(tab) {
+  const e = escHtml, now = new Date(), ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  const appr = _avItems.filter(x => x.status === "approved"), apprM = appr.filter(x => String(x.decAt || "").slice(0, 7) === ym);
+  const kp = (c, v, l) => `<div class="av-kpi" style="--c:${c}"><b>${e(String(v))}</b><span>${e(l)}</span></div>`;
+  let h = `<div class="av-kpis">${kp("#B45309", _avPending().length, t3("Onay bekleyen talep", "Awaiting approval", "طلبات مستنية الموافقة"))}${kp("#16A34A", apprM.length, t3("Bu ay onaylanan", "Approved this month", "اتوافق عليها الشهر ده"))}${kp("#1A3660", _avSumByCur(apprM), t3("Bu ay onaylanan toplam tutar", "Total approved this month", "إجمالي الموافق عليه الشهر ده"))}</div>`;
+  if (!_avSettings.toEmail) h += `<div class="av-note">⚠️ ${e(t3("Onaylanan formun gideceği alıcı adresi henüz girilmedi. \"Alıcı Ayarı\" sekmesinden bir kez girin.", "The recipient address for approved forms is not set yet. Enter it once in the \"Recipient\" tab.", "عنوان المستلم للنماذج الموافق عليها لسه ما اتحطش. اكتبه مرة واحدة من تبويب \"المستلم\"."))}</div>`;
+  const list = _avItems.filter(x => tab === "pending" ? x.status === "pending" : true).slice().sort((a, b) => (tab === "all" ? ((a.status === "pending" ? 0 : 1) - (b.status === "pending" ? 0 : 1)) : 0) || String(b.at).localeCompare(String(a.at)));
+  h += list.length ? `<div class="av-list">${list.map(x => _avCardHtml(x, true)).join("")}</div>` : `<div class="ug-empty big">${e(tab === "pending" ? t3("Bekleyen avans talebi yok. 🎉", "No pending advance requests. 🎉", "مفيش طلبات سلفة معلقة. 🎉") : t3("Henüz avans talebi yok.", "No advance requests yet.", "لسه مفيش طلبات سلفة."))}</div>`;
+  return h;
+}
+function _avSetHtml() {
+  const e = escHtml, s = _avSettings;
+  return `<div class="ug-form" style="max-width:560px;"><p class="ug-muted" style="margin:0 0 6px;">${e(t3("Onayladığınız ve imzaladığınız avans formu bu kişiye gönderilir (adres yalnız bulutta saklanır, sitenin kodunda yer almaz).", "The advance form you approve and sign is sent to this person (the address is stored only in the cloud, not in the site code).", "نموذج السلفة اللي بتوافق عليه وتوقّعه بيتبعت للشخص ده (العنوان بيتخزّن في السحابة بس، مش في كود الموقع)."))}</p>
+    <label>${e(t3("Alıcı adı", "Recipient name", "اسم المستلم"))}<input id="av-set-name" class="ug-in" value="${e(s.toName || "")}" autocomplete="off"></label>
+    <label>${e(t3("Alıcı e-posta adresi *", "Recipient e-mail *", "إيميل المستلم *"))}<input id="av-set-mail" class="ug-in" type="email" value="${e(s.toEmail || "")}" placeholder="name@company.com" autocomplete="off" dir="ltr"></label>
+    <label>${e(t3("Bilgi (CC) adresi (isteğe bağlı)", "CC address (optional)", "نسخة (CC) (اختياري)"))}<input id="av-set-cc" class="ug-in" type="email" value="${e(s.ccEmail || "")}" autocomplete="off" dir="ltr"></label>
+    <div class="av-acts"><button type="button" class="ug-btn pri" onclick="avSaveSettings()">💾 ${e(t3("Kaydet", "Save", "حفظ"))}</button></div></div>`;
+}
+async function avSaveSettings(cb) {
+  if (!_avIsAdmin()) return;
+  const name = _avV("av-set-name"), mail = _avV("av-set-mail"), cc = _avV("av-set-cc");
+  if (!_avValidMail(mail)) { alert(t3("Geçerli bir alıcı e-posta adresi girin.", "Enter a valid recipient e-mail address.", "اكتب إيميل مستلم صحيح.")); return; }
+  if (cc && !_avValidMail(cc)) { alert(t3("CC adresi geçerli değil.", "The CC address is not valid.", "عنوان CC مش صحيح.")); return; }
+  _avSettings = { toName: name || "Wael Ezzeldien", toEmail: mail, ccEmail: cc }; _avSetDirty = true;
+  const ok = await _avSave(); _avSetDirty = false;
+  if (ok !== false) { showEmsToast(t3("✅ Alıcı kaydedildi.", "✅ Recipient saved.", "✅ اتحفظ المستلم."), 4000, "#15803D"); document.querySelectorAll("[data-av-dlg='set']").forEach(o => o.remove()); _avRender(true); if (typeof cb === "function") cb(); }
+}
+
+// ── Diyalog ──
+function _avDlg(id, html, avId) {
+  document.querySelectorAll("#av-dlg-" + id).forEach(o => o.remove());
+  const o = document.createElement("div"); o.className = "ug-dlg-ov"; o.id = "av-dlg-" + id; o.setAttribute("data-av-dlg", id === "set" ? "set" : "1"); o.setAttribute("data-ug-dlg", "1"); if (avId) o.setAttribute("data-av-id", avId);
+  o.innerHTML = `<div class="ug-dlg" role="dialog" aria-modal="true">${html}</div>`;
+  document.body.appendChild(o);
+  return o;
+}
+function _avDlgClose() { document.querySelectorAll("[data-av-dlg]").forEach(o => o.remove()); if (_avIsOpen()) _avRender(true); }
+
+// Personel: yeni talep
+function avNew() {
+  if (!currentUserIsNamedAccount) return;
+  let dept = ""; try { dept = localStorage.getItem("ems_av_dept") || ""; } catch (e) {}
+  const e = escHtml;
+  _avDlg("new", `<div class="ug-dlg-h"><h3>💵 ${e(t3("Yeni Avans Talebi", "New Advance Request", "طلب سلفة جديد"))}</h3><button type="button" class="ug-x" onclick="_avDlgClose()" aria-label="Close">✕</button></div>
+    <div class="ug-dlg-b"><div class="ug-form">
+      <label class="full">${e(t3("Ad Soyad", "Full Name", "الاسم"))}<input class="ug-in" value="${e(currentUserName || "")}" disabled></label>
+      <label class="full">${e(t3("Bölüm veya Görev", "Department or Position", "القسم أو الوظيفة"))}<input id="av-dept" class="ug-in" value="${e(dept)}" autocomplete="off"></label>
+      <div style="display:grid; grid-template-columns:2fr 1fr; gap:10px;" class="full"><label>${e(t3("İstenen avans tutarı *", "Requested advance amount *", "مبلغ السلفة المطلوب *"))}<input id="av-amount" class="ug-in" type="number" inputmode="decimal" min="1" step="0.01" placeholder="0.00" autocomplete="off"></label>
+        <label>${e(t3("Para birimi", "Currency", "العملة"))}<select id="av-cur" class="ug-in">${AV_CURS.map(c => `<option value="${c}">${c}</option>`).join("")}</select></label></div>
+      <label class="full">${e(t3("Avansın nedeni *", "Reason for the advance *", "سبب السلفة *"))}<textarea id="av-reason" class="ug-in" rows="4" maxlength="600" placeholder="${e(t3("Nedenini kısaca yazın…", "Briefly explain the reason…", "اكتب السبب باختصار…"))}"></textarea></label>
+      <label class="full">${e(t3("Geri ödeme", "Repayment", "السداد"))}<select id="av-repay" class="ug-in">${AV_REPAY.map(r => `<option value="${r.k}">${e(t3(r.tr, r.en, r.ar))}</option>`).join("")}</select></label>
+    </div></div>
+    <div class="ug-dlg-f"><button type="button" class="ug-btn pri" onclick="avSubmit()">📨 ${e(t3("Gönder", "Send", "إرسال"))}</button><button type="button" class="ug-btn" onclick="_avDlgClose()">${e(t3("Vazgeç", "Cancel", "إلغاء"))}</button></div>`);
+  setTimeout(() => { const i = document.getElementById("av-amount"); if (i) i.focus(); }, 60);
+}
+async function avSubmit() {
+  if (!currentUserIsNamedAccount) return;
+  const amount = parseFloat(String(_avV("av-amount")).replace(",", ".")), reason = _avV("av-reason"), cur = _avV("av-cur") || "EGP", dept = _avV("av-dept"), repay = _avV("av-repay") || "next";
+  if (!(amount > 0) || amount > 10000000) { alert(t3("Geçerli bir avans tutarı girin.", "Enter a valid advance amount.", "اكتب مبلغ سلفة صحيح.")); return; }
+  if (reason.length < 3) { alert(t3("Lütfen avansın nedenini yazın.", "Please write the reason for the advance.", "من فضلك اكتب سبب السلفة.")); return; }
+  const prev = _avItems;
+  const x = { id: _avId(), at: new Date().toISOString(), by: _avMe(), byName: String(currentUserName || _avMe()), dept, amount: Math.round(amount * 100) / 100, cur, reason, repay, status: "pending" };
+  _avItems = [ x, ..._avItems ];
+  try { localStorage.setItem("ems_av_dept", dept); } catch (e) {}
+  const btn = document.querySelector("#av-dlg-new .ug-btn.pri"); if (btn) { btn.disabled = true; btn.textContent = "…"; }
+  const ok = await _avSave();
+  if (ok === false) { _avItems = prev; if (btn) { btn.disabled = false; btn.textContent = "📨 " + t3("Gönder", "Send", "إرسال"); } alert(t3("Talep gönderilemedi. İnternet bağlantınızı kontrol edin veya yöneticinizle görüşün.", "The request could not be sent. Check your connection or contact your manager.", "الطلب ماتبعتش. اتأكد من الاتصال أو كلّم مديرك.")); return; }
+  _avDlgClose();
+  showEmsToast("✅ " + t3("Avans talebiniz yöneticiye gönderildi.", "Your advance request was sent to the manager.", "طلب السلفة اتبعت للمدير."), 6000, "#15803D");
+  _avRender(true);
+}
+
+// Ayrıntı (personel ve yönetici)
+function avOpen(id, silent) {
+  const x = _avFind(id); if (!x || !_avCanSee(x)) return;
+  const e = escHtml, admin = _avIsAdmin(), s = _avSt(x.status), kv = (k, v) => `<tr><td>${e(k)}</td><td>${v}</td></tr>`;
+  let acts = "", note = "";
+  if (admin && x.status === "pending") {
+    note = `<label style="display:block; margin-top:10px;">${e(t3("Not (isteğe bağlı, personele görünür)", "Note (optional, visible to the employee)", "ملاحظة (اختياري، بتظهر للموظف)"))}<textarea id="av-note" class="ug-in" rows="2" maxlength="300"></textarea></label>`;
+    acts = `<button type="button" class="ug-btn av-ok" onclick="avDecide('${x.id}','approved')">✅ ${e(t3("Onayla ve İmzala", "Approve and Sign", "وافق ووقّع"))}</button><button type="button" class="ug-btn av-no" onclick="avDecide('${x.id}','rejected')">❌ ${e(t3("Reddet", "Reject", "ارفض"))}</button>`;
+  } else if (x.status === "approved") {
+    acts = `<button type="button" class="ug-btn" onclick="avPdf('${x.id}')">📄 ${e(t3("Formu İndir (PDF)", "Download Form (PDF)", "تنزيل النموذج (PDF)"))}</button>`;
+    if (admin) acts = `<button type="button" class="ug-btn av-send" onclick="avSend('${x.id}')">📧 ${e(t3("Formu " + (_avSettings.toName || "alıcıya") + " kişisine gönder", "Send the form to " + (_avSettings.toName || "the recipient"), "ابعت النموذج إلى " + (_avSettings.toName || "المستلم")))}</button>` + acts + `<button type="button" class="ug-btn" onclick="avSend('${x.id}','eml')" title="${e(t3("Outlook masaüstü: PDF ekli taslak açılır", "Outlook desktop: opens a draft with the PDF attached", "Outlook على الكمبيوتر: بيفتح مسودة والـ PDF مرفق"))}">📎 ${e(t3("PDF ekli taslak (.eml)", "Draft with PDF attached (.eml)", "مسودة بـ PDF مرفق (.eml)"))}</button>`;
+  } else if (!admin && x.status === "pending") {
+    acts = `<button type="button" class="ug-btn av-no" onclick="avCancel('${x.id}')">🚫 ${e(t3("Talebi İptal Et", "Cancel Request", "إلغاء الطلب"))}</button>`;
+  }
+  const o = _avDlg("det", `<div class="ug-dlg-h"><h3>💵 ${e(t3("Avans Talebi", "Advance Request", "طلب سلفة"))}${x.no ? " · " + e(x.no) : ""}</h3><button type="button" class="ug-x" onclick="_avDlgClose()" aria-label="Close">✕</button></div>
+    <div class="ug-dlg-b"><div style="margin-bottom:10px;"><span class="av-badge" style="background:${s.bg}; color:${s.c};">${s.ic} ${e(_avStL(x.status))}</span></div>
+    <table class="av-kv">
+      ${kv(t3("Personel", "Employee", "الموظف"), `<b>${e(x.byName || x.by || "")}</b>${x.dept ? "<br><span class=\"ug-muted\">" + e(x.dept) + "</span>" : ""}`)}
+      ${kv(t3("Talep tarihi", "Request date", "تاريخ الطلب"), e(_avDateTime(x.at)))}
+      ${kv(t3("İstenen tutar", "Requested amount", "المبلغ المطلوب"), `<span class="av-big">${e(_avMoney(x))}</span>`)}
+      ${kv(t3("Geri ödeme", "Repayment", "السداد"), e(_avRepayL(x.repay)))}
+      ${kv(t3("Neden", "Reason", "السبب"), `<div class="av-reason">${e(x.reason || "")}</div>`)}
+      ${x.decAt ? kv(x.status === "approved" ? t3("Onay", "Approval", "الموافقة") : t3("Karar", "Decision", "القرار"), e(_avDateTime(x.decAt))) : ""}
+      ${x.decNote ? kv(t3("Not", "Note", "ملاحظة"), e(x.decNote)) : ""}
+      ${admin && x.mailedAt ? kv(t3("E-posta", "E-mail", "الإيميل"), e(t3("Taslak hazırlandı: ", "Draft prepared: ", "اتجهزت المسودة: ") + _avDateTime(x.mailedAt) + " → " + (x.mailedTo || ""))) : ""}
+    </table>${note}</div>
+    <div class="ug-dlg-f"><div class="av-acts" style="margin:0;">${acts}</div></div>`, id);
+  if (!silent) { /* odak */ }
+  return o;
+}
+async function avCancel(id) {
+  const x = _avFind(id); if (!x || x.status !== "pending" || String(x.by || "").toLowerCase() !== _avMe()) return;
+  if (!confirm(t3("Bu avans talebi iptal edilsin mi?", "Cancel this advance request?", "تلغي طلب السلفة ده؟"))) return;
+  const prev = _avItems; _avItems = _avItems.map(z => z.id === id ? Object.assign({}, z, { status: "cancelled", decAt: new Date().toISOString() }) : z);
+  const ok = await _avSave();
+  if (ok === false) { _avItems = prev; return; }
+  _avDlgClose(); showEmsToast(t3("Talep iptal edildi.", "Request cancelled.", "اتلغى الطلب."), 4000);
+}
+function _avNextNo(yr) {
+  let mx = 0; _avItems.forEach(x => { const m = /^AV-(\d{4})-(\d+)$/.exec(String(x.no || "")); if (m && Number(m[1]) === yr) mx = Math.max(mx, Number(m[2])); });
+  return "AV-" + yr + "-" + String(mx + 1).padStart(3, "0");
+}
+async function avDecide(id, st) {
+  if (!_avIsAdmin()) return;
+  const x = _avFind(id); if (!x || x.status !== "pending") return;
+  if (st === "rejected" && !confirm(t3("Bu avans talebi reddedilsin mi?", "Reject this advance request?", "ترفض طلب السلفة ده؟"))) return;
+  const note = _avV("av-note"), nowIso = new Date().toISOString();
+  const y = Object.assign({}, x, { status: st, decAt: nowIso, decBy: _avMe(), decNote: note });
+  if (st === "approved") y.no = _avNextNo(new Date(nowIso).getFullYear());
+  const prev = _avItems; _avItems = _avItems.map(z => z.id === id ? y : z);
+  const ok = await _avSave();
+  if (ok === false) { _avItems = prev; return; }
+  _avBadgeSync();
+  showEmsToast(st === "approved" ? "✅ " + t3("Onaylandı ve imzalandı. Şimdi formu gönderebilirsiniz.", "Approved and signed. You can now send the form.", "اتوافق عليه واتوقّع. دلوقتي تقدر تبعت النموذج.") : "❌ " + t3("Talep reddedildi.", "Request rejected.", "اترفض الطلب."), 6000, st === "approved" ? "#15803D" : "#B91C1C");
+  avOpen(id);
+  if (_avIsOpen()) _avRender(true);
+}
+
+// ── İmzalı kurumsal form (PDF) ──
+const _avFileName = x => "EMS_Avans_Talep_Formu_" + String(x.no || x.id) + "_" + String(x.byName || "").replace(/ı/g, "i").replace(/İ/g, "I").normalize("NFKD").replace(/[^\w]+/g, "_").replace(/^_+|_+$/g, "") + ".pdf";
+async function _avBuildPdf(x) {
+  const e = escHtml, lab = (en, ar) => `<div style="display:flex; justify-content:space-between; gap:8px; font-size:10px; font-weight:800; color:#64748B; letter-spacing:.03em; text-transform:uppercase;"><span>${en}</span><span dir="rtl" style="text-transform:none; font-size:11px;">${ar}</span></div>`;
+  const cell = (en, ar, v, w) => `<td style="border:1px solid #CBD5E1; padding:9px 12px; vertical-align:top; width:${w || 50}%;">${lab(en, ar)}<div style="font-size:15px; font-weight:800; margin-top:4px; min-height:20px; color:#0F172A; overflow-wrap:anywhere;">${v}</div></td>`;
+  const R = AV_REPAY.find(r => r.k === x.repay) || AV_REPAY[0], to = _avSettings.toName || "";
+  const line = (en, ar) => `<div style="margin-top:14px;">${lab(en, ar)}<div style="border-bottom:1px solid #94A3B8; height:20px;"></div></div>`;
+  return await _vzPdfSetup(() => `${_pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", icon: "📋", title: "ADVANCE REQUEST FORM", sub: `<span dir="rtl">نموذج طلب سلفة</span> · ${e(x.no || "")}` })}
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; background:#DCFCE7; border:1.5px solid #16A34A; border-radius:12px; padding:10px 16px; margin-bottom:14px;">
+      <div style="font-size:15px; font-weight:900; color:#166534;">✔ APPROVED &nbsp;·&nbsp; <span dir="rtl">تمت الموافقة</span></div>
+      <div style="font-size:12px; font-weight:800; color:#166534;">${e(_avDate(x.decAt))}</div></div>
+    <table style="width:100%; border-collapse:collapse; margin-bottom:14px;"><tr>${cell("Request No", "رقم الطلب", e(x.no || ""))}${cell("Request Date", "تاريخ الطلب", e(_avDate(x.at)))}</tr>
+      <tr>${cell("Employee Name", "اسم الموظف", e(x.byName || ""))}${cell("Department / Position", "القسم / الوظيفة", e(x.dept || "—"))}</tr></table>
+    <div style="border:2px solid #1A3660; border-radius:14px; padding:14px 18px; margin-bottom:14px; background:#F8FAFC;">${lab("Requested Advance Amount", "مبلغ السلفة المطلوب")}<div style="font-size:34px; font-weight:900; color:#1A3660; margin-top:4px;">${e(_avMoney(x))}</div></div>
+    <table style="width:100%; border-collapse:collapse; margin-bottom:14px;"><tr>${cell("Repayment", "السداد", e(R.en) + `<div dir="rtl" style="font-size:12px; font-weight:700; color:#475569;">${e(R.ar)}</div>`, 100)}</tr></table>
+    <div style="border:1px solid #CBD5E1; border-radius:10px; padding:10px 14px; margin-bottom:16px; min-height:96px;">${lab("Reason for the Advance", "سبب السلفة")}<div style="font-size:14px; line-height:1.55; margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere;">${e(x.reason || "")}</div></div>
+    <div style="display:flex; gap:16px; margin-bottom:16px;">
+      <div style="flex:1; border:1px solid #CBD5E1; border-radius:10px; padding:10px 14px; min-height:150px;">${lab("Requested by", "مقدم الطلب")}<div style="font-size:15px; font-weight:800; margin-top:8px;">${e(x.byName || "")}</div><div style="font-size:11.5px; color:#64748B; margin-top:4px;">Submitted electronically via EMS Portal<br>${e(_avDateTime(x.at))}</div></div>
+      <div style="flex:1; border:1.5px solid #1A3660; border-radius:10px; padding:10px 14px; min-height:150px;">${lab("Approved and Signed by", "اعتمد ووقّع")}<div style="font-size:15px; font-weight:900; color:#1A3660; margin-top:8px;">${e(REPORT_SIGNATURE.name)}</div><div style="font-size:11.5px; color:#475569;">Quality Assurance Manager · <span dir="rtl">مدير ضمان الجودة</span></div>
+        <img src="${REPORT_SIGNATURE_IMG}" style="display:block; height:64px; width:auto; max-width:100%; margin:6px 0 2px;" alt=""><div style="font-size:11px; color:#64748B;">${e(_avDateTime(x.decAt))}</div>${x.decNote ? `<div style="font-size:11.5px; color:#334155; margin-top:4px;"><b>Note:</b> ${e(x.decNote)}</div>` : ""}</div></div>
+    <div style="border:1px dashed #94A3B8; border-radius:10px; padding:10px 14px; margin-bottom:12px;"><div style="font-size:12px; font-weight:900; color:#1A3660; text-transform:uppercase; letter-spacing:.04em;">For Finance Use · <span dir="rtl" style="text-transform:none;">للاستخدام المالي</span>${to ? ` &nbsp;—&nbsp; <span style="text-transform:none; font-weight:700; color:#475569;">To: ${e(to)}</span>` : ""}</div>
+      <div style="display:flex; gap:20px;"><div style="flex:1;">${line("Payment Date", "تاريخ الصرف")}</div><div style="flex:1;">${line("Paid by", "صُرف بواسطة")}</div><div style="flex:1;">${line("Employee Signature", "توقيع الموظف")}</div></div></div>
+    <div style="margin-top:14px; padding-top:10px; border-top:1px solid #E2E8F0; font-size:9.5px; color:#94A3B8; text-align:center;">EMS — Eroğlu Knitting · Approved electronically via EMS Portal · ${e(x.no || "")} · ${new Date().toLocaleString("en-GB")}</div>`);
+}
+async function avPdf(id) {
+  const x = _avFind(id); if (!x || x.status !== "approved" || !_avCanSee(x)) return;
+  try { showPdfProgress(t3("Avans formu hazırlanıyor…", "Preparing the advance form…", "بنجهّز نموذج السلفة…")); const pdf = await _avBuildPdf(x); if (pdf) { pdf.__sigDone = true; pdf.save(_avFileName(x)); } }
+  catch (err) { console.error("[Avans PDF]", err); alert(t3("PDF oluşturulurken bir hata oluştu: ", "An error occurred while generating the PDF: ", "حصل خطأ أثناء إنشاء PDF: ") + err.message); }
+  finally { try { hidePdfProgress(); } catch (e) {} }
+}
+function _avMailBody(x) {
+  const first = String(_avSettings.toName || "").split(/\s+/)[0] || "";
+  return "Dear " + (first || "Sir/Madam") + ",\n\nPlease find attached the approved and signed Advance Request Form (No. " + (x.no || "") + ") for " + x.byName + ".\n\n• Employee: " + x.byName + (x.dept ? " (" + x.dept + ")" : "") + "\n• Amount: " + _avMoney(x) + "\n• Repayment: " + ((AV_REPAY.find(r => r.k === x.repay) || AV_REPAY[0]).en) + "\n• Approved on: " + _avDate(x.decAt) + "\n\nBest regards,\n" + REPORT_SIGNATURE.name + "\nQuality Assurance Manager\nEMS Eroğlu Knitting\n" + REPORT_SIGNATURE.phone + "\n" + REPORT_SIGNATURE.email;
+}
+function _avBuf2b64(buf) { const u = new Uint8Array(buf); let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
+function _avEml(to, cc, subject, body, fileName, pdfB64) {
+  const b64u = s => btoa(unescape(encodeURIComponent(s))), wrap = s => s.replace(/(.{76})/g, "$1\r\n"), B = "=_EMS_" + Date.now().toString(36);
+  const html = "<html><body style=\"font-family:Calibri,Segoe UI,Arial,sans-serif;font-size:14px;\">" + escHtml(body).replace(/\n/g, "<br>") + "</body></html>";
+  return [ "To: " + to, cc ? "Cc: " + cc : null, "Subject: =?UTF-8?B?" + b64u(subject) + "?=", "X-Unsent: 1", "MIME-Version: 1.0", "Content-Type: multipart/mixed; boundary=\"" + B + "\"", "",
+    "--" + B, "Content-Type: text/html; charset=UTF-8", "Content-Transfer-Encoding: base64", "", wrap(b64u(html)), "",
+    "--" + B, "Content-Type: application/pdf; name=\"" + fileName + "\"", "Content-Transfer-Encoding: base64", "Content-Disposition: attachment; filename=\"" + fileName + "\"", "", wrap(pdfB64), "", "--" + B + "--", "" ].filter(l => l !== null).join("\r\n");
+}
+async function avSend(id, mode) {
+  if (!_avIsAdmin()) return;
+  const x = _avFind(id); if (!x || x.status !== "approved") return;
+  if (!_avValidMail(_avSettings.toEmail)) {
+    _avDlg("set", `<div class="ug-dlg-h"><h3>⚙️ ${escHtml(t3("Alıcı Bilgisi", "Recipient", "بيانات المستلم"))}</h3><button type="button" class="ug-x" onclick="_avDlgClose()" aria-label="Close">✕</button></div><div class="ug-dlg-b">${_avSetHtml()}</div>`);
+    window._avSetCb = () => avSend(id, mode);
+    const b = document.querySelector("#av-dlg-set .ug-btn.pri"); if (b) b.setAttribute("onclick", "avSaveSettings(window._avSetCb)");
+    return;
+  }
+  let w = null; if (mode !== "eml") { try { w = window.open("about:blank", "_blank"); } catch (err) {} }
+  try {
+    showPdfProgress(t3("İmzalı form hazırlanıyor…", "Preparing the signed form…", "بنجهّز النموذج الموقّع…"));
+    const pdf = await _avBuildPdf(x); if (!pdf) { if (w) w.close(); return; }
+    pdf.__sigDone = true;
+    const fn = _avFileName(x), to = _avSettings.toEmail.trim(), cc = (_avSettings.ccEmail || "").trim(), subj = "Advance Request Form " + (x.no || "") + " — " + x.byName, body = _avMailBody(x);
+    if (mode === "eml") {
+      const eml = _avEml(to, cc, subj, body, fn, _avBuf2b64(pdf.output("arraybuffer")));
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([ eml ], { type: "message/rfc822" })); a.download = fn.replace(/\.pdf$/, ".eml"); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      showEmsToast(t3("📎 Taslak dosyası indi. Dosyaya çift tıklayın (Outlook masaüstü); PDF ekli açılır, Gönder'e basın.", "📎 Draft file downloaded. Double-click it (Outlook desktop); it opens with the PDF attached, then press Send.", "📎 ملف المسودة نزل. اضغط عليه مرتين (Outlook على الكمبيوتر)؛ هيفتح والـ PDF مرفق، وبعدين اضغط إرسال."), 12000);
+    } else {
+      pdf.save(fn);
+      const url = "https://outlook.office.com/mail/deeplink/compose?to=" + encodeURIComponent(to) + (cc ? "&cc=" + encodeURIComponent(cc) : "") + "&subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+      if (w) { try { w.location.href = url; } catch (err) { w.close(); w = null; } }
+      showEmsToast(w ? t3("📧 İmzalı PDF indi ve e-posta taslağı açıldı. İndirilen PDF'yi taslağa ekleyip Gönder'e basın.", "📧 The signed PDF was downloaded and the e-mail draft opened. Attach the downloaded PDF and press Send.", "📧 الـ PDF الموقّع نزل ومسودة الإيميل اتفتحت. أرفق الـ PDF اللي نزل واضغط إرسال.") : t3("PDF indi. Açılır pencere engellendi; \"PDF ekli taslak (.eml)\" düğmesini kullanın.", "The PDF was downloaded. The pop-up was blocked; use the \"Draft with PDF attached (.eml)\" button.", "الـ PDF نزل. النافذة اتمنعت؛ استخدم زر \"مسودة بـ PDF مرفق (.eml)\"."), 12000);
+    }
+    const prev = _avItems; _avItems = _avItems.map(z => z.id === id ? Object.assign({}, z, { mailedAt: new Date().toISOString(), mailedTo: to }) : z);
+    const ok = await _avSave(); if (ok === false) _avItems = prev;
+    avOpen(id);
+  } catch (err) { if (w) { try { w.close(); } catch (e2) {} } console.error("[Avans gönder]", err); alert(t3("Hata: ", "Error: ", "خطأ: ") + err.message); }
+  finally { try { hidePdfProgress(); } catch (e) {} }
+}
+</script>
+
 <style id="advisor-meeting-css">
 /* ═══ DANIŞMAN TOPLANTI TUTANAKLARI ═══ */
 #advisor-meeting-modal .modal-container { max-width: 1180px; }
@@ -84509,7 +84952,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 14:54";
+const EMS_BUILD = "2026-11-16 15:17";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
