@@ -4492,6 +4492,10 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
         <span class="nav-emoji">💵</span>
         <span data-i18n="nav_avans">Avans Talebi</span><span class="av-nav-bd" id="av-nav-bd" style="display:none"></span>
       </button>
+      <button class="side-nav-item" onclick="try{ openDefs(); }catch(e){ console.error('Tanımlamalar açma hatası:', e); alert(t3('Hata: ', 'Error: ', 'خطأ: ') + e.message); }">
+        <span class="nav-emoji">📖</span>
+        <span data-i18n="nav_defs">Tanımlamalar</span>
+      </button>
       
       <div class="side-nav-section-label" data-i18n="nav_section_production">Üretim Raporları</div>
       <button class="side-nav-item" onclick="try{ openProdGroup('iplik'); }catch(e){ console.error('İplik açma hatası:', e); alert(t3('Hata: ', 'Error: ', 'خطأ: ') + e.message); }">
@@ -8160,6 +8164,11 @@ const UI_TRANSLATIONS = {
     en: "Advance Request",
     ar: "طلب سلفة"
   },
+  nav_defs: {
+    tr: "Tanımlamalar",
+    en: "Definitions",
+    ar: "التعريفات"
+  },
   nav_advisor_meetings: {
     tr: "Danışman Toplantı Tutanakları",
     en: "Consultant Meeting Minutes",
@@ -10811,7 +10820,7 @@ function _teamRerenderForLanguage() {
   const ss = document.getElementById("team-self-service-modal");
   if (ss && ss.classList.contains("open") && typeof renderTeamSelfServiceView === "function") renderTeamSelfServiceView();
 }
-const _LANG_RERENDER_SCREENS = [ [ "about-hub-modal", "openAboutHub" ], [ "cert-hub-modal", "openCertHub" ], [ "urge-modal", "openUrge" ], [ "visitor-modal", "openVisitor" ], [ "avans-modal", "openAvans" ], [ "meeting-modal", "openMeetings" ], [ "cert-fullpage-overlay", "openCertDetail" ], [ "chemical-consumption-hub-modal", "openChemicalConsumptionHub" ], [ "chemical-dept-report-modal", "openChemicalDeptReport" ], [ "chemical-material-detail-modal", "openChemicalMaterialDetail" ], [ "daily-audit-reports-modal", "openDailyAuditReports" ], [ "daily-audit-dept-report-modal", "renderDailyAuditDeptReport" ], [ "departments-reports-modal", "openDepartmentsReports" ], [ "dept-compliance-chart-modal", "openDeptComplianceChart" ], [ "section-report-picker-modal", "openSectionReportPicker" ], [ "backup-history-modal", "openBackupHistory" ], [ "prod-category-detail-modal", "openProdCategoryDetail" ], [ "qa-dept-info-overlay", "openQADeptInfo" ], [ "privacy-policy-modal", "openPrivacyPolicyModal" ], [ "cookie-policy-modal", "openCookiePolicyModal" ], [ "factory-location-modal", "openFactoryLocationModal" ], [ "production-reports-modal", "openProductionReports" ], [ "mgmt-summary-modal", "openMgmtSummary" ], [ "certx-viewer", "openCertViewer" ], [ "finance-modal", "openFinance" ] ];
+const _LANG_RERENDER_SCREENS = [ [ "about-hub-modal", "openAboutHub" ], [ "cert-hub-modal", "openCertHub" ], [ "urge-modal", "openUrge" ], [ "visitor-modal", "openVisitor" ], [ "avans-modal", "openAvans" ], [ "defs-modal", "openDefs" ], [ "meeting-modal", "openMeetings" ], [ "cert-fullpage-overlay", "openCertDetail" ], [ "chemical-consumption-hub-modal", "openChemicalConsumptionHub" ], [ "chemical-dept-report-modal", "openChemicalDeptReport" ], [ "chemical-material-detail-modal", "openChemicalMaterialDetail" ], [ "daily-audit-reports-modal", "openDailyAuditReports" ], [ "daily-audit-dept-report-modal", "renderDailyAuditDeptReport" ], [ "departments-reports-modal", "openDepartmentsReports" ], [ "dept-compliance-chart-modal", "openDeptComplianceChart" ], [ "section-report-picker-modal", "openSectionReportPicker" ], [ "backup-history-modal", "openBackupHistory" ], [ "prod-category-detail-modal", "openProdCategoryDetail" ], [ "qa-dept-info-overlay", "openQADeptInfo" ], [ "privacy-policy-modal", "openPrivacyPolicyModal" ], [ "cookie-policy-modal", "openCookiePolicyModal" ], [ "factory-location-modal", "openFactoryLocationModal" ], [ "production-reports-modal", "openProductionReports" ], [ "mgmt-summary-modal", "openMgmtSummary" ], [ "certx-viewer", "openCertViewer" ], [ "finance-modal", "openFinance" ] ];
 const _langLastOpenArgs = {};
 function _langInstallOpenTrackers() {
   _LANG_RERENDER_SCREENS.forEach(([, fn]) => {
@@ -55467,6 +55476,9 @@ function _applySavedView(saved) {
      case "avans":
       openAvans(p.tab);
       break;
+     case "defs":
+      openDefs();
+      break;
      case "meetings":
       openMeetings(p.tab);
       break;
@@ -55553,6 +55565,9 @@ function goHome() {
   } catch (e) {}
   try {
     closeAvans();
+  } catch (e) {}
+  try {
+    closeDefs();
   } catch (e) {}
   try {
     closeCertFullpage();
@@ -70195,7 +70210,7 @@ function _ahubAttachTool(key, tries) {
     // panel bölümü ve merkez sessizce kapanır, açılan sayfa temiz görünür /
     // If the admin opened another page (footer link, menu…), the tool pane must not stay stuck on top of it: the tool and the hub close quietly
     try {
-      const _pageIds = /^(global-filter-modal|customer-dashboard-modal|customer-picker-modal|audit-findings-modal|departments-hub-modal|department-checklist-modal|daily-audit-[a-z-]+-modal|production-reports-modal|document-library-modal|procedures-modal|cert-hub-modal|about-hub-modal|urge-modal|visitor-modal|avans-modal|meeting-modal|advisor-meeting-modal|chemical-[a-z-]+-modal|company-profile-overlay|dept-audit-modal|mgmt-summary-modal)$/;
+      const _pageIds = /^(global-filter-modal|customer-dashboard-modal|customer-picker-modal|audit-findings-modal|departments-hub-modal|department-checklist-modal|daily-audit-[a-z-]+-modal|production-reports-modal|document-library-modal|procedures-modal|cert-hub-modal|about-hub-modal|urge-modal|visitor-modal|avans-modal|defs-modal|meeting-modal|advisor-meeting-modal|chemical-[a-z-]+-modal|company-profile-overlay|dept-audit-modal|mgmt-summary-modal)$/;
       const _other = Array.from(document.querySelectorAll(".modal-overlay.open, .qa-dept-overlay.open")).find(e => e !== still && _pageIds.test(e.id) && (e._emsOpenedAt || 0) > _ahubAt + 300);
       if (_other) {
         _ahubCloseToolSilent();
@@ -80500,6 +80515,7 @@ function _fxInit() {
           "urge-modal": T("Ür-Ge - Ar-Ge Departmanı", "Ür-Ge - Ar-Ge Department", "قسم Ür-Ge - Ar-Ge"),
           "visitor-modal": T("Ziyaretçi Kayıt", "Visitor Log", "سجل الزوار"),
           "avans-modal": T("Avans Talebi", "Advance Request", "طلب سلفة"),
+          "defs-modal": T("Tanımlamalar", "Definitions", "التعريفات"),
           "meeting-modal": T("Haftalık Toplantı Raporları", "Weekly Meeting Reports", "تقارير الاجتماعات الأسبوعية"),
           "team-self-service-modal": T("Performans Kartım", "My Performance", "بطاقة أدائي")
         };
@@ -83346,6 +83362,169 @@ async function avSend(id, mode) {
 }
 </script>
 
+<style id="defs-css">
+/* ═══ TANIMLAMALAR — departman ve bölüm tanımları (16.11.2026) ═══ */
+#defs-modal .qa-dept-overlay-inner { max-width: 1180px; padding-top: 28px; }
+#defs-modal { font-size: 14px; line-height: 1.5; }
+#side-nav .side-nav-item [data-i18n="nav_defs"] { white-space: normal !important; line-height: 1.2; }
+.df-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.df-search { flex: 1 1 260px; min-width: 0; font: inherit; padding: 11px 14px; border: 1px solid var(--border-h, #CBD5E1); border-radius: 12px; background: #fff; }
+.df-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.df-chip { font: inherit; font-weight: 800; font-size: 12.5px; border: 1px solid var(--border-h, #CBD5E1); background: #fff; color: #334155; border-radius: 99px; padding: 7px 14px; cursor: pointer; }
+.df-chip.on { background: #1A3660; color: #fff; border-color: #1A3660; }
+.df-group { margin-bottom: 26px; }
+.df-ghead { display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, var(--c1, #1A3660), var(--c2, #2D5A9A)); color: #fff; border-radius: 16px; padding: 16px 20px; margin-bottom: 12px; box-shadow: 0 8px 22px rgba(15,23,42,.14); }
+.df-gic { width: 52px; height: 52px; flex: none; border-radius: 14px; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.df-gtx { flex: 1; min-width: 0; }
+.df-gtx h3 { margin: 0; font-size: 19px; font-weight: 900; }
+.df-gtx p { margin: 3px 0 0; font-size: 13px; opacity: .92; overflow-wrap: anywhere; }
+.df-cnt { font-size: 12px; font-weight: 800; background: rgba(255,255,255,.22); border-radius: 99px; padding: 4px 12px; white-space: nowrap; }
+.df-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+.df-card { background: #fff; border: 1px solid var(--border, #DCE3EC); border-top: 4px solid var(--c1, #1A3660); border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 10px rgba(15,23,42,.05); min-width: 0; }
+.df-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.df-ic { width: 38px; height: 38px; flex: none; border-radius: 11px; background: linear-gradient(135deg, var(--c1, #1A3660), var(--c2, #2D5A9A)); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.df-top h4 { margin: 0; flex: 1; font-size: 16.5px; font-weight: 900; color: #0F172A; overflow-wrap: anywhere; }
+.df-edit { border: 0; background: #F1F5F9; border-radius: 9px; width: 32px; height: 32px; cursor: pointer; font-size: 14px; flex: none; }
+.df-def { font-size: 13px !important; line-height: 1.5 !important; text-align: start !important; color: #334155; margin: 0 0 8px; overflow-wrap: anywhere; }
+.df-sub { font-size: 11px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; color: #64748B; margin: 4px 0 4px; }
+.df-cnt2 { font-size: 12.5px; font-weight: 800; color: #64748B; white-space: nowrap; }
+.df-ul { margin: 0; padding-inline-start: 18px; font-size: 12.5px; color: #475569; }
+.df-ul li { margin-bottom: 2px; overflow-wrap: anywhere; }
+.df-own { margin-top: 8px; font-size: 12px; font-weight: 800; color: #1A3660; background: #EEF3FA; border-radius: 8px; padding: 5px 9px; display: inline-block; overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  #defs-modal .qa-dept-overlay-inner { padding: 18px 12px 80px; }
+  .df-grid { grid-template-columns: 1fr; }
+  .df-ghead { padding: 12px 14px; }
+}
+</style>
+
+<div id="defs-modal" class="qa-dept-overlay">
+  <div class="qa-dept-overlay-header">
+    <img data-dup="dup2" loading="lazy" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="EMS Eroğlu Knitting" class="qa-dept-overlay-logo" onclick="closeDefs(); goHome();" role="button" tabindex="0">
+    <div class="qa-dept-overlay-header-title" id="defs-title">TANIMLAMALAR</div>
+    <div style="display:flex; align-items:center; gap:10px; justify-self:end; position:relative; z-index:1;">
+      <button class="qa-dept-overlay-close" onclick="closeDefs(); goHome();" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="qa-dept-overlay-body" id="defs-body"><div class="qa-dept-overlay-inner" id="defs-inner"></div></div>
+</div>
+<script id="defs-module">
+// ═══ TANIMLAMALAR — tüm departman ve bölümlerin tanımı, başlıca işleri ve sorumlusu (16.11.2026) ═══
+// Metinler kodda hazır (TR/EN/AR); ad, simge ve renkler sitedeki PRODUCTION_MAIN_DEPARTMENTS / PRODUCTION_DEPARTMENTS'tan gelir.
+// Yönetici ✏️ ile tanımı ve sorumluyu değiştirir: bulutta "deptDefs" belgesi (alan m). Giriş yapan herkes okur.
+// Texts are built in (TR/EN/AR); names, icons and colours come from the site's production department lists. The admin can edit the definition and the owner (cloud doc "deptDefs").
+const DF_TEXT = {"iplik":{"d":["Pamuk ve diğer liflerin temizlenip taranarak kumaşta kullanılacak ipliğe dönüştürüldüğü departmandır.","The department that cleans and combs cotton and other fibres and spins them into yarn for fabric production.","القسم اللي بينضّف القطن والألياف التانية ويمشّطها ويغزلها لخيوط تستخدم في تصنيع القماش."],"w":[["Lif hazırlığı ve temizleme","Taraklama, cer ve penye","Eğirme, bobinleme ve iplik kalite kontrolü"],["Fibre preparation and cleaning","Carding, drawing and combing","Spinning, winding and yarn quality control"],["تحضير الألياف وتنظيفها","التمشيط والسحب والتمشيط الناعم","الغزل واللف ومراقبة جودة الخيط"]]},"orgu":{"d":["İpliğin örme makinelerinde ham kumaşa dönüştürüldüğü departmandır.","The department where yarn is knitted into greige fabric on knitting machines.","القسم اللي بيتحول فيه الخيط لقماش خام على ماكينات الحياكة."],"w":[["İplik hazırlama ve iş planlama","Örme makinelerinin çalıştırılması","Ham kumaş kalite kontrolü ve sevkiyatı"],["Yarn preparation and job planning","Operating the knitting machines","Greige fabric quality control and shipping"],["تحضير الخيط وتخطيط الشغل","تشغيل ماكينات الحياكة","مراقبة جودة القماش الخام وشحنه"]]},"boyahane":{"d":["Ham kumaşın ön terbiye, boyama ve apre işlemleriyle istenen renk ve özelliğe getirildiği departmandır.","The department where greige fabric is pre-treated, dyed and finished to the required colour and properties.","القسم اللي بيتجهّز فيه القماش الخام ويتصبغ ويتشطّب لحد اللون والمواصفات المطلوبة."],"w":[["Laboratuvarda renk ve reçete geliştirme","Ön terbiye ve boyama","Apre, yıkama ve kalite kontrol"],["Colour and recipe development in the laboratory","Pre-treatment and dyeing","Finishing, washing and quality control"],["تطوير الألوان والوصفات في المعمل","التجهيز المبدئي والصباغة","التشطيب والغسيل ومراقبة الجودة"]]},"fabric":{"d":["Kumaşların teslim alındığı, kontrol edilip saklandığı ve kesime verildiği depodur.","The warehouse where fabrics are received, inspected, stored and issued to cutting.","المخزن اللي بيستلم القماش ويفحصه ويخزنه ويسلمه للقص."],"w":[["Kumaş kabulü ve kontrol","Depolama ve stok takibi","Kesime sevk"],["Fabric receiving and inspection","Storage and stock tracking","Issuing to cutting"],["استلام القماش وفحصه","التخزين ومتابعة المخزون","التسليم للقص"]]},"cutting":{"d":["Kumaşın kesim planına göre serilip kalıba uygun kesildiği bölümdür.","The section where fabric is spread and cut to pattern according to the cutting plan.","القسم اللي بيتفرد فيه القماش ويتقص حسب الباترون وخطة القص."],"w":[["Serim ve kesim","Kalıp ve pastal kontrolü","Kesilen parçaların numaralanması ve dikime sevki"],["Spreading and cutting","Checking patterns and markers","Numbering cut parts and issuing to sewing"],["فرد القماش وقصه","فحص الباترونات والماركر","ترقيم القطع المقصوصة وتسليمها للخياطة"]]},"baski":{"d":["Kumaş veya kesilmiş parçaların üzerine müşteri desenlerinin baskı ile uygulandığı departmandır.","The department where customer designs are printed onto fabric or cut panels.","القسم اللي بيتطبع فيه تصميمات العملاء على القماش أو القطع المقصوصة."],"w":[["Desen, film ve şablon hazırlama","Boya/pasta hazırlama ve baskı","Kurutma, fikse ve baskı kalite kontrolü"],["Artwork, film and screen preparation","Ink/paste preparation and printing","Curing, fixation and print quality control"],["تحضير التصميم والفيلم والشاشات","تحضير الأحبار والطباعة","التجفيف والتثبيت ومراقبة جودة الطباعة"]]},"nakis":{"d":["Desenlerin nakış makineleriyle kumaş veya hazır parçalar üzerine işlendiği departmandır.","The department where designs are embroidered onto fabric or ready panels with embroidery machines.","القسم اللي بيتطرّز فيه التصميمات على القماش أو القطع الجاهزة بماكينات التطريز."],"w":[["Desen dijitalleştirme (punch) ve program hazırlama","Parça hazırlık ve kasnaklama","Nakış işleme, temizleme ve kalite kontrol"],["Design digitising (punching) and programming","Panel preparation and hooping","Embroidering, trimming and quality control"],["رقمنة التصميم وتجهيز البرنامج","تجهيز القطع وتركيبها على الإطار","التطريز والتنضيف ومراقبة الجودة"]]},"sewing":{"d":["Kesilen parçaların dikim hatlarında birleştirilerek ürün hâline getirildiği bölümdür.","The section where cut parts are assembled into finished garments on the sewing lines.","القسم اللي بتتجمع فيه القطع المقصوصة على خطوط الخياطة لتبقى منتج كامل."],"w":[["Dikim hatlarının işletilmesi","Hat içi kalite kontrol","Verimlilik ve hedef takibi"],["Operating the sewing lines","In-line quality control","Tracking efficiency and targets"],["تشغيل خطوط الخياطة","مراقبة الجودة داخل الخط","متابعة الإنتاجية والأهداف"]]},"packaging":{"d":["Kontrolden geçen ürünlerin ütülenip katlandığı, etiketlendiği ve koli veya palete paketlendiği bölümdür.","The section where approved garments are pressed, folded, labelled and packed into cartons or onto pallets.","القسم اللي بيتكوى فيه المنتج المعتمد ويتطبّق ويتحط عليه الملصقات ويتعبّى في كراتين أو على بالتات."],"w":[["Ütü ve katlama","Etiketleme ve poşetleme","Koli ve palet hazırlama, paketleme listesi kontrolü"],["Pressing and folding","Labelling and bagging","Carton and pallet preparation, packing list check"],["الكي والتطبيق","وضع الملصقات والتكييس","تجهيز الكراتين والبالتات ومراجعة قائمة التعبئة"]]},"shipping":{"d":["Hazır ürünlerin sevkiyat öncesi depolandığı, siparişe göre hazırlanıp belgeleriyle birlikte yüklenerek müşteriye gönderildiği depodur.","The warehouse where finished goods are stored before shipment, prepared per order, loaded with their documents and dispatched to the customer.","المخزن اللي بتتخزن فيه المنتجات الجاهزة قبل الشحن وتتجهز حسب الطلبية وتتحمّل مع مستنداتها وتتبعت للعميل."],"w":[["Sevkiyata hazır ürünlerin kabulü ve depolanması","Sipariş bazlı hazırlama, yükleme ve araç kontrolü","Sevk irsaliyesi, belgeler ve teslimat takibi"],["Receiving and storing goods ready for shipment","Order-based preparation, loading and vehicle check","Delivery note, documents and delivery follow-up"],["استلام وتخزين المنتجات الجاهزة للشحن","التجهيز حسب الطلبية والتحميل وفحص السيارة","إذن التسليم والمستندات ومتابعة التسليم"]]}};
+let _dfMap = {}, _dfReady = false, _dfWatching = false, _dfUI = { q: "" };
+const _dfIdx = () => currentLang === "en" ? 1 : currentLang === "ar" ? 2 : 0;
+const _dfAdmin = () => { try { return currentUserRole === "admin"; } catch (e) { return false; } };
+function _dfWatch() {
+  if (_dfWatching) return;
+  if (!(FIREBASE_ENABLED && fbDb)) { _dfReady = true; return; }
+  _dfWatching = true;
+  fbDb.collection("ems_csr").doc("deptDefs").onSnapshot(snap => {
+    const d = snap.exists ? snap.data() : {};
+    _dfMap = d.m && typeof d.m === "object" ? d.m : {};
+    _dfReady = true;
+    if (_dfIsOpen() && !document.querySelector("[data-df-dlg]")) _dfRender(true);
+  }, err => { _dfWatching = false; console.error("Firestore okuma hatası (deptDefs):", err); });
+}
+function _dfSave() {
+  if (!(FIREBASE_ENABLED && fbDb)) return Promise.resolve(true);
+  if (!_dfReady) { showEmsToast(t3("⏳ Veriler buluttan yükleniyor; birkaç saniye sonra tekrar deneyin.", "⏳ Data is loading from the cloud; try again in a few seconds.", "⏳ البيانات بتتحمل من السحابة؛ جرّب كمان كام ثانية.")); return Promise.resolve(false); }
+  const mine = _dfMap;
+  return _transactionalMergeSave("deptDefs", cloud => ({ m: Object.assign({}, cloud.m || {}, mine), ..._saveMeta() }));
+}
+// Bölümler (kullanıcı listesi, 16.11.2026): ad, simge ve renk sabit; süreç adımları sitedeki PRODUCTION_DEPARTMENTS'tan
+const DF_SECTIONS = [
+  { key: "iplik", main: "iplik", ic: "🧵", c1: "#A78BFA", c2: "#6D28D9", n: [ "İplik", "Yarn", "الغزل" ] },
+  { key: "orgu", main: "orgu", ic: "🧶", c1: "#22D3EE", c2: "#0E7490", n: [ "Örgü", "Knitting", "الحياكة" ] },
+  { key: "boyahane", main: "boyahane", ic: "🎨", c1: "#FB923C", c2: "#C2410C", n: [ "Boyahane", "Dyehouse", "الصباغة" ] },
+  { key: "fabric", ic: "🏬", c1: "#0EA5E9", c2: "#0369A1", n: [ "Kumaş Depo", "Fabric Warehouse", "مخزن القماش" ] },
+  { key: "cutting", ic: "✂️", c1: "#F59E0B", c2: "#B45309", n: [ "Kesim", "Cutting", "القص" ] },
+  { key: "baski", main: "baski", ic: "🖨️", c1: "#C084FC", c2: "#7E22CE", n: [ "Baskı", "Printing", "الطباعة" ] },
+  { key: "nakis", main: "nakis", ic: "🪡", c1: "#F472B6", c2: "#BE185D", n: [ "Nakış", "Embroidery", "التطريز" ] },
+  { key: "sewing", ic: "👕", c1: "#4ADE80", c2: "#15803D", n: [ "Dikim", "Sewing", "الخياطة" ] },
+  { key: "packaging", ic: "📦", c1: "#14B8A6", c2: "#0F766E", n: [ "Ütü ve Paket", "Pressing and Packing", "الكي والتعبئة" ] },
+  { key: "shipping", ic: "🚚", c1: "#64748B", c2: "#334155", n: [ "Sevkiyat Depo", "Shipping Warehouse", "مخزن الشحن" ] }
+];
+const _dfSteps = s => (s.main && typeof PRODUCTION_DEPARTMENTS !== "undefined" ? PRODUCTION_DEPARTMENTS.filter(x => x.main === s.main) : []).map(x => [ x.labelTr, x.labelEn, x.labelAr ][_dfIdx()] || x.labelTr);
+function _dfDefOf(key) { const o = _dfMap[key] || {}, i = _dfIdx(), b = DF_TEXT[key] || { d: [ "", "", "" ], w: [ [], [], [] ] }; return { d: (o.d && o.d[i]) || b.d[i] || "", w: b.w[i] || [], owner: o.owner || "" }; }
+function _dfCard(it) {
+  const e = escHtml, d = _dfDefOf(it.key), nm = it.n[_dfIdx()] || it.n[0], st = _dfSteps(it), list = st.length ? st : d.w;
+  return `<div class="df-card" style="--c1:${it.c1}; --c2:${it.c2};" data-df="${e((nm + " " + d.d + " " + list.join(" ")).toLowerCase())}"><div class="df-top"><div class="df-ic">${it.ic}</div><h4>${e(nm)}</h4>${_dfAdmin() ? `<button type="button" class="df-edit" onclick="dfEdit('${it.key}')" title="${e(t3("Düzenle", "Edit", "تعديل"))}">✏️</button>` : ""}</div>
+    <p class="df-def">${e(d.d)}</p>${list.length ? `<div class="df-sub">${e(st.length ? t3("Süreç adımları", "Process steps", "مراحل العملية") : t3("Başlıca işler", "Main duties", "المهام الرئيسية"))}</div><ol class="df-ul">${list.map(x => `<li>${e(x)}</li>`).join("")}</ol>` : ""}${d.owner ? `<div class="df-own">👤 ${e(t3("Sorumlu: ", "Owner: ", "المسؤول: ") + d.owner)}</div>` : ""}</div>`;
+}
+function _dfRender(keepScroll) {
+  const inner = document.getElementById("defs-inner"), body = document.getElementById("defs-body");
+  if (!inner) return;
+  const sc = keepScroll && body ? body.scrollTop : 0, e = escHtml;
+  const ttl = document.getElementById("defs-title"); if (ttl) ttl.textContent = t3("TANIMLAMALAR", "DEFINITIONS", "التعريفات");
+  inner.innerHTML = `<div class="df-bar"><input id="df-q" class="df-search" type="search" value="${e(_dfUI.q)}" placeholder="${e(t3("Bölüm ara…", "Search a section…", "دوّر على قسم…"))}" oninput="dfSearch(this.value)" autocomplete="off"><span class="df-cnt2">${DF_SECTIONS.length} ${e(t3("bölüm", "sections", "قسم"))}</span></div><div class="df-grid">${DF_SECTIONS.map(_dfCard).join("")}</div>`;
+  dfSearch(_dfUI.q, true);
+  if (body) body.scrollTop = sc;
+}
+function dfSearch(q, noFocus) {
+  _dfUI.q = String(q || "");
+  const s = _dfUI.q.trim().toLowerCase();
+  document.querySelectorAll("#defs-inner .df-card").forEach(c => { c.style.display = !s || (c.getAttribute("data-df") || "").indexOf(s) >= 0 ? "" : "none"; });
+}
+const _dfIsOpen = () => { const m = document.getElementById("defs-modal"); return !!(m && m.classList.contains("open")); };
+function openDefs() {
+  if (!currentUserIsNamedAccount) {
+    try { showEmsToast(t3("🔒 Tanımlamalar için giriş yapmanız gerekiyor.", "🔒 You need to sign in to open Definitions.", "🔒 لازم تسجل دخول عشان تفتح التعريفات.")); } catch (e) {}
+    return;
+  }
+  _dfWatch();
+  saveLastView("defs", {});
+  document.getElementById("defs-modal").classList.add("open");
+  _dfRender();
+}
+function closeDefs() {
+  const m = document.getElementById("defs-modal");
+  if (m) m.classList.remove("open");
+  document.querySelectorAll("[data-df-dlg]").forEach(o => o.remove());
+}
+// Yönetici düzenleme
+function dfEdit(key) {
+  if (!_dfAdmin()) return;
+  const e = escHtml, o = _dfMap[key] || {}, b = DF_TEXT[key] || { d: [ "", "", "" ] }, d = [ 0, 1, 2 ].map(i => (o.d && o.d[i]) || b.d[i] || "");
+  const nm = (DF_SECTIONS.find(x => x.key === key) || { n: [ key, key, key ] }).n[_dfIdx()];
+  document.querySelectorAll("#df-dlg").forEach(x => x.remove());
+  const ov = document.createElement("div"); ov.className = "ug-dlg-ov"; ov.id = "df-dlg"; ov.setAttribute("data-df-dlg", "1"); ov.setAttribute("data-ug-dlg", "1");
+  ov.innerHTML = `<div class="ug-dlg" role="dialog" aria-modal="true"><div class="ug-dlg-h"><h3>✏️ ${e(nm)}</h3><button type="button" class="ug-x" onclick="_dfDlgClose()" aria-label="Close">✕</button></div>
+    <div class="ug-dlg-b"><div class="ug-form">
+      <label class="full">${e(t3("Sorumlu (ad soyad)", "Owner (name)", "المسؤول (الاسم)"))}<input id="df-owner" class="ug-in" value="${e(o.owner || "")}" autocomplete="off"></label>
+      <label class="full">${e("Tanım (Türkçe)")}<textarea id="df-d0" class="ug-in" rows="3">${e(d[0])}</textarea></label>
+      <label class="full">${e("Definition (English)")}<textarea id="df-d1" class="ug-in" rows="3" dir="ltr">${e(d[1])}</textarea></label>
+      <label class="full">${e("التعريف (العربية)")}<textarea id="df-d2" class="ug-in" rows="3" dir="rtl">${e(d[2])}</textarea></label>
+    </div></div>
+    <div class="ug-dlg-f"><button type="button" class="ug-btn pri" onclick="dfSave('${key}')">💾 ${e(t3("Kaydet", "Save", "حفظ"))}</button><button type="button" class="ug-btn" onclick="dfReset('${key}')">↩️ ${e(t3("Varsayılana dön", "Reset to default", "رجوع للافتراضي"))}</button></div></div>`;
+  document.body.appendChild(ov);
+}
+function _dfDlgClose() { document.querySelectorAll("[data-df-dlg]").forEach(o => o.remove()); if (_dfIsOpen()) _dfRender(true); }
+const _dfV = id => { const x = document.getElementById(id); return x ? String(x.value || "").trim() : ""; };
+async function dfSave(key) {
+  if (!_dfAdmin()) return;
+  const b = DF_TEXT[key] || { d: [ "", "", "" ] }, d = [ _dfV("df-d0"), _dfV("df-d1"), _dfV("df-d2") ], owner = _dfV("df-owner");
+  const o = {}; if (owner) o.owner = owner;
+  if (d.some((x, i) => x !== (b.d[i] || ""))) o.d = d;
+  const prev = _dfMap; _dfMap = Object.assign({}, _dfMap, { [key]: o });
+  const ok = await _dfSave();
+  if (ok === false) { _dfMap = prev; return; }
+  showEmsToast("✅ " + t3("Kaydedildi.", "Saved.", "اتحفظ."), 3500, "#15803D");
+  _dfDlgClose();
+}
+async function dfReset(key) {
+  if (!_dfAdmin() || !confirm(t3("Bu kart varsayılan metne döndürülsün mü?", "Reset this card to the default text?", "ترجّع الكارت للنص الافتراضي؟"))) return;
+  const prev = _dfMap; _dfMap = Object.assign({}, _dfMap, { [key]: {} });
+  const ok = await _dfSave();
+  if (ok === false) { _dfMap = prev; return; }
+  _dfDlgClose();
+}
+</script>
+
 <style id="advisor-meeting-css">
 /* ═══ DANIŞMAN TOPLANTI TUTANAKLARI ═══ */
 #advisor-meeting-modal .modal-container { max-width: 1180px; }
@@ -84952,7 +85131,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 15:17";
+const EMS_BUILD = "2026-11-16 16:39";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
