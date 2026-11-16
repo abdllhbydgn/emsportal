@@ -68510,12 +68510,15 @@ async function downloadCustomersStatusPDF() {
     rows.forEach(r => { T.q.t += r.d.q.t; T.q.c += r.d.q.comp; T.q.m += r.d.q.min; T.q.x += r.d.q.crit; T.f.t += r.d.f.t; T.f.c += r.d.f.comp; T.f.m += r.d.f.min; T.f.x += r.d.f.crit; T.aud += r.d.audits.length; });
     const pc = (n, t) => t ? Math.round(n * 100 / t) : 0, P = n => fmtPct(n);
     const nAppr = rows.filter(r => _custAppr(r.c) === "yes").length, nAud = (customersList || []).filter(_custHasAudit).length, nOrd = (customersList || []).filter(c => _custOrd(c) === "yes").length, nAll = (customersList || []).length;
+    // Genel uyum oranı: denetime gelmiş müşterilerin uyum puanı ortalaması (tablodaki Uyum sütunuyla aynı puan) / overall compliance: average compliance score of the audited customers (same score as the Compliance column)
+    const audScores = rows.filter(r => r.has && _custScore(r.c) >= 0).map(r => _custScore(r.c));
+    const overallAvg = audScores.length ? Math.round(audScores.reduce((x, y) => x + y, 0) / audScores.length) : 0;
     const kpi = _pdfKpiBandHtml([
       { label: t3("Müşteri", "Customers", "العملاء"), val: nAll, sub: t3("Toplam müşteri", "Total customers", "إجمالي العملاء"), bar: 100 },
       { label: t3("Onaylı", "Approved", "معتمد"), val: nAppr, sub: t3("Denetim sonucu onaylayan", "Approved us after audit", "اعتمدونا بعد التدقيق"), bar: pc(nAppr, nAll), color: "#10B981" },
       { label: t3("Denetime Gelmiş", "Audited", "تم تدقيقهم"), val: nAud, sub: nAll ? P(pc(nAud, nAll)) : "", bar: pc(nAud, nAll), color: "#F59E0B" },
       { label: t3("Siparişi Olan", "With Orders", "عندهم أوردرات"), val: nOrd, sub: (nAll - nOrd) + " " + t3("müşterinin siparişi yok", "have no orders", "مفيش أوردرات"), bar: pc(nOrd, nAll), color: "#93C5FD" },
-      { label: t3("Açık Bulgu", "Open Findings", "نتائج مفتوحة"), val: T.f.x + T.f.m, sub: T.f.x + " " + t3("başlanmadı", "not started", "لسه ما بدأش"), bar: pc(T.f.x + T.f.m, T.f.t), color: "#EF4444", gold: true }
+      { label: t3("Genel Uyum Oranı", "Overall Compliance", "نسبة الامتثال العامة"), val: P(overallAvg), sub: t3("Ortalama · ", "Average · ", "المتوسط · ") + audScores.length + " " + t3("müşteri", "customers", "عميل"), bar: overallAvg, color: "#C8A44A", gold: true }
     ], { scale: .78 });
     const h2 = (ic, x, sub) => `<div style="margin:22px 0 11px; padding-bottom:7px; border-bottom:2px solid ${N}; display:flex; align-items:baseline; justify-content:space-between; gap:12px;"><span style="font-size:13.5px; font-weight:900; letter-spacing:.09em; text-transform:uppercase; color:${N};">${x}</span>${sub ? `<span style="font-size:11px; color:#64748B; font-weight:600;">${sub}</span>` : ""}</div>`;
     const th = `padding:9px 10px; text-align:start; font-size:10.5px; font-weight:800; color:#fff; background:${N}; letter-spacing:.03em;`;
@@ -84447,7 +84450,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 13:00";
+const EMS_BUILD = "2026-11-16 13:07";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
