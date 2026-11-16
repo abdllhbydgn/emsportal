@@ -3421,6 +3421,7 @@ body.ems-shell-on #ems-topbar {
 #ems-topbar .etb-crumbs .sep { width: 14px; height: 14px; opacity: .55; fill: none; stroke: currentColor; stroke-width: 2.2; flex: none; }
 #ems-topbar .etb-crumbs .cur { color: #0F172A; font-weight: 800; overflow: hidden; text-overflow: ellipsis; }
 #ems-topbar .etb-right { display: flex; align-items: center; gap: 10px; flex: none; }
+#ems-topbar .etb-right { margin-inline-start: auto; } /* breadcrumb gizliyken (ziyaretçi) dil ve tarih sağda kalsın */
 #ems-topbar #lang-switcher, #ems-topbar #header-date-badge { position: static !important; inset: auto !important; transform: none !important; margin: 0 !important; z-index: auto !important; }
 body.ems-shell-on .sidebar-toggle-btn { top: 76px !important; }
 body.ems-shell-on .sticky-home-fab { display: none !important; }
@@ -85181,7 +85182,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-17 00:36";
+const EMS_BUILD = "2026-11-17 00:40";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
