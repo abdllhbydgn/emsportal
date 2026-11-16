@@ -68519,7 +68519,7 @@ async function downloadCustomersStatusPDF() {
     ], { scale: .78 });
     const h2 = (ic, x, sub) => `<div style="margin:22px 0 11px; padding-bottom:7px; border-bottom:2px solid ${N}; display:flex; align-items:baseline; justify-content:space-between; gap:12px;"><span style="font-size:13.5px; font-weight:900; letter-spacing:.09em; text-transform:uppercase; color:${N};">${x}</span>${sub ? `<span style="font-size:11px; color:#64748B; font-weight:600;">${sub}</span>` : ""}</div>`;
     const th = `padding:9px 10px; text-align:start; font-size:10.5px; font-weight:800; color:#fff; background:${N}; letter-spacing:.03em;`;
-    const td = "padding:9px 10px; font-size:11.5px; border-bottom:1px solid #E2E8F0; vertical-align:middle; color:#1E293B;";
+    const td = "padding:7px 10px; font-size:11.5px; border-bottom:1px solid #E2E8F0; vertical-align:middle; color:#1E293B;";
     const bar = (c, m, x, t) => t ? `<div style="display:flex; height:10px; border-radius:99px; overflow:hidden; background:#F1F5F9; min-width:90px;"><div style="width:${c * 100 / t}%; background:#16A34A;"></div><div style="width:${m * 100 / t}%; background:#F59E0B;"></div><div style="width:${x * 100 / t}%; background:#EF4444;"></div></div>` : `<div style="color:#94A3B8; font-size:10.5px;">—</div>`;
     const cnt = (c, m, x) => `<span style="color:#16A34A; font-weight:800;">${c}</span> · <span style="color:#D97706; font-weight:800;">${m}</span> · <span style="color:#DC2626; font-weight:800;">${x}</span>`;
     const pctCol = p => p >= 80 ? "#16A34A" : p >= 50 ? "#D97706" : "#DC2626";
@@ -68563,7 +68563,8 @@ async function downloadCustomersStatusPDF() {
     const footHtml = `<div style="margin-top:16px; padding-top:10px; border-top:2px solid ${N}; font-size:9.5px; color:#64748B; text-align:center;">EMS — Eroğlu Manufacturing Studio · ${esc(t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was generated automatically by the system", "التقرير ده اتعمل أوتوماتيك من النظام"))}</div>`;
     // Sayfa sayfa üretilir: hiçbir tablo satırı, başlık veya kutu sayfa sınırında kesilmez / built page by page so no row, heading or box is cut at a page edge
     const chunks = [ statusRowsArr.slice(0, 6) ];
-    for (let k = 6; k < statusRowsArr.length; k += 14) chunks.push(statusRowsArr.slice(k, k + 14));
+    // Devam sayfalarına satırlar DENGELİ dağıtılır; tek satırlık yetim sayfa olmaz (sayfa başına en çok 16) / continuation rows are spread evenly; never an orphan page with a single row (max 16 per page)
+    { const rest = statusRowsArr.slice(6), pgs = Math.max(1, Math.ceil(rest.length / 16)), per = Math.ceil(rest.length / pgs); for (let k = 0; k < rest.length; k += per) chunks.push(rest.slice(k, k + per)); }
     const slim = `<div style="display:flex; justify-content:space-between; align-items:center; padding:0 0 10px; margin:0 0 14px; border-bottom:2px solid #C8102E; font-size:13px; font-weight:900; color:#0F172A;"><span>${esc(title)}</span><span style="font-size:11px; color:#64748B; font-weight:700;">${t3("devam", "continued", "تابع")}</span></div>`;
     const nm = f => rows.filter(f).map(r => r.c.name).sort((x, y) => String(x).localeCompare(String(y), locale));
     const nPend = rows.filter(r => _custAppr(r.c) === "pend").length, ordNames = nm(r => _custOrd(r.c) === "yes").join(", ");
@@ -84446,7 +84447,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:56";
+const EMS_BUILD = "2026-11-16 13:00";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
