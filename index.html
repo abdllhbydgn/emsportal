@@ -66288,12 +66288,12 @@ function _custFlagsHtml(c) {
   const aud = _custHasAudit(c) ? "" : `<span class="cust-flag" style="background:#F1F5F9; color:#475569; border-color:#CBD5E1;">🕐 ${escHtml(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`;
   return `<div class="cust-flags">${aud}${tag((ap === "yes" ? "✅ " : ap === "pend" ? "⏳ " : "⛔ ") + escHtml(_custApprLabel(ap)), col(ap === "yes", ap === "pend"), `_custFlagCycle('${c.key}','appr')`)}${tag("📦 " + escHtml(_custOrdLabel(od)), col(od === "yes", false), `_custFlagCycle('${c.key}','ord')`)}</div>`;
 }
-// Uyum puanı: soru ve bulgular birlikte (tamamlanan / toplam). Madde verisi yok ama tüm denetimlerin CAP'ı kapalıysa 100; hiçbiri yoksa -1 (bilinmiyor) /
-// Compliance score: questions and findings together (completed / total). No item data but every audit CAP closed: 100; otherwise -1 (unknown)
+// Uyum puanı = müşterinin denetim sonucu: bulgu kapanış oranı (denetim bulguları sayfasındaki % ile aynı); bulgu yoksa soru tamamlanma oranı; madde verisi yok ama tüm denetimlerin CAP'ı kapalıysa 100; hiçbiri yoksa -1 (bilinmiyor) /
+// Compliance score = the customer's audit result: finding closure rate (same % as the audit findings page); else question completion; no item data but every audit CAP closed: 100; else -1 (unknown)
 function _custScore(c) {
   let d; try { d = _custSwitchData(c.key); } catch (e) { return -1; }
-  const tot = d.q.t + d.f.t;
-  if (tot) return Math.round((d.q.comp + d.f.comp) * 100 / tot);
+  if (d.f.t) return Math.round(d.f.comp * 100 / d.f.t);
+  if (d.q.t) return Math.round(d.q.comp * 100 / d.q.t);
   const au = d.audits || [];
   return au.length && au.every(x => x.capStatus === "closed") ? 100 : -1;
 }
@@ -68495,7 +68495,7 @@ async function downloadCustomersStatusPDF() {
       const last = (d.audits || [])[0] || null;
       const tot = d.q.t + d.f.t, cmp = d.q.comp + d.f.comp, openF = d.f.crit + d.f.min;
       const capAll = (d.audits || []).length > 0 && d.audits.every(x => x.capStatus === "closed");
-      rows.push({ c: c, d: d, last: last, tot: tot, cmp: cmp, pct: tot ? Math.round(cmp * 100 / tot) : 0, openF: openF, noData: !d.q.t && !d.f.t, capAll: capAll });
+      rows.push({ c: c, d: d, last: last, tot: tot, cmp: cmp, pct: Math.max(0, _custScore(c)), openF: openF, noData: !d.q.t && !d.f.t, capAll: capAll });
     });
     if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
     // Önce denetimi/verisi olanlar (en geride olan en üstte), sonra denetime gelmemişler (alfabetik) / audited customers first (furthest behind on top), then the not-yet-audited ones (alphabetical)
@@ -68568,7 +68568,10 @@ async function downloadCustomersStatusPDF() {
     const ordTag = r => _custOrd(r.c) === "yes" ? `<b style="color:#15803D;">${esc(_custOrdLabel("yes"))}</b>` : `<span style="color:#64748B;">${esc(_custOrdLabel("no"))}</span>`;
     const listOrd = f => rows.filter(f).sort((x, y) => (_custOrd(y.c) === "yes" ? 1 : 0) - (_custOrd(x.c) === "yes" ? 1 : 0) || String(x.c.name).localeCompare(String(y.c.name), locale)).map(r => ({ n: r.c.name, h: `${esc(r.c.name)} <span style="color:#94A3B8;">·</span> ${ordTag(r)}` }));
     const sumBox = (ttl, names, col, bg) => `<div style="border:1.5px solid ${col}55; background:${bg}; border-radius:14px; padding:14px 16px;"><div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px;"><div style="font-size:12px; font-weight:900; color:${col}; text-transform:uppercase; letter-spacing:.04em;">${ttl}</div><div style="font-size:30px; font-weight:900; color:${col}; line-height:1;">${names.length}</div></div><div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">${names.length ? names.map(n => `<span style="background:#fff; border:1px solid ${col}44; color:#0F172A; font-size:12px; font-weight:700; padding:4px 10px; border-radius:99px;">${typeof n === "string" ? esc(n) : n.h}</span>`).join("") : `<span style="color:#94A3B8; font-size:12px;">—</span>`}</div></div>`;
-    pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + h2("✅", t3("Onay, Sipariş ve Denetim Özeti", "Approval, Orders and Audit Summary", "ملخص الاعتماد والأوردرات والتدقيق"))
+    // En yüksek puanlı 5 müşteri / the 5 highest-scoring customers
+    const topRows = rows.filter(r => r.has && _custScore(r.c) >= 0).sort((x, y) => _custScore(y.c) - _custScore(x.c) || (_custAppr(y.c) === "yes" ? 1 : 0) - (_custAppr(x.c) === "yes" ? 1 : 0) || String(x.c.name).localeCompare(String(y.c.name), locale)).slice(0, 5);
+    const topHtml = topRows.length ? h2("🏆", t3("En Yüksek Uyum Puanı", "Highest Compliance Score", "أعلى نسبة امتثال")) + `<div style="display:grid; grid-template-columns:repeat(${topRows.length},minmax(0,1fr)); gap:12px; margin-bottom:6px;">${topRows.map((r, i) => `<div style="border:1.5px solid #BBF7D0; background:#F0FDF4; border-radius:14px; padding:12px 14px;"><div style="display:flex; align-items:center; gap:8px;"><span style="flex:none; width:24px; height:24px; border-radius:50%; background:${i < 3 ? "#C8A44A" : "#CBD5E1"}; color:#fff; font-size:12px; font-weight:900; display:grid; place-items:center;">${i + 1}</span><span style="font-size:13px; font-weight:900; color:#0F172A; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(r.c.name)}</span></div><div style="font-size:34px; font-weight:900; color:#15803D; line-height:1.1; margin-top:6px;">${P(_custScore(r.c))}</div><div style="font-size:10.5px; font-weight:800; color:${_custAppr(r.c) === "yes" ? "#16A34A" : _custAppr(r.c) === "pend" ? "#D97706" : "#64748B"}; margin-top:2px;">${esc(_custApprLabel(_custAppr(r.c)))}</div><div style="font-size:10.5px; font-weight:700; color:#64748B;">${esc(_custOrdLabel(_custOrd(r.c)))}</div></div>`).join("")}</div>` : "";
+    pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + topHtml + h2("✅", t3("Onay, Sipariş ve Denetim Özeti", "Approval, Orders and Audit Summary", "ملخص الاعتماد والأوردرات والتدقيق"))
       + `<div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;">`
       + sumBox(t3("Denetim sonucu onaylayan", "Approved us after audit", "اعتمدونا بعد التدقيق"), listOrd(r => _custAppr(r.c) === "yes"), "#15803D", "#F0FDF4")
       + sumBox(t3("Onay devam ediyor", "Approval in progress", "الاعتماد جاري"), listOrd(r => _custAppr(r.c) === "pend"), "#B45309", "#FFFBEB")
@@ -68698,7 +68701,7 @@ async function downloadCustomerPDF(opts) {
       { label: t3("Kapanış Oranı", "Closure Rate", "نسبة الإغلاق"), val: fmtPct(pct), sub: comp + " / " + total, bar: pct, color: "#C8A44A", gold: true }
     ], { narrow: true }) : _pdfKpiBandStd(total, comp, min, crit, pct, { narrow: true });
     const dashHtml = _custDashCardsHtml(total, comp, min, crit, !!aud);
-    const banner = `<div style="display:flex; align-items:center; gap:14px; margin:0 0 16px;"><div style="width:54px; height:54px; border-radius:50%; background:${c.color || "#1A3660"}; color:#fff; font-weight:900; font-size:19px; display:flex; align-items:center; justify-content:center; flex:none;">${escHtml(c.init || c.name.slice(0, 2).toUpperCase())}</div><div><div style="font-size:22px; font-weight:900; color:#0F172A; line-height:1.15;">${escHtml(c.name)}</div><div style="font-size:12px; font-weight:700; color:#64748B;">Corrective Action Plan · ${total} ${t3("soru", "questions", "سؤال")} · ${items0.length} ${t3("bulgu", "findings", "نتيجة")}</div></div></div>`;
+    const banner = `<div style="display:flex; align-items:center; gap:14px; margin:0 0 16px;"><div style="width:54px; height:54px; border-radius:50%; background:${c.color || "#1A3660"}; color:#fff; font-weight:900; font-size:19px; display:flex; align-items:center; justify-content:center; flex:none;">${escHtml(c.init || c.name.slice(0, 2).toUpperCase())}</div><div><div style="font-size:22px; font-weight:900; color:#0F172A; line-height:1.15;">${escHtml(c.name)}</div><div style="font-size:12px; font-weight:700; color:#64748B;">Corrective Action Plan · ${total} ${t3("soru", "questions", "سؤال")} · ${items0.length} ${t3("bulgu", "findings", "نتيجة")}</div>${aud ? "" : `<div style="font-size:12px; font-weight:800; margin-top:3px;"><span style="color:${_custAppr(c) === "yes" ? "#16A34A" : _custAppr(c) === "pend" ? "#D97706" : "#64748B"};">${escHtml(_custApprLabel(_custAppr(c)))}</span> <span style="color:#94A3B8;">·</span> <span style="color:${_custOrd(c) === "yes" ? "#16A34A" : "#64748B"};">${escHtml(_custOrdLabel(_custOrd(c)))}</span></div>`}</div></div>`;
     const footerHtml = () => `<div style="margin-top:20px; padding-top:12px; border-top:1px solid #E2E8F0; font-size:9.5px; color:#94A3B8; text-align:center;">EMS — Eroğlu Knitting · ${t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was automatically generated by the system", "التقرير ده اتعمل تلقائيًا بواسطة النظام")} · ${new Date().toLocaleString(locale)}</div>`;
     const firstBlock = () => dashHtml + kpiHtml + breakdownHtml + audHtml + `<div style="font-size:13px; font-weight:900; color:#1E293B; margin-bottom:10px; text-transform:uppercase; letter-spacing:.04em;">🔍 ${aud ? t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق") : t3("Denetim Soruları ve Bulgular", "Audit Questions and Findings", "أسئلة التدقيق والنتائج")}</div>${annexRows.length ? `<div style="font-size:10px; color:#64748B; margin:-4px 0 8px; font-weight:600;">📷 ${t3("Fotoğrafa tıklayınca tam boy hâli raporun sonundaki Fotoğraf Ekleri sayfasında açılır.", "Click a photo to open its full-size version on the Photo Annex pages at the end of the report.", "اضغط على الصورة لفتحها بالحجم الكامل في صفحات ملحق الصور في آخر التقرير.")}</div>` : ""}`;
     const contBlock = () => `<div style="height:14px;"></div>`;
@@ -69019,12 +69022,13 @@ async function exportReportPDF(opts) {
     } else {
       pct = calcCustomerStats(cst.key).pct;
     }
-    pct = calcCustomerStats(cst.key).pct;
+    pct = _custScore(cst) >= 0 ? _custScore(cst) : calcCustomerStats(cst.key).pct;
     return {
       name: cst.name,
-      pct: pct
+      pct: pct,
+      c: cst
     };
-  }).sort((a, b) => b.pct - a.pct);
+  }).sort((a, b) => _custCompare(a.c, b.c));
   const auditRows = customerAudits.map(a => {
     const cst = customersList.find(c => c.key === a.customerKey);
     const cnt = getAuditCounts(a);
@@ -69355,15 +69359,15 @@ async function exportReportPDF(opts) {
     });
   }
   
-  pages.push(pageShell("🏆", t3("Müşteri Uyum Sıralaması", "Customer Compliance Ranking", "ترتيب امتثال العملاء"), t3("Müşteri denetim sorularına göre uyum oranı — en yüksekten en düşüğe", "Compliance by customer audit questions — highest to lowest", "نسبة الامتثال حسب العميل"), `
+  pages.push(pageShell("🏆", t3("Müşteri Uyum Sıralaması", "Customer Compliance Ranking", "ترتيب امتثال العملاء"), t3("Denetimden onaylı ve %100 olanlar üstte, sonra uyum puanına göre — onay ve sipariş durumu ile", "Approved and 100% first, then by compliance score — with approval and order status", "المعتمدون و100% أولًا ثم حسب نسبة الامتثال — مع حالة الاعتماد والأوردرات"), `
     <div style="display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:minmax(0, 1fr); gap:10px 26px; flex:1; min-height:0;">
       ${custData.slice(0, 20).map((c, i) => {
-    const is100 = c.pct >= 100, col = is100 ? OK : c.pct >= 75 ? "#22A06B" : c.pct > 50 ? WARN : BAD;
+    const _has = _custHasAudit(c.c), is100 = _has && c.pct >= 100, col = !_has ? "#94A3B8" : is100 ? OK : c.pct >= 75 ? "#22A06B" : c.pct > 50 ? WARN : BAD;
     return `<div style="display:flex; align-items:center; gap:16px; padding:0 18px; ${panelCss} ${is100 ? `border-color:rgba(200,164,74,.55); background:linear-gradient(90deg, rgba(200,164,74,.10), #fff 60%);` : ""} min-height:0;">
           <div style="width:38px; height:38px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:900; ${i < 3 ? `background:linear-gradient(135deg, ${GOLD}, #A8862F); color:#fff;` : `background:#EEF2F6; color:${NAVY};`}">${i + 1}</div>
-          <div style="flex:1; min-width:0; font-size:17px; font-weight:800; color:${INK}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(c.name)}</div>
-          <div style="width:230px; height:12px; background:#EEF2F6; border-radius:6px; overflow:hidden; flex:none;"><div style="width:${Math.max(2, c.pct)}%; height:100%; background:${col}; border-radius:6px;"></div></div>
-          <div style="width:74px; text-align:end; font-size:21px; font-weight:900; color:${col}; flex:none;">${fmtPct(c.pct)}</div>
+          <div style="flex:1; min-width:0; font-size:17px; font-weight:800; color:${INK}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(c.name)}<div style="font-size:11.5px; font-weight:700; color:#64748B; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span style="color:${_custAppr(c.c) === "yes" ? "#16A34A" : _custAppr(c.c) === "pend" ? "#D97706" : "#64748B"};">${escHtml(_custApprLabel(_custAppr(c.c)))}</span> · <span style="color:${_custOrd(c.c) === "yes" ? "#16A34A" : "#64748B"};">${escHtml(_custOrdLabel(_custOrd(c.c)))}</span>${_has ? "" : " · " + escHtml(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</div></div>
+          <div style="width:230px; height:12px; background:#EEF2F6; border-radius:6px; overflow:hidden; flex:none;"><div style="width:${_has ? Math.max(2, c.pct) : 0}%; height:100%; background:${col}; border-radius:6px;"></div></div>
+          <div style="width:74px; text-align:end; font-size:21px; font-weight:900; color:${col}; flex:none;">${_has ? fmtPct(c.pct) : "—"}</div>
         </div>`;
   }).join("")}
     </div>
@@ -84430,7 +84434,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:50";
+const EMS_BUILD = "2026-11-16 12:52";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
