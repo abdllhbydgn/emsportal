@@ -66288,11 +66288,31 @@ function _custFlagsHtml(c) {
   const aud = _custHasAudit(c) ? "" : `<span class="cust-flag" style="background:#F1F5F9; color:#475569; border-color:#CBD5E1;">🕐 ${escHtml(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`;
   return `<div class="cust-flags">${aud}${tag((ap === "yes" ? "✅ " : ap === "pend" ? "⏳ " : "⛔ ") + escHtml(_custApprLabel(ap)), col(ap === "yes", ap === "pend"), `_custFlagCycle('${c.key}','appr')`)}${tag("📦 " + escHtml(_custOrdLabel(od)), col(od === "yes", false), `_custFlagCycle('${c.key}','ord')`)}</div>`;
 }
-// Müşteri sırası (kartlar ve rapor ortak): 0 denetimden onaylı ve denetime gelmiş; 1 denetime gelmemiş ama siparişi var; 2 denetime gelmiş diğerleri (onayı devam edenler önce); 3 denetime gelmemiş ve siparişi yok (en altta) /
-// Customer order (cards and report): 0 approved and audited; 1 not audited but has orders; 2 other audited (approval in progress first); 3 not audited and no orders (very bottom)
-function _custRank(c) {
-  const has = _custHasAudit(c);
-  return has && _custAppr(c) === "yes" ? 0 : !has && _custOrd(c) === "yes" ? 1 : has ? (_custAppr(c) === "pend" ? 2 : 2.5) : 3;
+// Uyum puanı: soru ve bulgular birlikte (tamamlanan / toplam). Madde verisi yok ama tüm denetimlerin CAP'ı kapalıysa 100; hiçbiri yoksa -1 (bilinmiyor) /
+// Compliance score: questions and findings together (completed / total). No item data but every audit CAP closed: 100; otherwise -1 (unknown)
+function _custScore(c) {
+  let d; try { d = _custSwitchData(c.key); } catch (e) { return -1; }
+  const tot = d.q.t + d.f.t;
+  if (tot) return Math.round((d.q.comp + d.f.comp) * 100 / tot);
+  const au = d.audits || [];
+  return au.length && au.every(x => x.capStatus === "closed") ? 100 : -1;
+}
+// Müşteri sırası (kartlar ve rapor ortak, kullanıcı kararı 16.11.2026): 1) denetime gelmişler: önce "denetimden onaylı ve uyum %100" olanlar, sonra uyum puanına göre yüksekten düşüğe (eşitlikte onaylı önce, sonra ad);
+// 2) denetime gelmemiş ama siparişi olanlar; 3) denetime gelmemiş ve siparişi olmayanlar EN ALTTA. /
+// Customer order (cards and report): audited first, "approved and 100%" on top then by score high to low; then not audited with orders; then not audited without orders at the very bottom
+function _custCompare(x, y) {
+  const g = c => _custHasAudit(c) ? 0 : _custOrd(c) === "yes" ? 1 : 2;
+  const gx = g(x), gy = g(y);
+  if (gx !== gy) return gx - gy;
+  if (gx === 0) {
+    const sx = _custScore(x), sy = _custScore(y);
+    const tx = _custAppr(x) === "yes" && sx === 100 ? 0 : 1, ty = _custAppr(y) === "yes" && sy === 100 ? 0 : 1;
+    if (tx !== ty) return tx - ty;
+    if (sx !== sy) return sy - sx;
+    const ax = _custAppr(x) === "yes" ? 0 : 1, ay = _custAppr(y) === "yes" ? 0 : 1;
+    if (ax !== ay) return ax - ay;
+  }
+  return String(x.name).localeCompare(String(y.name), currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR");
 }
 function _custFlagCycle(key, what) {
   if (currentUserRole !== "admin") return;
@@ -66424,7 +66444,7 @@ function openCustomerPicker() {
   // Kullanıcı isteği (16.11.2026): kartlar rapordaki sıraya göre gruplanır (onaylı ve denetimli, denetime gelmemiş ama siparişli, diğer denetimliler, denetime gelmemiş ve siparişsiz en altta); grup içinde önceki sıra korunur /
   // Cards are grouped like the report; the previous order is kept inside each group
   cardData.forEach((x, i) => { x._i = i; });
-  cardData.sort((x, y) => _custRank(x.c) - _custRank(y.c) || x._i - y._i);
+  cardData.sort((x, y) => _custCompare(x.c, y.c) || x._i - y._i);
   grid.innerHTML = cardData.map(({c: c, neverAudited: neverAudited, subtitle: subtitle, shortSub: shortSub, statusKey: statusKey, pctForSort: pctForSort, fT: fT, fC: fC, stWord: stWord, qs: qs}) => {
     const st = STATUS_STYLES[statusKey];
     const clickFn = `openCustomerDashboard('${c.key}')`;
@@ -68480,10 +68500,9 @@ async function downloadCustomersStatusPDF() {
     if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
     // Önce denetimi/verisi olanlar (en geride olan en üstte), sonra denetime gelmemişler (alfabetik) / audited customers first (furthest behind on top), then the not-yet-audited ones (alphabetical)
     rows.forEach(r => { r.has = _custHasAudit(r.c); });
-    // Sıra: 1) denetimden onaylı ve denetime gelmiş, 2) denetime gelmemiş ama siparişi olanlar, 3) denetime gelmiş diğerleri (önce onayı devam edenler), 4) denetime gelmemiş ve siparişi olmayanlar EN ALTTA /
-    // order: 1) audited and approved, 2) not audited but with orders, 3) other audited ones (approval in progress first), 4) not audited and without orders at the very bottom
-    const _aRank = r => _custRank(r.c);
-    rows.sort((a, b) => _aRank(a) - _aRank(b) || (a.has ? a.pct - b.pct || b.openF - a.openF : String(a.c.name).localeCompare(String(b.c.name), locale)));
+    // Sıra (kartlarla aynı): denetimliler önce, "denetimden onaylı ve %100" en üstte, sonra uyum puanına göre yüksekten düşüğe; denetime gelmemiş ama siparişi olanlar; denetime gelmemiş ve siparişsizler en altta /
+    // Order (same as the cards)
+    rows.sort((a, b) => _custCompare(a.c, b.c));
     const T = { q: { t: 0, c: 0, m: 0, x: 0 }, f: { t: 0, c: 0, m: 0, x: 0 }, aud: 0 };
     rows.forEach(r => { T.q.t += r.d.q.t; T.q.c += r.d.q.comp; T.q.m += r.d.q.min; T.q.x += r.d.q.crit; T.f.t += r.d.f.t; T.f.c += r.d.f.comp; T.f.m += r.d.f.min; T.f.x += r.d.f.crit; T.aud += r.d.audits.length; });
     const pc = (n, t) => t ? Math.round(n * 100 / t) : 0, P = n => fmtPct(n);
@@ -84399,7 +84418,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:47";
+const EMS_BUILD = "2026-11-16 12:49";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
