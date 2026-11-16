@@ -32884,10 +32884,10 @@ const firebaseConfig = {
   appId: "1:95779649376:web:1d2732971a8ebba9229005",
   measurementId: "G-NPQ2TZ8Z2D"
 };
-// Yönetici hesapları: yeni giriş adresi (nscstr.com) ve eski adres BİRLİKTE geçerlidir (geçiş süresinde kilitlenme olmasın); şifre koda yazılmaz.
-// Admin accounts: the new login (nscstr.com) and the old one are BOTH valid during the transition; passwords are never in code.
+// Yönetici hesabı YALNIZ nscstr.com (kullanıcı kararı, 16.11.2026); şifre koda yazılmaz.
+// Admin account is ONLY the nscstr.com address (user decision); passwords are never in code.
 const ADMIN_EMAIL = "abdullah.baydogan@nscstr.com";
-const ADMIN_EMAILS = [ "abdullah.baydogan@nscstr.com", "abdullah.baydogan@eroglums.com" ];
+const ADMIN_EMAILS = [ "abdullah.baydogan@nscstr.com" ];
 const _isAdminEmail = e => !!e && ADMIN_EMAILS.indexOf(String(e).trim().toLowerCase()) >= 0;
 const FIREBASE_ENABLED = firebaseConfig.apiKey && firebaseConfig.apiKey !== "BURAYA_YAPISTIRIN";
 let fbApp = null, fbAuth = null, fbDb = null;
@@ -85181,7 +85181,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 21:48";
+const EMS_BUILD = "2026-11-16 21:49";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
