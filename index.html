@@ -3001,6 +3001,8 @@ button.tvd-c.on { background:#15803d; color:#fff; border-color:#15803d; }
 .cov-aud:first-of-type { border-top:none; }
 .cov-aud:hover .cov-aud-t { color:var(--primary); }
 .cov-box .cov-aud.cov-aud-feat { border:2px solid #E11D2E; background:#FFF5F5; box-shadow:0 6px 18px -10px rgba(225,29,46,.55); }
+.cov-aud-del { flex:none; border:1.5px solid #FCA5A5; background:#FEF2F2; color:#B91C1C; border-radius:8px; padding:5px 8px; font-size:13px; cursor:pointer; }
+.cov-aud-del:hover { background:#FEE2E2; }
 .cov-aud-badge { display:inline-block; font-size:10px; font-weight:900; letter-spacing:.04em; color:#fff; background:#E11D2E; border-radius:99px; padding:2px 8px; margin-inline-end:6px; vertical-align:1px; }
 .cov-aud.cov-aud-feat .cov-aud-t { white-space:normal; }
 .cov-aud-t { flex:1; min-width:0; font-size:12.5px; font-weight:800; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -65727,6 +65729,28 @@ function renderCustomerTopDashboard() {
     card("all", t3("GENEL UYUM ORANI", "OVERALL COMPLIANCE", "نسبة الالتزام العامة"), _donut3Svg([ cu, mu, xu ], P3[0]), row(DK, lblC, cu, 0) + row(MID, lblM, mu, 1) + row(RD, lblX, xu, 2))
   ].join("");
 }
+// Müşteri denetim kaydını (bulgularıyla) siler: yalnız yönetici; buluttaki belgeden DOĞRUDAN çıkarılır (birleştirme geri getirmesin). Fotoğraf dosyalarına dokunulmaz. /
+// Deletes a customer audit record with its findings: admin only; removed DIRECTLY from the cloud document (a merge must not restore it). Photo files are untouched.
+function deleteCustomerAuditRecord(id) {
+  if (currentUserRole !== "admin") return;
+  const a = (customerAudits || []).find(x => String(x.id) === String(id));
+  if (!a) return;
+  const nm = biText(a.note || "").slice(0, 90);
+  if (!confirm(t3("Bu denetim kaydı ve içindeki bulgular SİLİNECEK:\n\n", "This audit record and its findings will be DELETED:\n\n", "سجل التدقيق ده ونتايجه هتتمسح:\n\n") + nm + "\n\n" + t3("Geri alınamaz. Devam edilsin mi?", "This cannot be undone. Continue?", "مش هينفع التراجع. نكمّل؟"))) return;
+  const sid = String(a.id), ck = a.customerKey;
+  customerAudits = customerAudits.filter(x => String(x.id) !== sid);
+  try { if (FIREBASE_ENABLED && fbDb) {
+    const ref = fbDb.collection("ems_csr").doc("customerAudits");
+    _runTransactionWithRetry(tx => tx.get(ref).then(snap => {
+      const data = snap.exists ? snap.data() : {};
+      const arr = Array.isArray(data.customerAudits) ? data.customerAudits : [];
+      tx.set(ref, Object.assign({}, data, { customerAudits: arr.filter(x => !(String(x.id) === sid && x.customerKey === ck)) }), { merge: true });
+    })).then(() => showEmsToast(t3("🗑️ Denetim kaydı silindi.", "🗑️ Audit record deleted.", "🗑️ اتمسح سجل التدقيق.")))
+      .catch(e => { console.warn("[Denetim silme / Audit delete]", e && e.code); showEmsToast(t3("⚠️ Yalnız bu ekranda silindi; buluta yazılamadı.", "⚠️ Deleted on this screen only; cloud write failed.", "⚠️ اتمسح من الشاشة دي بس؛ مقدرناش نكتب على السحابة.")); });
+  } } catch (e) { console.warn(e); }
+  try { calcMetrics(); } catch (e) {}
+  try { if (currentCustomerKey) { renderCustomerOverview(); renderCustomerFindingsSection(currentCustomerKey); renderCustomerTopDashboard(); } } catch (e) {}
+}
 // Öne çıkan denetim: kayıtta featured işareti veya H&M CAP Onay Raporu (kullanıcı isteği); listede en üstte vurgulanır /
 // Featured audit: the featured flag or the H&M CAP Acknowledgement Report (user request); shown first and highlighted
 function _audFeatured(a) {
@@ -65761,7 +65785,7 @@ function renderCustomerOverview() {
   const capTxt = st => st === "closed" ? t3("Kapandı", "Closed", "مغلق") : st === "in_progress" ? t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : t3("Açık", "Open", "مفتوح");
   const aBox = `<div class="cov-box"><h4>🗓️ ${t3("Denetim Geçmişi", "Audit History", "سجل التدقيقات")}</h4>${d.audits.length ? _audFeatSort(d.audits).map(a => {
     const aud = _custAuditor(a), nt = biText(a.note || "").replace(/\s*[—–-]\s*(Denetçi|Auditor)\b.*$/i, "").replace(aud ? new RegExp("\\s*[—–-]\\s*" + aud.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i") : /$^/, "").trim();
-    return `<div class="cov-aud${_audFeatured(a) ? " cov-aud-feat" : ""}" style="cursor:${Array.isArray(a.findings) && a.findings.length ? "pointer" : "default"};"${Array.isArray(a.findings) && a.findings.length ? ` onclick="openAuditFindings(${JSON.stringify(a.id).replace(/"/g, "&quot;")})" title="${escHtml(t3("Bu denetimin bulgularını aç", "Open this audit's findings", "افتح نتائج التدقيق ده"))}"` : ""}><div style="min-width:0; flex:1;"><div class="cov-aud-t">${_audFeatured(a) ? `<span class="cov-aud-badge">⭐ ${t3("ÖNE ÇIKAN", "FEATURED", "مميّز")}</span> ` : ""}${escHtml(nt || t3("Denetim", "Audit", "تدقيق"))}</div><div class="cov-aud-d">📅 ${a.date ? new Date(a.date).toLocaleDateString(_dLoc()) : "-"} · 👤 ${escHtml(aud || "—")}</div></div></div>`;
+    return `<div class="cov-aud${_audFeatured(a) ? " cov-aud-feat" : ""}" style="cursor:${Array.isArray(a.findings) && a.findings.length ? "pointer" : "default"};"${Array.isArray(a.findings) && a.findings.length ? ` onclick="openAuditFindings(${JSON.stringify(a.id).replace(/"/g, "&quot;")})" title="${escHtml(t3("Bu denetimin bulgularını aç", "Open this audit's findings", "افتح نتائج التدقيق ده"))}"` : ""}><div style="min-width:0; flex:1;"><div class="cov-aud-t">${_audFeatured(a) ? `<span class="cov-aud-badge">⭐ ${t3("ÖNE ÇIKAN", "FEATURED", "مميّز")}</span> ` : ""}${escHtml(nt || t3("Denetim", "Audit", "تدقيق"))}</div><div class="cov-aud-d">📅 ${a.date ? new Date(a.date).toLocaleDateString(_dLoc()) : "-"} · 👤 ${escHtml(aud || "—")}</div></div>${currentUserRole === "admin" ? `<button type="button" class="cov-aud-del" title="${escHtml(t3("Bu denetim kaydını sil", "Delete this audit record", "امسح سجل التدقيق ده"))}" onclick="event.stopPropagation(); deleteCustomerAuditRecord(${JSON.stringify(a.id).replace(/"/g, "&quot;")})">🗑️</button>` : ""}</div>`;
   }).join("") : `<div style="color:var(--muted); font-size:12.5px;">${t3("Henüz denetim kaydı yok.", "No audit records yet.", "لسه مفيش سجلات تدقيق.")}</div>`}</div>`;
   box.innerHTML = `<div class="cov-grid">${fBox}${aBox}</div>`;
 }
@@ -84256,7 +84280,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:04";
+const EMS_BUILD = "2026-11-16 12:09";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
