@@ -66253,12 +66253,18 @@ function _custAppr(c) { return c && (c.appr === "yes" || c.appr === "pend") ? c.
 function _custOrd(c) { return c && c.ord === "yes" ? "yes" : "no"; }
 function _custApprLabel(v) { return v === "yes" ? t3("Denetimden onaylı", "Approved after audit", "معتمد بعد التدقيق") : v === "pend" ? t3("Onay devam ediyor", "Approval in progress", "الاعتماد جاري") : t3("Onay yok", "Not approved", "مش معتمد"); }
 function _custOrdLabel(v) { return v === "yes" ? t3("Sipariş var", "Has orders", "عنده أوردرات") : t3("Siparişi yok", "No orders", "مفيش أوردرات"); }
-function _custHasAudit(c) { return (customerAudits || []).some(a => a.customerKey === c.key) && !AWAITING_AUDIT_KEYS.includes(c.key); }
+// Denetime gelmiş: denetim kaydı var VEYA denetimden gelen soru/bulgu seti var (ör. Inditex: kayıt yok ama 102 denetim sorusu var) / audited: has an audit record OR a question/finding set that comes from an audit
+function _custHasAudit(c) {
+  if (AWAITING_AUDIT_KEYS.includes(c.key)) return false;
+  if ((customerAudits || []).some(a => a.customerKey === c.key)) return true;
+  try { return calcCustomerStats(c.key).total > 0; } catch (e) { return false; }
+}
 function _custFlagsHtml(c) {
   const adm = currentUserRole === "admin", ap = _custAppr(c), od = _custOrd(c);
   const col = (ok, mid) => ok ? "background:#DCFCE7; color:#166534; border-color:#86EFAC;" : mid ? "background:#FEF3C7; color:#92400E; border-color:#FCD34D;" : "background:#F1F5F9; color:#475569; border-color:#CBD5E1;";
   const tag = (txt, st, act) => adm ? `<button type="button" class="cust-flag" style="${st}" title="${escHtml(t3("Değiştirmek için tıklayın", "Click to change", "اضغط للتغيير"))}" onclick="event.stopPropagation(); ${act}">${txt}</button>` : `<span class="cust-flag" style="${st}">${txt}</span>`;
-  return `<div class="cust-flags">${tag((ap === "yes" ? "✅ " : ap === "pend" ? "⏳ " : "⛔ ") + escHtml(_custApprLabel(ap)), col(ap === "yes", ap === "pend"), `_custFlagCycle('${c.key}','appr')`)}${tag("📦 " + escHtml(_custOrdLabel(od)), col(od === "yes", false), `_custFlagCycle('${c.key}','ord')`)}</div>`;
+  const aud = _custHasAudit(c) ? "" : `<span class="cust-flag" style="background:#F1F5F9; color:#475569; border-color:#CBD5E1;">🕐 ${escHtml(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`;
+  return `<div class="cust-flags">${aud}${tag((ap === "yes" ? "✅ " : ap === "pend" ? "⏳ " : "⛔ ") + escHtml(_custApprLabel(ap)), col(ap === "yes", ap === "pend"), `_custFlagCycle('${c.key}','appr')`)}${tag("📦 " + escHtml(_custOrdLabel(od)), col(od === "yes", false), `_custFlagCycle('${c.key}','ord')`)}</div>`;
 }
 function _custFlagCycle(key, what) {
   if (currentUserRole !== "admin") return;
@@ -84334,7 +84340,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:24";
+const EMS_BUILD = "2026-11-16 12:25";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
