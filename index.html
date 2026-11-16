@@ -83446,6 +83446,9 @@ function _dfSave() {
   return _transactionalMergeSave("deptDefs", cloud => ({ m: Object.assign({}, cloud.m || {}, mine), ..._saveMeta() }));
 }
 // Bölümler (kullanıcı listesi, 16.11.2026): ad, simge ve renk sabit; süreç adımları sitedeki PRODUCTION_DEPARTMENTS'tan
+// Rejekt alanı olmayan bölümler (kullanıcı kararı, 16.11.2026: Ütü, kontrol ve paket alanlarında rejekt alanı yok); yönetici ✏️ ile yine de yazabilir
+const DF_NO_REJ = { packaging: true };
+const _dfRoDef = (key, f, i) => f === "r" && DF_NO_REJ[key] ? "" : DF_RO[f][i];
 const DF_SECTIONS = [
   { key: "iplik", main: "iplik", ic: "🧵", c1: "#A78BFA", c2: "#6D28D9", n: [ "İplik", "Yarn", "الغزل" ] },
   { key: "orgu", main: "orgu", ic: "🧶", c1: "#22D3EE", c2: "#0E7490", n: [ "Örgü", "Knitting", "الحياكة" ] },
@@ -83460,7 +83463,7 @@ const DF_SECTIONS = [
   { key: "shipping", ic: "🚚", c1: "#64748B", c2: "#334155", n: [ "Sevkiyat Depo", "Shipping Warehouse", "مخزن الشحن" ] }
 ];
 const _dfSteps = s => (s.main && typeof PRODUCTION_DEPARTMENTS !== "undefined" ? PRODUCTION_DEPARTMENTS.filter(x => x.main === s.main) : []).map(x => [ x.labelTr, x.labelEn, x.labelAr ][_dfIdx()] || x.labelTr);
-function _dfDefOf(key) { const o = _dfMap[key] || {}, i = _dfIdx(), b = DF_TEXT[key] || { d: [ "", "", "" ], w: [ [], [], [] ] }; const pick = (f, def) => Array.isArray(o[f]) && typeof o[f][i] === "string" ? o[f][i] : def; return { d: (o.d && o.d[i]) || b.d[i] || "", w: b.w[i] || [], owner: o.owner || "", r: pick("r", DF_RO.r[i]), g: pick("g", DF_RO.g[i]) }; }
+function _dfDefOf(key) { const o = _dfMap[key] || {}, i = _dfIdx(), b = DF_TEXT[key] || { d: [ "", "", "" ], w: [ [], [], [] ] }; const pick = (f, def) => Array.isArray(o[f]) && typeof o[f][i] === "string" ? o[f][i] : def; return { d: (o.d && o.d[i]) || b.d[i] || "", w: b.w[i] || [], owner: o.owner || "", r: pick("r", _dfRoDef(key, "r", i)), g: pick("g", _dfRoDef(key, "g", i)) }; }
 function _dfCard(it) {
   const e = escHtml, d = _dfDefOf(it.key), nm = it.n[_dfIdx()] || it.n[0], st = _dfSteps(it), list = st.length ? st : d.w;
   return `<div class="df-card" style="--c1:${it.c1}; --c2:${it.c2};" data-df="${e((nm + " " + d.d + " " + list.join(" ")).toLowerCase())}"><div class="df-top"><div class="df-ic">${it.ic}</div><h4>${e(nm)}</h4>${_dfAdmin() ? `<button type="button" class="df-edit" onclick="dfEdit('${it.key}')" title="${e(t3("Düzenle", "Edit", "تعديل"))}">✏️</button>` : ""}</div>
@@ -83509,7 +83512,7 @@ function dfEdit(key) {
       <label class="full">${e("Tanım (Türkçe)")}<textarea id="df-d0" class="ug-in" rows="3">${e(d[0])}</textarea></label>
       <label class="full">${e("Definition (English)")}<textarea id="df-d1" class="ug-in" rows="3" dir="ltr">${e(d[1])}</textarea></label>
       <label class="full">${e("التعريف (العربية)")}<textarea id="df-d2" class="ug-in" rows="3" dir="rtl">${e(d[2])}</textarea></label>
-      ${[ [ "r", "🗑️ " + t3("Rejekt alanı", "Reject area", "منطقة الرفض") ], [ "g", "🌿 " + t3("Organik alan", "Organic area", "المنطقة العضوية") ] ].map(f => `<div class="full"><div class="ug-lbl">${e(f[1])} <span class="ug-muted">${e(t3("(boş bırakırsanız bu bölümde gösterilmez)", "(leave empty to hide it in this section)", "(سيبه فاضي علشان ما يظهرش في القسم ده)"))}</span></div>${[ 0, 1, 2 ].map(i => `<textarea id="df-${f[0]}${i}" class="ug-in" rows="3" dir="${i === 0 ? "auto" : i === 1 ? "ltr" : "rtl"}" placeholder="${[ "TR", "EN", "AR" ][i]}" style="margin-top:4px;">${e((Array.isArray(o[f[0]]) && typeof o[f[0]][i] === "string" ? o[f[0]][i] : DF_RO[f[0]][i]))}</textarea>`).join("")}</div>`).join("")}
+      ${[ [ "r", "🗑️ " + t3("Rejekt alanı", "Reject area", "منطقة الرفض") ], [ "g", "🌿 " + t3("Organik alan", "Organic area", "المنطقة العضوية") ] ].map(f => `<div class="full"><div class="ug-lbl">${e(f[1])} <span class="ug-muted">${e(t3("(boş bırakırsanız bu bölümde gösterilmez)", "(leave empty to hide it in this section)", "(سيبه فاضي علشان ما يظهرش في القسم ده)"))}</span></div>${[ 0, 1, 2 ].map(i => `<textarea id="df-${f[0]}${i}" class="ug-in" rows="3" dir="${i === 0 ? "auto" : i === 1 ? "ltr" : "rtl"}" placeholder="${[ "TR", "EN", "AR" ][i]}" style="margin-top:4px;">${e((Array.isArray(o[f[0]]) && typeof o[f[0]][i] === "string" ? o[f[0]][i] : _dfRoDef(key, f[0], i)))}</textarea>`).join("")}</div>`).join("")}
     </div></div>
     <div class="ug-dlg-f"><button type="button" class="ug-btn pri" onclick="dfSave('${key}')">💾 ${e(t3("Kaydet", "Save", "حفظ"))}</button><button type="button" class="ug-btn" onclick="dfReset('${key}')">↩️ ${e(t3("Varsayılana dön", "Reset to default", "رجوع للافتراضي"))}</button></div></div>`;
   document.body.appendChild(ov);
@@ -83521,7 +83524,7 @@ async function dfSave(key) {
   const b = DF_TEXT[key] || { d: [ "", "", "" ] }, d = [ _dfV("df-d0"), _dfV("df-d1"), _dfV("df-d2") ], owner = _dfV("df-owner");
   const o = {}; if (owner) o.owner = owner;
   if (d.some((x, i) => x !== (b.d[i] || ""))) o.d = d;
-  [ "r", "g" ].forEach(f => { const v = [ _dfV("df-" + f + "0"), _dfV("df-" + f + "1"), _dfV("df-" + f + "2") ]; if (v.some((x, i) => x !== DF_RO[f][i])) o[f] = v; });
+  [ "r", "g" ].forEach(f => { const v = [ _dfV("df-" + f + "0"), _dfV("df-" + f + "1"), _dfV("df-" + f + "2") ]; if (v.some((x, i) => x !== _dfRoDef(key, f, i))) o[f] = v; });
   const prev = _dfMap; _dfMap = Object.assign({}, _dfMap, { [key]: o });
   const ok = await _dfSave();
   if (ok === false) { _dfMap = prev; return; }
@@ -85143,7 +85146,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 16:55";
+const EMS_BUILD = "2026-11-16 16:57";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
