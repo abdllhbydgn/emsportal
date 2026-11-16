@@ -3288,6 +3288,7 @@ html[dir=rtl] .ent-edge{background:linear-gradient(to right,#0E1526,rgba(14,21,3
 .ent-eyebrow{font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#E0C374}
 .ent-hello{font-size:clamp(16px,1.5vw,22px);font-weight:500;color:rgba(255,255,255,.86)}
 .ent-brand{margin:0;font-size:clamp(28px,3.6vw,52px);font-weight:800;line-height:1.08;letter-spacing:-.01em;color:#fff}
+.ent-opt.ent-off{opacity:.38;filter:grayscale(.85);pointer-events:none;cursor:not-allowed}
 .ent-brand-sub{margin:6px 0 0;font-size:clamp(14px,1.5vw,21px);font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.92);direction:ltr;text-align:start}
 .ent-goldline{width:96px;height:4px;border-radius:4px;background:linear-gradient(90deg,#E0C374,var(--red));transform-origin:left center;animation:entGrow 1.4s .5s cubic-bezier(.2,.8,.2,1) both}
 html[dir=rtl] .ent-goldline{transform-origin:right center}
@@ -4289,9 +4290,9 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
         <span class="ent-txt"><span class="ent-t" data-i18n="entry_admin_title">Admin Girişi</span><span class="ent-s" data-i18n="entry_admin_sub">Yönetici hesabıyla giriş yapın</span></span>
         <span class="ent-arr"><span class="ent-flip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span><span class="ent-sheen" aria-hidden="true"></span>
       </button>
-      <button type="button" class="ent-opt ent-rise ent-vis" onclick="enterAsViewer()" style="animation-delay:0.7s">
+      <button type="button" class="ent-opt ent-rise ent-vis ent-off" onclick="enterAsViewer()" aria-disabled="true" tabindex="-1" style="animation-delay:0.7s">
         <span class="ent-tile"><span class="ent-gloss" aria-hidden="true"></span><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
-        <span class="ent-txt"><span class="ent-t" data-i18n="entry_visitor_title">Ziyaretçi Girişi</span><span class="ent-s" data-i18n="entry_visitor_sub">Verileri görüntüleyin ve indirin</span></span>
+        <span class="ent-txt"><span class="ent-t" data-i18n="entry_visitor_title">Ziyaretçi Girişi</span><span class="ent-s" data-i18n="entry_visitor_closed">Şimdilik kapalı</span></span>
         <span class="ent-arr"><span class="ent-flip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span><span class="ent-sheen" aria-hidden="true"></span>
       </button>
       </div>
@@ -9180,6 +9181,11 @@ const UI_TRANSLATIONS = {
     tr: "Ziyaretçi Girişi",
     en: "Visitor Login",
     ar: "دخول الزوار"
+  },
+  entry_visitor_closed: {
+    tr: "Şimdilik kapalı",
+    en: "Temporarily closed",
+    ar: "مقفول حاليا"
   },
   entry_visitor_sub: {
     tr: "Verileri görüntüleyin ve indirin",
@@ -54645,7 +54651,10 @@ function handleLogin() {
     alert(t3("Beklenmeyen bir hata oluştu: ", "An unexpected error occurred: ", "حصل خطأ مش متوقع: ") + (fatalErr && fatalErr.message ? fatalErr.message : fatalErr) + "\n\n" + t3("Lütfen bu mesajın ekran görüntüsünü paylaşın.", "Please share a screenshot of this message.", "من فضلك ابعت لقطة شاشة للرسالة دي."));
   }
 }
+// Ziyaretçi girişi KAPALI (kullanıcı kararı, 17.11.2026). Açmak için true yapın. / Visitor entry is CLOSED (user decision); set to true to reopen.
+const VISITOR_ENTRY_OPEN = false;
 function enterAsViewer() {
+  if (!VISITOR_ENTRY_OPEN) { try { showEmsToast(t3("Ziyaretçi girişi şimdilik kapalı.", "Visitor entry is temporarily closed.", "دخول الزوار مقفول حاليا."), 4000); } catch (e) {} return; }
   _setVisitorChosen(true);
   if (FIREBASE_ENABLED && fbAuth && fbAuth.currentUser) {
     enterApp();
@@ -54809,6 +54818,7 @@ let _fbAuthResolved = false;
 let _visitorChosenMem = false;
 let _langPickedManually = false;
 function _visitorChosenThisTab() {
+  if (typeof VISITOR_ENTRY_OPEN !== "undefined" && !VISITOR_ENTRY_OPEN) return false;
   if (_visitorChosenMem) return true;
   try {
     return sessionStorage.getItem("ems_visitor_chosen") === "1";
@@ -85182,7 +85192,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-17 00:42";
+const EMS_BUILD = "2026-11-17 00:47";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
