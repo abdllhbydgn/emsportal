@@ -66288,11 +66288,31 @@ function _custFlagsHtml(c) {
   const aud = _custHasAudit(c) ? "" : `<span class="cust-flag" style="background:#F1F5F9; color:#475569; border-color:#CBD5E1;">🕐 ${escHtml(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`;
   return `<div class="cust-flags">${aud}${tag((ap === "yes" ? "✅ " : ap === "pend" ? "⏳ " : "⛔ ") + escHtml(_custApprLabel(ap)), col(ap === "yes", ap === "pend"), `_custFlagCycle('${c.key}','appr')`)}${tag("📦 " + escHtml(_custOrdLabel(od)), col(od === "yes", false), `_custFlagCycle('${c.key}','ord')`)}</div>`;
 }
-// Müşteri sırası (kartlar ve rapor ortak): 0 denetimden onaylı ve denetime gelmiş; 1 denetime gelmemiş ama siparişi var; 2 denetime gelmiş diğerleri (onayı devam edenler önce); 3 denetime gelmemiş ve siparişi yok (en altta) /
-// Customer order (cards and report): 0 approved and audited; 1 not audited but has orders; 2 other audited (approval in progress first); 3 not audited and no orders (very bottom)
-function _custRank(c) {
-  const has = _custHasAudit(c);
-  return has && _custAppr(c) === "yes" ? 0 : !has && _custOrd(c) === "yes" ? 1 : has ? (_custAppr(c) === "pend" ? 2 : 2.5) : 3;
+// Uyum puanı: soru ve bulgular birlikte (tamamlanan / toplam). Madde verisi yok ama tüm denetimlerin CAP'ı kapalıysa 100; hiçbiri yoksa -1 (bilinmiyor) /
+// Compliance score: questions and findings together (completed / total). No item data but every audit CAP closed: 100; otherwise -1 (unknown)
+function _custScore(c) {
+  let d; try { d = _custSwitchData(c.key); } catch (e) { return -1; }
+  const tot = d.q.t + d.f.t;
+  if (tot) return Math.round((d.q.comp + d.f.comp) * 100 / tot);
+  const au = d.audits || [];
+  return au.length && au.every(x => x.capStatus === "closed") ? 100 : -1;
+}
+// Müşteri sırası (kartlar ve rapor ortak, kullanıcı kararı 16.11.2026): 1) denetime gelmişler: önce "denetimden onaylı ve uyum %100" olanlar, sonra uyum puanına göre yüksekten düşüğe (eşitlikte onaylı önce, sonra ad);
+// 2) denetime gelmemiş ama siparişi olanlar; 3) denetime gelmemiş ve siparişi olmayanlar EN ALTTA. /
+// Customer order (cards and report): audited first, "approved and 100%" on top then by score high to low; then not audited with orders; then not audited without orders at the very bottom
+function _custCompare(x, y) {
+  const g = c => _custHasAudit(c) ? 0 : _custOrd(c) === "yes" ? 1 : 2;
+  const gx = g(x), gy = g(y);
+  if (gx !== gy) return gx - gy;
+  if (gx === 0) {
+    const sx = _custScore(x), sy = _custScore(y);
+    const tx = _custAppr(x) === "yes" && sx === 100 ? 0 : 1, ty = _custAppr(y) === "yes" && sy === 100 ? 0 : 1;
+    if (tx !== ty) return tx - ty;
+    if (sx !== sy) return sy - sx;
+    const ax = _custAppr(x) === "yes" ? 0 : 1, ay = _custAppr(y) === "yes" ? 0 : 1;
+    if (ax !== ay) return ax - ay;
+  }
+  return String(x.name).localeCompare(String(y.name), currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR");
 }
 function _custFlagCycle(key, what) {
   if (currentUserRole !== "admin") return;
@@ -66424,7 +66444,7 @@ function openCustomerPicker() {
   // Kullanıcı isteği (16.11.2026): kartlar rapordaki sıraya göre gruplanır (onaylı ve denetimli, denetime gelmemiş ama siparişli, diğer denetimliler, denetime gelmemiş ve siparişsiz en altta); grup içinde önceki sıra korunur /
   // Cards are grouped like the report; the previous order is kept inside each group
   cardData.forEach((x, i) => { x._i = i; });
-  cardData.sort((x, y) => _custRank(x.c) - _custRank(y.c) || x._i - y._i);
+  cardData.sort((x, y) => _custCompare(x.c, y.c) || x._i - y._i);
   grid.innerHTML = cardData.map(({c: c, neverAudited: neverAudited, subtitle: subtitle, shortSub: shortSub, statusKey: statusKey, pctForSort: pctForSort, fT: fT, fC: fC, stWord: stWord, qs: qs}) => {
     const st = STATUS_STYLES[statusKey];
     const clickFn = `openCustomerDashboard('${c.key}')`;
@@ -68480,10 +68500,9 @@ async function downloadCustomersStatusPDF() {
     if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
     // Önce denetimi/verisi olanlar (en geride olan en üstte), sonra denetime gelmemişler (alfabetik) / audited customers first (furthest behind on top), then the not-yet-audited ones (alphabetical)
     rows.forEach(r => { r.has = _custHasAudit(r.c); });
-    // Sıra: 1) denetimden onaylı ve denetime gelmiş, 2) denetime gelmemiş ama siparişi olanlar, 3) denetime gelmiş diğerleri (önce onayı devam edenler), 4) denetime gelmemiş ve siparişi olmayanlar EN ALTTA /
-    // order: 1) audited and approved, 2) not audited but with orders, 3) other audited ones (approval in progress first), 4) not audited and without orders at the very bottom
-    const _aRank = r => _custRank(r.c);
-    rows.sort((a, b) => _aRank(a) - _aRank(b) || (a.has ? a.pct - b.pct || b.openF - a.openF : String(a.c.name).localeCompare(String(b.c.name), locale)));
+    // Sıra (kartlarla aynı): denetimliler önce, "denetimden onaylı ve %100" en üstte, sonra uyum puanına göre yüksekten düşüğe; denetime gelmemiş ama siparişi olanlar; denetime gelmemiş ve siparişsizler en altta /
+    // Order (same as the cards)
+    rows.sort((a, b) => _custCompare(a.c, b.c));
     const T = { q: { t: 0, c: 0, m: 0, x: 0 }, f: { t: 0, c: 0, m: 0, x: 0 }, aud: 0 };
     rows.forEach(r => { T.q.t += r.d.q.t; T.q.c += r.d.q.comp; T.q.m += r.d.q.min; T.q.x += r.d.q.crit; T.f.t += r.d.f.t; T.f.c += r.d.f.comp; T.f.m += r.d.f.min; T.f.x += r.d.f.crit; T.aud += r.d.audits.length; });
     const pc = (n, t) => t ? Math.round(n * 100 / t) : 0, P = n => fmtPct(n);
@@ -68515,11 +68534,23 @@ async function downloadCustomersStatusPDF() {
     const legend = `<div style="display:flex; gap:16px; margin-top:8px; font-size:10.5px; color:#475569; font-weight:700;"><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#16A34A; margin-inline-end:5px;"></i>${t3("Tamamlandı / Kapandı", "Completed / Closed", "مكتمل / مغلق")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#F59E0B; margin-inline-end:5px;"></i>${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#EF4444; margin-inline-end:5px;"></i>${t3("Başlanmadı / Açık", "Not Started / Open", "لسه ما بدأش / مفتوح")}</span></div>`;
     const attn = rows.filter(r => r.openF > 0).sort((a, b) => b.openF - a.openF).slice(0, 5);
     const attnHtml = attn.length ? `<div style="display:grid; grid-template-columns:repeat(${Math.min(5, attn.length)},minmax(0,1fr)); gap:12px;">${attn.map(r => `<div style="border:1.5px solid #FECACA; background:#FEF2F2; border-radius:12px; padding:12px 14px;"><div style="font-size:12px; font-weight:900; color:#0F172A;">${esc(r.c.name)}</div><div style="font-size:30px; font-weight:900; color:#DC2626; line-height:1.1; margin-top:4px;">${r.openF}</div><div style="font-size:10.5px; font-weight:700; color:#7F1D1D;">${t3("açık bulgu", "open findings", "نتائج مفتوحة")}</div></div>`).join("")}</div>` : `<div style="font-size:12px; color:#16A34A; font-weight:800;">✅ ${t3("Açık bulgu yok.", "No open findings.", "مفيش نتائج مفتوحة.")}</div>`;
+    // Son denetimler: müşteri sırasıyla (onaylı ve %100 üstte, puana göre), her müşteride yeni tarih önce; başlık tek dilde, kısa ve temiz; onay durumu eklendi /
+    // Recent audits: same customer order (approved and 100% on top, by score), newest first per customer; one-language short clean title; approval status added
     const audList = [];
-    rows.forEach(r => r.d.audits.forEach(a => audList.push({ c: r.c, a: a })));
-    audList.sort((x, y) => String(y.a.date || "").localeCompare(String(x.a.date || "")));
-    const audRows = audList.slice(0, 14).map((x, i) => { const aud = _custAuditor(x.a), nt = biText(x.a.note || "").replace(/\s*[—–-]\s*(Denetçi|Auditor)\b.*$/i, "").trim(); const n = Array.isArray(x.a.findings) ? x.a.findings.length : 0;
-      return `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} white-space:nowrap;">${fmtD(x.a.date)}</td><td style="${td} font-weight:800;">${esc(x.c.name)}</td><td style="${td}">${esc(nt || "—")}</td><td style="${td}">${esc(aud || "—")}</td><td style="${td} text-align:center;">${n}</td><td style="${td} font-weight:800; color:${capCol(x.a.capStatus)};">${esc(capTxt(x.a.capStatus))}</td></tr>`; }).join("");
+    rows.forEach(r => r.d.audits.forEach(a => audList.push({ c: r.c, a: a, ri: rows.indexOf(r) })));
+    audList.sort((x, y) => x.ri - y.ri || String(y.a.date || "").localeCompare(String(x.a.date || "")));
+    const cleanTitle = a => {
+      const L = currentLang === "en" ? 1 : 0;
+      const segs = String(a.note || "").split(/\s+[—–]\s+/).map(sg => sg.trim()).filter(Boolean)
+        .filter(sg => !/^(Denetçi|Auditor)\b/i.test(sg))
+        .map(sg => { const pr = sg.split(/\s+\/\s+/); return (pr[L] || pr[0] || "").trim(); }).filter(Boolean);
+      if (segs.length > 1 && /(Denetimi|Audit|Denetim)$/i.test(segs[0]) && segs[0].length < 40) segs.shift();
+      let t = segs.join(" — ");
+      return t.length > 95 ? t.slice(0, 92).trim() + "…" : t;
+    };
+    const apprCol = v => v === "yes" ? "#16A34A" : v === "pend" ? "#D97706" : "#64748B";
+    const audRows = audList.slice(0, 16).map((x, i) => { const aud = _custAuditor(x.a), nt = cleanTitle(x.a); const n = Array.isArray(x.a.findings) ? x.a.findings.length : 0; const ap = _custAppr(x.c);
+      return `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} white-space:nowrap;">${fmtD(x.a.date)}</td><td style="${td} font-weight:800;">${esc(x.c.name)}</td><td style="${td} font-weight:800; font-size:10.5px; color:${apprCol(ap)};">${esc(_custApprLabel(ap))}</td><td style="${td}">${esc(nt || t3("Denetim", "Audit", "تدقيق"))}</td><td style="${td}">${esc(aud || "—")}</td><td style="${td} text-align:center;">${n || "—"}</td><td style="${td} font-weight:800; white-space:nowrap; color:${capCol(x.a.capStatus)};">${esc(capTxt(x.a.capStatus))}</td></tr>`; }).join("");
     const title = _reportTitle("Müşteri Durum Raporu", "Customer Status Report", "تقرير حالة العملاء");
     const wrap = document.createElement("div");
     wrap.style.cssText = 'position:fixed; left:-99999px; top:0; width:1120px; background:#fff; font-family:"Plus Jakarta Sans",Arial,sans-serif; padding:36px; box-sizing:border-box;' + (currentLang === "ar" ? " direction:rtl;" : "");
@@ -68548,7 +68579,7 @@ async function downloadCustomersStatusPDF() {
       + sumBox(t3("Denetime gelmeyen", "Not audited yet", "لسه ما اتدققوش"), listOf(r => !r.has), "#B91C1C", "#FEF2F2")
       + `</div>` + footHtml);
     pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + legend + h2("🎯", t3("Dikkat Gerektirenler", "Needs Attention", "تحتاج انتباه")) + attnHtml
-      + (audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : "") + footHtml);
+      + (audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Onay", "Approval", "الاعتماد")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : "") + footHtml);
     document.body.appendChild(wrap);
     let pdf = null;
     try {
@@ -84399,7 +84430,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:47";
+const EMS_BUILD = "2026-11-16 12:50";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
