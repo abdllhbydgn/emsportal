@@ -48797,13 +48797,42 @@ function postProcessData() {
     // Kullanıcı isteği (16.11.2026): H&M'de yalnız CAP Onay Raporu denetimi ve içindekiler kalır; diğer H&M denetim kayıtları BİR KEZ silinir (yalnız yönetici oturumunda, CAP kaydı varsa).
     // Soru seti ve fotoğraf dosyaları (ems_csr_files) silinmez. Silinenlerin özeti bu tarayıcıda saklanır.
     // User request: only the H&M CAP Acknowledgement audit and its contents stay; other H&M audit records are removed ONCE (admin session only, only if the CAP record exists). Question set and photo files are not deleted.
-    if (currentUserRole === "admin") {
-      const _hmKeep = customerAudits.find(a => a.customerKey === hc.key && /CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || "")));
-      if (_hmKeep && _sg("cleanup:hm-only-cap-20261116", customerAudits.some(a => a.customerKey === hc.key && a !== _hmKeep))) {
-        const _hmGone = customerAudits.filter(a => a.customerKey === hc.key && a !== _hmKeep);
-        try { localStorage.setItem("ems_removed_hm_audits_20261116", JSON.stringify(_hmGone.map(a => ({ id: a.id, date: a.date, note: a.note, findings: (a.findings || []).length })))); } catch (e) {}
-        customerAudits = customerAudits.filter(a => !(a.customerKey === hc.key && a !== _hmKeep));
-        _ppSeeded++;
+    const _hmKeep = customerAudits.find(a => a.customerKey === hc.key && /CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || "")));
+    if (currentUserRole === "admin" && _hmKeep && _sg("cleanup:hm-only-cap-20261116", customerAudits.some(a => a.customerKey === hc.key && a !== _hmKeep))) {
+      const _hmGone = customerAudits.filter(a => a.customerKey === hc.key && a !== _hmKeep);
+      try { localStorage.setItem("ems_removed_hm_audits_20261116", JSON.stringify(_hmGone.map(a => ({ id: a.id, date: a.date, note: a.note, findings: (a.findings || []).length })))); } catch (e) {}
+      customerAudits = customerAudits.filter(a => !(a.customerKey === hc.key && a !== _hmKeep));
+      _ppSeeded++;
+    }
+    // H&M "Denetim Soruları" bölümü (188 soru) kaldırıldı (kullanıcı isteği 16.11.2026, yedek alındı): CAP Onay Raporu bulgularına bağlı sorular dışındaki tüm H&M soruları her açılışta listeden çıkarılır,
+    // hazır satırlar geri gelmesin diye silinenler listesine yazılır; yönetici girişinde bulutta bir kez toplu silinir. Fotoğraf dosyalarına (ems_csr_files) dokunulmaz.
+    // The H&M question section (188 questions) was removed (user request, backup taken): every H&M question not linked to a CAP report finding is dropped on each load, built-in rows go to the deleted list; removed once in the cloud on admin login. Photo files are untouched.
+    if (_hmKeep && Array.isArray(auditQuestions)) {
+      const _hmOk = new Set();
+      (_hmKeep.findings || []).forEach(f => { if (f && f.linkedQuestionId != null) _hmOk.add(String(f.linkedQuestionId)); });
+      const _hmQ = q => q && q.category === "custq" && Array.isArray(q.fqCust) && q.fqCust.length === 1 && (q.fqCust[0] === hc.key || q.fqCust[0] === "hm") && !_hmOk.has(String(q.id));
+      // Hazır H&M satırları (kodda tanımlı) buluttaki kayıtta olmasa da geri eklenmesin / built-in H&M rows must not be re-added even if absent in the cloud copy
+      defaultAuditQuestions.filter(_hmQ).forEach(d => { if (!deletedDefaultQuestionIds.includes(d.id)) deletedDefaultQuestionIds.push(d.id); });
+      if (auditQuestions.some(_hmQ)) {
+        const _hmQGone = auditQuestions.filter(_hmQ).map(q => q.id);
+        auditQuestions = auditQuestions.filter(q => !_hmQ(q));
+        const _dflt = new Set(defaultAuditQuestions.map(d => d.id));
+        _hmQGone.forEach(id => { if (_dflt.has(id) && !deletedDefaultQuestionIds.includes(id)) deletedDefaultQuestionIds.push(id); });
+        if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:hm-questions-20261116", true)) {
+          try { localStorage.setItem("ems_removed_hm_questions_20261116", JSON.stringify(_hmQGone)); } catch (e) {}
+          const _gset = new Set(_hmQGone.map(String));
+          [ [ "customerQuestions", "customerQuestions" ], [ "questions", "auditQuestions" ] ].forEach(([ dn, fld ]) => {
+            const ref = fbDb.collection("ems_csr").doc(dn);
+            _runTransactionWithRetry(tx => tx.get(ref).then(snap => {
+              const data = snap.exists ? snap.data() : {};
+              const arr = Array.isArray(data[fld]) ? data[fld] : [];
+              const upd = { [fld]: arr.filter(q => !_gset.has(String(q.id))) };
+              if (dn === "questions") { const dl = Array.isArray(data.deletedDefaultQuestionIds) ? data.deletedDefaultQuestionIds.slice() : []; _hmQGone.forEach(id => { if (_dflt.has(id) && !dl.includes(id)) dl.push(id); }); upd.deletedDefaultQuestionIds = dl; }
+              tx.set(ref, Object.assign({}, data, upd), { merge: true });
+            })).catch(e => console.warn("[H&M soru silme / H&M question delete] " + dn, e && e.code));
+          });
+          _ppSeeded++;
+        }
       }
     }
   }
@@ -84136,7 +84165,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 11:35";
+const EMS_BUILD = "2026-11-16 11:37";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
