@@ -3284,6 +3284,7 @@ html[dir=rtl] .ent-edge{background:linear-gradient(to right,#0E1526,rgba(14,21,3
 .ent-eyebrow{font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#E0C374}
 .ent-hello{font-size:clamp(16px,1.5vw,22px);font-weight:500;color:rgba(255,255,255,.86)}
 .ent-brand{margin:0;font-size:clamp(28px,3.6vw,52px);font-weight:800;line-height:1.08;letter-spacing:-.01em;color:#fff}
+.ent-brand-sub{margin:6px 0 0;font-size:clamp(14px,1.5vw,21px);font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.92);direction:ltr;text-align:start}
 .ent-goldline{width:96px;height:4px;border-radius:4px;background:linear-gradient(90deg,#E0C374,var(--red));transform-origin:left center;animation:entGrow 1.4s .5s cubic-bezier(.2,.8,.2,1) both}
 html[dir=rtl] .ent-goldline{transform-origin:right center}
 @keyframes entGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
@@ -3373,10 +3374,11 @@ body.ent-open #header-date-badge{display:none}
 html[dir=rtl] body.ent-open #lang-switcher{left:64px;right:auto}
 @media (max-width:900px){
   #view-welcome.welcome-screen{flex-direction:column;overflow-y:auto;overflow-x:hidden}
-  .ent-hero{flex:0 0 340px}
+  .ent-hero{flex:0 0 378px}
   .ent-edge{display:none}
   .ent-scrim{background:linear-gradient(180deg,rgba(8,14,28,.5),rgba(8,14,28,.05) 34%,rgba(8,14,28,.55) 66%,#0E1526)}
-  .ent-copy{gap:8px;bottom:36px}
+  .ent-copy{gap:8px;bottom:44px}
+  .ent-brand-sub{font-size:15px;margin-top:2px}
   .ent-brand{font-size:28px}.ent-hello{display:none}.ent-tags{height:26px;font-size:15px}
   .ent-panel{flex:1 0 auto;overflow:visible;margin-top:-20px;border-radius:28px 28px 0 0;padding:22px 20px 16px;box-shadow:0 -18px 40px -20px rgba(0,0,0,.6)}
   .ent-opt{padding:14px 16px;gap:14px}.ent-tile,.ent-ftile{width:46px;height:46px;border-radius:14px}.ent-t{font-size:17px}.ent-s{font-size:13px}.ent-arr{width:34px;height:34px}
@@ -4257,7 +4259,8 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
     <div class="ent-copy">
       <div class="ent-eyebrow ent-rise" data-i18n="welcome_slogan" style="animation-delay:.3s">CSR & Sürdürülebilirlik Portalı</div>
       <div class="ent-hello ent-rise" data-i18n="ent_hello" style="animation-delay:.42s">Hoş Geldiniz</div>
-      <h2 class="ent-brand ent-rise" data-i18n="ent_brand" style="animation-delay:.52s">EMS Eroğlu Knitting</h2>
+      <h2 class="ent-brand ent-rise" data-i18n="ent_brand" style="animation-delay:.52s">NSCS</h2>
+      <div class="ent-brand-sub ent-rise" data-i18n="ent_brand_sub" style="animation-delay:.58s">New Surveillance Consultant Systems</div>
       <div class="ent-goldline"></div>
       <div class="ent-tags"><span data-i18n="ent_tag1">Kalite Güvence</span><span data-i18n="ent_tag2">Sosyal Uygunluk</span><span data-i18n="ent_tag3">Çevre ve İş Güvenliği</span></div>
     </div>
@@ -7677,9 +7680,9 @@ const UI_TRANSLATIONS = {
     ar: "فيديو تعريفي عن EMS قريبًا"
   },
   visitor_welcome_title: {
-    tr: "EMS Eroğlu Knitting'ya Hoş Geldiniz",
-    en: "Welcome to EMS Eroğlu Knitting",
-    ar: "مرحبًا بكم في EMS إيروغلو للتصنيع"
+    tr: "NSCS'ye Hoş Geldiniz",
+    en: "Welcome to NSCS",
+    ar: "مرحبًا بكم في NSCS"
   },
   visitor_welcome_sub: {
     tr: "Aşağıdaki kartlardan şirketimiz hakkında daha fazla bilgi edinebilirsiniz",
@@ -10485,9 +10488,14 @@ const UI_TRANSLATIONS = {
     ar: "أهلاً بيكم"
   },
   ent_brand: {
-    tr: "EMS Eroğlu Knitting",
-    en: "EMS Eroğlu Knitting",
-    ar: "EMS إيروغلو للتصنيع"
+    tr: "NSCS",
+    en: "NSCS",
+    ar: "NSCS"
+  },
+  ent_brand_sub: {
+    tr: "New Surveillance Consultant Systems",
+    en: "New Surveillance Consultant Systems",
+    ar: "New Surveillance Consultant Systems"
   },
   ent_tag1: {
     tr: "Kalite Güvence",
@@ -85151,7 +85159,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 20:49";
+const EMS_BUILD = "2026-11-16 20:55";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
