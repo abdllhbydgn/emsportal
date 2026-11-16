@@ -68449,7 +68449,9 @@ async function downloadCustomersStatusPDF() {
       rows.push({ c: c, d: d, last: last, tot: tot, cmp: cmp, pct: tot ? Math.round(cmp * 100 / tot) : 0, openF: openF });
     });
     if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
-    rows.sort((a, b) => a.pct - b.pct || b.openF - a.openF);
+    // Önce denetimi/verisi olanlar (en geride olan en üstte), sonra denetime gelmemişler (alfabetik) / audited customers first (furthest behind on top), then the not-yet-audited ones (alphabetical)
+    rows.forEach(r => { r.has = _custHasAudit(r.c); });
+    rows.sort((a, b) => (b.has ? 1 : 0) - (a.has ? 1 : 0) || (a.has ? a.pct - b.pct || b.openF - a.openF : String(a.c.name).localeCompare(String(b.c.name), locale)));
     const T = { q: { t: 0, c: 0, m: 0, x: 0 }, f: { t: 0, c: 0, m: 0, x: 0 }, aud: 0 };
     rows.forEach(r => { T.q.t += r.d.q.t; T.q.c += r.d.q.comp; T.q.m += r.d.q.min; T.q.x += r.d.q.crit; T.f.t += r.d.f.t; T.f.c += r.d.f.comp; T.f.m += r.d.f.min; T.f.x += r.d.f.crit; T.aud += r.d.audits.length; });
     const pc = (n, t) => t ? Math.round(n * 100 / t) : 0, P = n => fmtPct(n);
@@ -68469,7 +68471,7 @@ async function downloadCustomersStatusPDF() {
     const pctCol = p => p >= 80 ? "#16A34A" : p >= 50 ? "#D97706" : "#DC2626";
     const capTxt = st => st === "closed" ? t3("Kapandı", "Closed", "مغلق") : st === "in_progress" ? t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : t3("Açık", "Open", "مفتوح");
     const capCol = st => st === "closed" ? "#16A34A" : st === "in_progress" ? "#D97706" : "#DC2626";
-    const statusRows = rows.map((r, i) => `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} width:30px; font-weight:800; color:${N};">${i + 1}</td>
+    const statusRowsArr = rows.map((r, i) => `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} width:40px; white-space:nowrap; font-weight:800; color:${N};">${i + 1}</td>
       <td style="${td}"><div style="display:flex; align-items:center; gap:9px;"><span style="flex:none; width:28px; height:28px; border-radius:50%; background:${r.c.color || N}; color:#fff; font-size:10px; font-weight:900; display:grid; place-items:center;">${esc(r.c.init || String(r.c.name).slice(0, 2).toUpperCase())}</span><b>${esc(r.c.name)}</b></div></td>
       <td style="${td} font-weight:800; color:${_custAppr(r.c) === "yes" ? "#16A34A" : _custAppr(r.c) === "pend" ? "#D97706" : "#64748B"};">${esc(_custApprLabel(_custAppr(r.c)))}</td>
       <td style="${td} font-weight:800; color:${_custOrd(r.c) === "yes" ? "#16A34A" : "#64748B"};">${esc(_custOrdLabel(_custOrd(r.c)))}</td>
@@ -68477,7 +68479,7 @@ async function downloadCustomersStatusPDF() {
       <td style="${td}">${r.last ? fmtD(r.last.date) : "—"}${r.last ? `<div style="font-size:10px; font-weight:800; color:${capCol(r.last.capStatus)};">${esc(capTxt(r.last.capStatus))}</div>` : ""}</td>
       <td style="${td}">${r.d.q.t ? bar(r.d.q.comp, r.d.q.min, r.d.q.crit, r.d.q.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.q.comp, r.d.q.min, r.d.q.crit)} / ${r.d.q.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
       <td style="${td}">${r.d.f.t ? bar(r.d.f.comp, r.d.f.min, r.d.f.crit, r.d.f.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.f.comp, r.d.f.min, r.d.f.crit)} / ${r.d.f.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
-      <td style="${td} text-align:end; font-size:16px; font-weight:900; color:${pctCol(r.pct)};">${P(r.pct)}</td></tr>`).join("");
+      <td style="${td} text-align:end; font-size:16px; font-weight:900; color:${r.has ? pctCol(r.pct) : "#94A3B8"};">${r.has ? P(r.pct) : "—"}</td></tr>`);
     const legend = `<div style="display:flex; gap:16px; margin-top:8px; font-size:10.5px; color:#475569; font-weight:700;"><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#16A34A; margin-inline-end:5px;"></i>${t3("Tamamlandı / Kapandı", "Completed / Closed", "مكتمل / مغلق")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#F59E0B; margin-inline-end:5px;"></i>${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#EF4444; margin-inline-end:5px;"></i>${t3("Başlanmadı / Açık", "Not Started / Open", "لسه ما بدأش / مفتوح")}</span></div>`;
     const attn = rows.filter(r => r.openF > 0).sort((a, b) => b.openF - a.openF).slice(0, 5);
     const attnHtml = attn.length ? `<div style="display:grid; grid-template-columns:repeat(${Math.min(5, attn.length)},minmax(0,1fr)); gap:12px;">${attn.map(r => `<div style="border:1.5px solid #FECACA; background:#FEF2F2; border-radius:12px; padding:12px 14px;"><div style="font-size:12px; font-weight:900; color:#0F172A;">${esc(r.c.name)}</div><div style="font-size:30px; font-weight:900; color:#DC2626; line-height:1.1; margin-top:4px;">${r.openF}</div><div style="font-size:10.5px; font-weight:700; color:#7F1D1D;">${t3("açık bulgu", "open findings", "نتائج مفتوحة")}</div></div>`).join("")}</div>` : `<div style="font-size:12px; color:#16A34A; font-weight:800;">✅ ${t3("Açık bulgu yok.", "No open findings.", "مفيش نتائج مفتوحة.")}</div>`;
@@ -68489,22 +68491,29 @@ async function downloadCustomersStatusPDF() {
     const title = _reportTitle("Müşteri Durum Raporu", "Customer Status Report", "تقرير حالة العملاء");
     const wrap = document.createElement("div");
     wrap.style.cssText = 'position:fixed; left:-99999px; top:0; width:1120px; background:#fff; font-family:"Plus Jakarta Sans",Arial,sans-serif; padding:36px; box-sizing:border-box;' + (currentLang === "ar" ? " direction:rtl;" : "");
-    wrap.innerHTML = `${_pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", icon: "🏢", title: esc(title), titleText: title, sub: "EMS Eroğlu Manufacturing Studio · 📅 " + new Date().toLocaleDateString(locale) })}
-      ${kpi}
-      ${h2("📊", t3("Müşteri Bazlı Durum", "Status by Customer", "الحالة حسب العميل"))}
-      <table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">#</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Onay", "Approval", "الاعتماد")}</th><th style="${th}">${t3("Sipariş", "Orders", "الأوردرات")}</th><th style="${th} text-align:center;">${t3("Denetim", "Audits", "تدقيقات")}</th><th style="${th}">${t3("Son Denetim", "Last Audit", "آخر تدقيق")}</th><th style="${th}">${t3("Denetim Soruları", "Audit Questions", "أسئلة التدقيق")}</th><th style="${th}">${t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق")}</th><th style="${th} text-align:end;">${t3("Uyum", "Compliance", "الامتثال")}</th></tr></thead><tbody>${statusRows}</tbody></table>${legend}
-      ${h2("🎯", t3("Dikkat Gerektirenler", "Needs Attention", "تحتاج انتباه"))}${attnHtml}
-      ${audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : ""}
-      <div style="margin-top:16px; padding-top:10px; border-top:2px solid ${N}; font-size:9.5px; color:#64748B; text-align:center;">EMS — Eroğlu Manufacturing Studio · ${esc(t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was generated automatically by the system", "التقرير ده اتعمل أوتوماتيك من النظام"))}</div>`;
+    const headHtml = _pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", icon: "🏢", title: esc(title), titleText: title, sub: "EMS Eroğlu Manufacturing Studio · 📅 " + new Date().toLocaleDateString(locale) });
+    const tblHead = `<thead><tr><th style="${th}">#</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Onay", "Approval", "الاعتماد")}</th><th style="${th}">${t3("Sipariş", "Orders", "الأوردرات")}</th><th style="${th} text-align:center;">${t3("Denetim", "Audits", "تدقيقات")}</th><th style="${th}">${t3("Son Denetim", "Last Audit", "آخر تدقيق")}</th><th style="${th}">${t3("Denetim Soruları", "Audit Questions", "أسئلة التدقيق")}</th><th style="${th}">${t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق")}</th><th style="${th} text-align:end;">${t3("Uyum", "Compliance", "الامتثال")}</th></tr></thead>`;
+    const tbl = arr => `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;">${tblHead}<tbody>${arr.join("")}</tbody></table>`;
+    const footHtml = `<div style="margin-top:16px; padding-top:10px; border-top:2px solid ${N}; font-size:9.5px; color:#64748B; text-align:center;">EMS — Eroğlu Manufacturing Studio · ${esc(t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was generated automatically by the system", "التقرير ده اتعمل أوتوماتيك من النظام"))}</div>`;
+    // Sayfa sayfa üretilir: hiçbir tablo satırı, başlık veya kutu sayfa sınırında kesilmez / built page by page so no row, heading or box is cut at a page edge
+    const chunks = [ statusRowsArr.slice(0, 7) ];
+    for (let k = 7; k < statusRowsArr.length; k += 13) chunks.push(statusRowsArr.slice(k, k + 13));
+    const slim = `<div style="display:flex; justify-content:space-between; align-items:center; padding:0 0 10px; margin:0 0 14px; border-bottom:2px solid #C8102E; font-size:13px; font-weight:900; color:#0F172A;"><span>${esc(title)}</span><span style="font-size:11px; color:#64748B; font-weight:700;">${t3("devam", "continued", "تابع")}</span></div>`;
+    const pagesHtml = chunks.map((arr, i) => i === 0 ? headHtml + kpi + h2("📊", t3("Müşteri Bazlı Durum", "Status by Customer", "الحالة حسب العميل")) + tbl(arr) : slim + tbl(arr));
+    pagesHtml.push(slim.replace(/<span style="font-size:11px[^>]*>[^<]*<\/span>/, "") + legend + h2("🎯", t3("Dikkat Gerektirenler", "Needs Attention", "تحتاج انتباه")) + attnHtml
+      + (audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : "") + footHtml);
     document.body.appendChild(wrap);
     let pdf = null;
     try {
-      await waitForImagesReady(wrap);
-      // Net çıktı: yüksek çözünürlük (≈230 ppi) ve yüksek JPEG kalitesi; diğer raporlardan farklı olarak bu rapor tabloya benzediği için yazılar keskin olmalı /
-      // Sharp output: high resolution (≈230 ppi) and high JPEG quality, because this report is table-like and the text must be crisp
+      // Net çıktı: yüksek çözünürlük (≈300 ppi) ve yüksek JPEG kalitesi / sharp output: high resolution and high JPEG quality
       const _sc = (window.innerWidth || 1024) <= 768 ? 2.2 : 3;
-      const canvas = await _h2c(wrap, { scale: _sc, backgroundColor: "#ffffff", useCORS: true });
-      pdf = _pdfStampPages(_pdfAddCanvasA4(null, jsPDFLib, canvas, wrap, { scale: _sc, orientation: "landscape", jpegQ: .93 }));
+      for (let pi = 0; pi < pagesHtml.length; pi++) {
+        wrap.innerHTML = pagesHtml[pi];
+        await waitForImagesReady(wrap);
+        const canvas = await _h2c(wrap, { scale: _sc, backgroundColor: "#ffffff", useCORS: true });
+        pdf = _pdfAddCanvasA4(pdf, jsPDFLib, canvas, wrap, { scale: _sc, orientation: "landscape", fit: true, jpegQ: .93 });
+      }
+      pdf = _pdfStampPages(pdf);
       try { _pdfAddSignature(pdf); } catch (e) { console.warn("[imza]", e); }
     } finally { document.body.removeChild(wrap); }
     if (pdf) pdf.save("EMS_Musteri_Durum_Raporu_" + _localISODate() + ".pdf");
@@ -84343,7 +84352,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:26";
+const EMS_BUILD = "2026-11-16 12:28";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
