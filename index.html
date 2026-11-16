@@ -68474,7 +68474,8 @@ async function downloadCustomersStatusPDF() {
       let d; try { d = _custSwitchData(c.key); } catch (e) { return; }
       const last = (d.audits || [])[0] || null;
       const tot = d.q.t + d.f.t, cmp = d.q.comp + d.f.comp, openF = d.f.crit + d.f.min;
-      rows.push({ c: c, d: d, last: last, tot: tot, cmp: cmp, pct: tot ? Math.round(cmp * 100 / tot) : 0, openF: openF });
+      const capAll = (d.audits || []).length > 0 && d.audits.every(x => x.capStatus === "closed");
+      rows.push({ c: c, d: d, last: last, tot: tot, cmp: cmp, pct: tot ? Math.round(cmp * 100 / tot) : 0, openF: openF, noData: !d.q.t && !d.f.t, capAll: capAll });
     });
     if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
     // Önce denetimi/verisi olanlar (en geride olan en üstte), sonra denetime gelmemişler (alfabetik) / audited customers first (furthest behind on top), then the not-yet-audited ones (alphabetical)
@@ -68507,10 +68508,10 @@ async function downloadCustomersStatusPDF() {
       <td style="${td} font-weight:800; color:${_custAppr(r.c) === "yes" ? "#16A34A" : _custAppr(r.c) === "pend" ? "#D97706" : "#64748B"};">${esc(_custApprLabel(_custAppr(r.c)))}</td>
       <td style="${td} font-weight:800; color:${_custOrd(r.c) === "yes" ? "#16A34A" : "#64748B"};">${esc(_custOrdLabel(_custOrd(r.c)))}</td>
       <td style="${td} text-align:center;">${r.d.audits.length}</td>
-      <td style="${td}">${r.last ? fmtD(r.last.date) : r.has ? "—" : `<span style="font-weight:800; color:#64748B;">${esc(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`}${r.last ? `<div style="font-size:10px; font-weight:800; color:${capCol(r.last.capStatus)};">${esc(capTxt(r.last.capStatus))}</div>` : ""}</td>
+      <td style="${td}">${r.last ? fmtD(r.last.date) : r.has ? "—" : `<span style="font-weight:800; color:#64748B;">${esc(t3("Denetime gelmedi", "Not audited yet", "لسه ما اتدققش"))}</span>`}${r.last ? `<div style="font-size:10px; font-weight:800; color:${capCol(r.last.capStatus)};">CAP: ${esc(capTxt(r.last.capStatus))}</div>` : ""}</td>
       <td style="${td}">${r.d.q.t ? bar(r.d.q.comp, r.d.q.min, r.d.q.crit, r.d.q.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.q.comp, r.d.q.min, r.d.q.crit)} / ${r.d.q.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
-      <td style="${td}">${r.d.f.t ? bar(r.d.f.comp, r.d.f.min, r.d.f.crit, r.d.f.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.f.comp, r.d.f.min, r.d.f.crit)} / ${r.d.f.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
-      <td style="${td} text-align:end; font-size:16px; font-weight:900; color:${r.has ? pctCol(r.pct) : "#94A3B8"};">${r.has ? P(r.pct) : "—"}</td></tr>`);
+      <td style="${td}">${r.d.f.t ? bar(r.d.f.comp, r.d.f.min, r.d.f.crit, r.d.f.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.f.comp, r.d.f.min, r.d.f.crit)} / ${r.d.f.t}</div>` : r.noData && r.d.audits.length ? (r.capAll ? `<span style="font-weight:800; color:#16A34A; font-size:11px;">✅ ${esc(t3("Tüm bulgular kapandı", "All findings closed", "كل النتايج اتقفلت"))}</span>` : `<span style="font-weight:700; color:#64748B; font-size:10.5px;">${esc(t3("Özet kayıt, madde listesi yok", "Summary record, no item list", "سجل ملخص، مفيش قائمة بنود"))}</span>`) : `<span style="color:#94A3B8;">—</span>`}</td>
+      <td style="${td} text-align:end; font-size:${r.has && !r.noData ? 16 : 12}px; font-weight:900; color:${r.has && !r.noData ? pctCol(r.pct) : r.noData && r.capAll ? "#16A34A" : "#94A3B8"};">${r.has && !r.noData ? P(r.pct) : r.noData && r.capAll ? "✓ " + esc(t3("Kapandı", "Closed", "مغلق")) : "—"}</td></tr>`);
     const legend = `<div style="display:flex; gap:16px; margin-top:8px; font-size:10.5px; color:#475569; font-weight:700;"><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#16A34A; margin-inline-end:5px;"></i>${t3("Tamamlandı / Kapandı", "Completed / Closed", "مكتمل / مغلق")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#F59E0B; margin-inline-end:5px;"></i>${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#EF4444; margin-inline-end:5px;"></i>${t3("Başlanmadı / Açık", "Not Started / Open", "لسه ما بدأش / مفتوح")}</span></div>`;
     const attn = rows.filter(r => r.openF > 0).sort((a, b) => b.openF - a.openF).slice(0, 5);
     const attnHtml = attn.length ? `<div style="display:grid; grid-template-columns:repeat(${Math.min(5, attn.length)},minmax(0,1fr)); gap:12px;">${attn.map(r => `<div style="border:1.5px solid #FECACA; background:#FEF2F2; border-radius:12px; padding:12px 14px;"><div style="font-size:12px; font-weight:900; color:#0F172A;">${esc(r.c.name)}</div><div style="font-size:30px; font-weight:900; color:#DC2626; line-height:1.1; margin-top:4px;">${r.openF}</div><div style="font-size:10.5px; font-weight:700; color:#7F1D1D;">${t3("açık bulgu", "open findings", "نتائج مفتوحة")}</div></div>`).join("")}</div>` : `<div style="font-size:12px; color:#16A34A; font-weight:800;">✅ ${t3("Açık bulgu yok.", "No open findings.", "مفيش نتائج مفتوحة.")}</div>`;
@@ -84398,7 +84399,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:46";
+const EMS_BUILD = "2026-11-16 12:47";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
