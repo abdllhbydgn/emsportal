@@ -5192,6 +5192,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
           <span data-i18n="cust_add_new">Yeni Müşteri Ekle / Add New Customer</span>
         </button>
       </div>
+      <div style="display:flex; justify-content:flex-end; margin:-4px 0 12px;"><button type="button" id="cust-status-report-btn" class="cust-add-new-btn" style="display:inline-flex;" onclick="downloadCustomersStatusPDF()">📄 <span id="cust-status-report-lbl">Müşteri Durum Raporu</span></button></div>
       <div id="customer-picker-bar-chart" style="margin-bottom:22px;"></div>
       <div class="customer-grid" id="customer-grid"></div>
     </div>
@@ -48798,11 +48799,24 @@ function postProcessData() {
     // Soru seti ve fotoğraf dosyaları (ems_csr_files) silinmez. Silinenlerin özeti bu tarayıcıda saklanır.
     // User request: only the H&M CAP Acknowledgement audit and its contents stay; other H&M audit records are removed ONCE (admin session only, only if the CAP record exists). Question set and photo files are not deleted.
     const _hmKeep = customerAudits.find(a => a.customerKey === hc.key && /CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || "")));
-    if (currentUserRole === "admin" && _hmKeep && _sg("cleanup:hm-only-cap-20261116", customerAudits.some(a => a.customerKey === hc.key && a !== _hmKeep))) {
-      const _hmGone = customerAudits.filter(a => a.customerKey === hc.key && a !== _hmKeep);
-      try { localStorage.setItem("ems_removed_hm_audits_20261116", JSON.stringify(_hmGone.map(a => ({ id: a.id, date: a.date, note: a.note, findings: (a.findings || []).length })))); } catch (e) {}
-      customerAudits = customerAudits.filter(a => !(a.customerKey === hc.key && a !== _hmKeep));
-      _ppSeeded++;
+    // Her açılışta H&M'in CAP dışındaki denetim kayıtları listeden çıkarılır (bulut birleştirmesi geri getirse bile); yönetici girişinde bulutta DOĞRUDAN, bir kez silinir (v2: ilk sürüm yalnız hafızada siliyordu, birleştirme geri getiriyordu).
+    // On every load the non-CAP H&M audit records are dropped from the list (even if a cloud merge brings them back); on admin login they are removed DIRECTLY in the cloud, once (v2: v1 removed them in memory only and the merge restored them).
+    const _hmNotCap = a => a && a.customerKey === hc.key && !/CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || ""));
+    // Silinen "Doküman Kontrol Listesi taraması" hazır kaydı bir daha eklenmesin / the deleted built-in "Document Checklist review" record must not be seeded again
+    if (_hmKeep && !appliedSeedKeys.includes("aud:hm:10")) appliedSeedKeys.push("aud:hm:10");
+    if (_hmKeep && customerAudits.some(_hmNotCap)) {
+      const _hmGone = customerAudits.filter(_hmNotCap);
+      customerAudits = customerAudits.filter(a => !_hmNotCap(a));
+      if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:hm-only-cap-v2-20261116", true)) {
+        try { localStorage.setItem("ems_removed_hm_audits_20261116", JSON.stringify(_hmGone.map(a => ({ id: a.id, date: a.date, note: a.note, findings: (a.findings || []).length })))); } catch (e) {}
+        const _aref = fbDb.collection("ems_csr").doc("customerAudits"), _hk = hc.key;
+        _runTransactionWithRetry(tx => tx.get(_aref).then(snap => {
+          const data = snap.exists ? snap.data() : {};
+          const arr = Array.isArray(data.customerAudits) ? data.customerAudits : [];
+          tx.set(_aref, Object.assign({}, data, { customerAudits: arr.filter(a => !(a && a.customerKey === _hk && !/CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || "")))) }), { merge: true });
+        })).catch(e => console.warn("[H&M denetim silme / H&M audit delete]", e && e.code));
+        _ppSeeded++;
+      }
     }
     // H&M "Denetim Soruları" bölümü (188 soru) kaldırıldı (kullanıcı isteği 16.11.2026, yedek alındı): CAP Onay Raporu bulgularına bağlı sorular dışındaki tüm H&M soruları her açılışta listeden çıkarılır,
     // hazır satırlar geri gelmesin diye silinenler listesine yazılır; yönetici girişinde bulutta bir kez toplu silinir. Fotoğraf dosyalarına (ems_csr_files) dokunulmaz.
@@ -48818,7 +48832,7 @@ function postProcessData() {
         auditQuestions = auditQuestions.filter(q => !_hmQ(q));
         const _dflt = new Set(defaultAuditQuestions.map(d => d.id));
         _hmQGone.forEach(id => { if (_dflt.has(id) && !deletedDefaultQuestionIds.includes(id)) deletedDefaultQuestionIds.push(id); });
-        if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:hm-questions-20261116", true)) {
+        if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:hm-questions-v2-20261116", true)) {
           try { localStorage.setItem("ems_removed_hm_questions_20261116", JSON.stringify(_hmQGone)); } catch (e) {}
           const _gset = new Set(_hmQGone.map(String));
           [ [ "customerQuestions", "customerQuestions" ], [ "questions", "auditQuestions" ] ].forEach(([ dn, fld ]) => {
@@ -66190,6 +66204,7 @@ function _custPickerSummaryHtml() {
 const AWAITING_AUDIT_KEYS = [];
 function openCustomerPicker() {
   saveLastView("customerPicker");
+  try { const _rl = document.getElementById("cust-status-report-lbl"); if (_rl) _rl.textContent = t3("Müşteri Durum Raporu (PDF)", "Customer Status Report (PDF)", "تقرير حالة العملاء (PDF)"); } catch (e) {}
   try {
     const chartBox = document.getElementById("customer-picker-bar-chart");
     if (chartBox) {
@@ -68334,6 +68349,82 @@ function _pdfLogoClean(dataUrl) {
       setTimeout(() => done(dataUrl), 6000);
     } catch (e) { done(dataUrl); }
   });
+}
+// ═══ MÜŞTERİ DURUM RAPORU (16.11.2026) ═══ Müşteri Portalı: tüm müşterilerin soru, bulgu ve denetim durumu; diğer raporlarla aynı biçim
+// (dönem başlığı, logo solda, özet bandı, imza bandı), yatay A4. / Customer status report: every customer's question, finding and audit status, same format as the other reports.
+async function downloadCustomersStatusPDF() {
+  try {
+    await _ensureLibs();
+    const jsPDFLib = window.jspdf && window.jspdf.jsPDF || window.jsPDF;
+    if (typeof html2canvas === "undefined" || !jsPDFLib) { alert(t3("PDF bileşenleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.", "PDF components failed to load. Check your connection and try again.", "مقدرناش نحمل مكونات PDF. اتأكد من النت وجرب تاني.")); return; }
+    const esc = escHtml, N = "#1A3660", locale = currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR";
+    const fmtD = x => x ? new Date(x).toLocaleDateString(locale) : "—";
+    const rows = [];
+    (customersList || []).forEach(c => {
+      let d; try { d = _custSwitchData(c.key); } catch (e) { return; }
+      if (!d.q.t && !d.f.t && !d.audits.length) return;
+      const last = (d.audits || [])[0] || null;
+      const tot = d.q.t + d.f.t, cmp = d.q.comp + d.f.comp, openF = d.f.crit + d.f.min;
+      rows.push({ c: c, d: d, last: last, tot: tot, cmp: cmp, pct: tot ? Math.round(cmp * 100 / tot) : 0, openF: openF });
+    });
+    if (!rows.length) { alert(t3("Raporda gösterilecek müşteri verisi yok.", "No customer data to show in the report.", "مفيش بيانات عملاء للتقرير.")); return; }
+    rows.sort((a, b) => a.pct - b.pct || b.openF - a.openF);
+    const T = { q: { t: 0, c: 0, m: 0, x: 0 }, f: { t: 0, c: 0, m: 0, x: 0 }, aud: 0 };
+    rows.forEach(r => { T.q.t += r.d.q.t; T.q.c += r.d.q.comp; T.q.m += r.d.q.min; T.q.x += r.d.q.crit; T.f.t += r.d.f.t; T.f.c += r.d.f.comp; T.f.m += r.d.f.min; T.f.x += r.d.f.crit; T.aud += r.d.audits.length; });
+    const pc = (n, t) => t ? Math.round(n * 100 / t) : 0, P = n => fmtPct(n);
+    const kpi = _pdfKpiBandHtml([
+      { label: t3("Müşteri", "Customers", "العملاء"), val: rows.length, sub: t3("Aktif denetim panosu", "Active audit dashboards", "لوحات تدقيق نشطة"), bar: 100 },
+      { label: t3("Denetim", "Audits", "التدقيقات"), val: T.aud, sub: t3("Kayıtlı denetim", "Recorded audits", "تدقيقات مسجلة"), bar: 100, color: "#93C5FD" },
+      { label: t3("Soru Uyumu", "Question Compliance", "امتثال الأسئلة"), val: P(pc(T.q.c, T.q.t)), sub: T.q.c + " / " + T.q.t, bar: pc(T.q.c, T.q.t), color: "#10B981" },
+      { label: t3("Bulgu Kapanışı", "Finding Closure", "إغلاق النتائج"), val: P(pc(T.f.c, T.f.t)), sub: T.f.c + " / " + T.f.t, bar: pc(T.f.c, T.f.t), color: "#F59E0B" },
+      { label: t3("Açık Bulgu", "Open Findings", "نتائج مفتوحة"), val: T.f.x + T.f.m, sub: T.f.x + " " + t3("başlanmadı", "not started", "لسه ما بدأش"), bar: pc(T.f.x + T.f.m, T.f.t), color: "#EF4444", gold: true }
+    ], { narrow: true });
+    const h2 = (ic, x) => `<div style="display:flex; align-items:center; gap:10px; margin:24px 0 12px;"><span style="width:30px; height:30px; border-radius:9px; background:${N}; color:#fff; display:grid; place-items:center; font-size:15px;">${ic}</span><span style="font-size:15px; font-weight:900; color:#0F172A; letter-spacing:.02em; text-transform:uppercase;">${x}</span></div>`;
+    const th = `padding:9px 10px; text-align:start; font-size:10.5px; font-weight:800; color:#fff; background:${N}; letter-spacing:.03em;`;
+    const td = "padding:9px 10px; font-size:11.5px; border-bottom:1px solid #E2E8F0; vertical-align:middle; color:#1E293B;";
+    const bar = (c, m, x, t) => t ? `<div style="display:flex; height:10px; border-radius:99px; overflow:hidden; background:#F1F5F9; min-width:120px;"><div style="width:${c * 100 / t}%; background:#16A34A;"></div><div style="width:${m * 100 / t}%; background:#F59E0B;"></div><div style="width:${x * 100 / t}%; background:#EF4444;"></div></div>` : `<div style="color:#94A3B8; font-size:10.5px;">—</div>`;
+    const cnt = (c, m, x) => `<span style="color:#16A34A; font-weight:800;">${c}</span> · <span style="color:#D97706; font-weight:800;">${m}</span> · <span style="color:#DC2626; font-weight:800;">${x}</span>`;
+    const pctCol = p => p >= 80 ? "#16A34A" : p >= 50 ? "#D97706" : "#DC2626";
+    const capTxt = st => st === "closed" ? t3("Kapandı", "Closed", "مغلق") : st === "in_progress" ? t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : t3("Açık", "Open", "مفتوح");
+    const capCol = st => st === "closed" ? "#16A34A" : st === "in_progress" ? "#D97706" : "#DC2626";
+    const statusRows = rows.map((r, i) => `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} width:30px; font-weight:800; color:${N};">${i + 1}</td>
+      <td style="${td}"><div style="display:flex; align-items:center; gap:9px;"><span style="flex:none; width:28px; height:28px; border-radius:50%; background:${r.c.color || N}; color:#fff; font-size:10px; font-weight:900; display:grid; place-items:center;">${esc(r.c.init || String(r.c.name).slice(0, 2).toUpperCase())}</span><b>${esc(r.c.name)}</b></div></td>
+      <td style="${td} text-align:center;">${r.d.audits.length}</td>
+      <td style="${td}">${r.last ? fmtD(r.last.date) : "—"}${r.last ? `<div style="font-size:10px; font-weight:800; color:${capCol(r.last.capStatus)};">${esc(capTxt(r.last.capStatus))}</div>` : ""}</td>
+      <td style="${td}">${r.d.q.t ? bar(r.d.q.comp, r.d.q.min, r.d.q.crit, r.d.q.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.q.comp, r.d.q.min, r.d.q.crit)} / ${r.d.q.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
+      <td style="${td}">${r.d.f.t ? bar(r.d.f.comp, r.d.f.min, r.d.f.crit, r.d.f.t) + `<div style="font-size:10px; margin-top:4px;">${cnt(r.d.f.comp, r.d.f.min, r.d.f.crit)} / ${r.d.f.t}</div>` : `<span style="color:#94A3B8;">—</span>`}</td>
+      <td style="${td} text-align:end; font-size:16px; font-weight:900; color:${pctCol(r.pct)};">${P(r.pct)}</td></tr>`).join("");
+    const legend = `<div style="display:flex; gap:16px; margin-top:8px; font-size:10.5px; color:#475569; font-weight:700;"><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#16A34A; margin-inline-end:5px;"></i>${t3("Tamamlandı / Kapandı", "Completed / Closed", "مكتمل / مغلق")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#F59E0B; margin-inline-end:5px;"></i>${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</span><span><i style="display:inline-block; width:10px; height:10px; border-radius:3px; background:#EF4444; margin-inline-end:5px;"></i>${t3("Başlanmadı / Açık", "Not Started / Open", "لسه ما بدأش / مفتوح")}</span></div>`;
+    const attn = rows.filter(r => r.openF > 0).sort((a, b) => b.openF - a.openF).slice(0, 5);
+    const attnHtml = attn.length ? `<div style="display:grid; grid-template-columns:repeat(${Math.min(5, attn.length)},minmax(0,1fr)); gap:12px;">${attn.map(r => `<div style="border:1.5px solid #FECACA; background:#FEF2F2; border-radius:12px; padding:12px 14px;"><div style="font-size:12px; font-weight:900; color:#0F172A;">${esc(r.c.name)}</div><div style="font-size:30px; font-weight:900; color:#DC2626; line-height:1.1; margin-top:4px;">${r.openF}</div><div style="font-size:10.5px; font-weight:700; color:#7F1D1D;">${t3("açık bulgu", "open findings", "نتائج مفتوحة")}</div></div>`).join("")}</div>` : `<div style="font-size:12px; color:#16A34A; font-weight:800;">✅ ${t3("Açık bulgu yok.", "No open findings.", "مفيش نتائج مفتوحة.")}</div>`;
+    const audList = [];
+    rows.forEach(r => r.d.audits.forEach(a => audList.push({ c: r.c, a: a })));
+    audList.sort((x, y) => String(y.a.date || "").localeCompare(String(x.a.date || "")));
+    const audRows = audList.slice(0, 14).map((x, i) => { const aud = _custAuditor(x.a), nt = biText(x.a.note || "").replace(/\s*[—–-]\s*(Denetçi|Auditor)\b.*$/i, "").trim(); const n = Array.isArray(x.a.findings) ? x.a.findings.length : 0;
+      return `<tr style="background:${i % 2 ? "#F8FAFC" : "#fff"};"><td style="${td} white-space:nowrap;">${fmtD(x.a.date)}</td><td style="${td} font-weight:800;">${esc(x.c.name)}</td><td style="${td}">${esc(nt || "—")}</td><td style="${td}">${esc(aud || "—")}</td><td style="${td} text-align:center;">${n}</td><td style="${td} font-weight:800; color:${capCol(x.a.capStatus)};">${esc(capTxt(x.a.capStatus))}</td></tr>`; }).join("");
+    const title = _reportTitle("Müşteri Durum Raporu", "Customer Status Report", "تقرير حالة العملاء");
+    const wrap = document.createElement("div");
+    wrap.style.cssText = 'position:fixed; left:-99999px; top:0; width:900px; background:#fff; font-family:"Plus Jakarta Sans",Arial,sans-serif; padding:36px; box-sizing:border-box;' + (currentLang === "ar" ? " direction:rtl;" : "");
+    wrap.innerHTML = `${_pdfHeadHtml({ logo: EMS_REPORT_LOGO, size: "sm", icon: "🏢", title: esc(title), titleText: title, sub: "EMS Eroğlu Manufacturing Studio · 📅 " + new Date().toLocaleDateString(locale) })}
+      ${kpi}
+      ${h2("📊", t3("Müşteri Bazlı Durum", "Status by Customer", "الحالة حسب العميل"))}
+      <table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">#</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th} text-align:center;">${t3("Denetim", "Audits", "تدقيقات")}</th><th style="${th}">${t3("Son Denetim", "Last Audit", "آخر تدقيق")}</th><th style="${th}">${t3("Denetim Soruları", "Audit Questions", "أسئلة التدقيق")}</th><th style="${th}">${t3("Denetim Bulguları", "Audit Findings", "نتائج التدقيق")}</th><th style="${th} text-align:end;">${t3("Uyum", "Compliance", "الامتثال")}</th></tr></thead><tbody>${statusRows}</tbody></table>${legend}
+      ${h2("🎯", t3("Dikkat Gerektirenler", "Needs Attention", "تحتاج انتباه"))}${attnHtml}
+      ${audRows ? h2("🗓️", t3("Son Denetimler", "Recent Audits", "آخر التدقيقات")) + `<table style="width:100%; border-collapse:collapse; border:1px solid #E2E8F0;"><thead><tr><th style="${th}">${t3("Tarih", "Date", "التاريخ")}</th><th style="${th}">${t3("Müşteri", "Customer", "العميل")}</th><th style="${th}">${t3("Denetim", "Audit", "التدقيق")}</th><th style="${th}">${t3("Denetçi", "Auditor", "المدقق")}</th><th style="${th} text-align:center;">${t3("Bulgu", "Findings", "نتائج")}</th><th style="${th}">CAP</th></tr></thead><tbody>${audRows}</tbody></table>` : ""}
+      <div style="margin-top:16px; padding-top:10px; border-top:2px solid ${N}; font-size:9.5px; color:#64748B; text-align:center;">EMS — Eroğlu Manufacturing Studio · ${esc(t3("Bu rapor sistem tarafından otomatik oluşturulmuştur", "This report was generated automatically by the system", "التقرير ده اتعمل أوتوماتيك من النظام"))}</div>`;
+    document.body.appendChild(wrap);
+    let pdf = null;
+    try {
+      await waitForImagesReady(wrap);
+      const canvas = await _h2c(wrap, { scale: _pdfCanvasScale(), backgroundColor: "#ffffff", useCORS: true });
+      pdf = _pdfStampPages(_pdfAddCanvasA4(null, jsPDFLib, canvas, wrap, { scale: _pdfCanvasScale(), orientation: "landscape" }));
+      try { _pdfAddSignature(pdf); } catch (e) { console.warn("[imza]", e); }
+    } finally { document.body.removeChild(wrap); }
+    if (pdf) pdf.save("EMS_Musteri_Durum_Raporu_" + _localISODate() + ".pdf");
+  } catch (e) {
+    console.error("Müşteri durum raporu hatası / Customer status report error:", e);
+    alert(t3("PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.", "An error occurred while generating the PDF. Please try again.", "حصل خطأ وإحنا بنعمل PDF."));
+  }
 }
 async function downloadCustomerPDF(opts) {
   // opts.auditId verilirse rapor yalnız o denetimin bulgularını içerir; biçim ve başlık aynıdır / with opts.auditId the report holds only that audit's findings; same format and title
@@ -84165,7 +84256,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 11:37";
+const EMS_BUILD = "2026-11-16 12:04";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
