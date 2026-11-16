@@ -4404,7 +4404,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
       </button>
       <button class="side-nav-item" onclick="try{ openDocumentLibrary('training_videos'); }catch(e){ console.error('Eğitim Videoları açma hatası:', e); alert(t3('Hata: ', 'Error: ', 'خطأ: ') + e.message); }">
         <span class="nav-emoji">🎓</span>
-        <span data-i18n="nav_training_videos">Eroğlu Akademi / Eroglu Academy</span>
+        <span data-i18n="nav_training_videos">NSCS Akademi / NSCS Academy</span>
       </button>
       <button type="button" class="side-nav-item admin-only-el" style="display:none;" onclick="openAdminHub()">
         <span class="nav-emoji">⚙️</span>
@@ -4917,7 +4917,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
         <li><a onclick="if (typeof goHome === 'function') goHome();" data-i18n="footer_link_home">Ana Sayfa</a></li>
         <li><a onclick="if (typeof openAboutHub === 'function') openAboutHub();" data-i18n="nav_about_us">Hakkımızda</a></li>
         <li><a onclick="if (typeof openCertHub === 'function') openCertHub();" data-i18n="nav_certificates">Sertifikalar</a></li>
-        <li><a onclick="footerNavGuard(() => { if (typeof openDocumentLibrary === 'function') openDocumentLibrary('training_videos'); });" data-i18n="nav_training_videos">Eroğlu Akademi</a></li>
+        <li><a onclick="footerNavGuard(() => { if (typeof openDocumentLibrary === 'function') openDocumentLibrary('training_videos'); });" data-i18n="nav_training_videos">NSCS Akademi</a></li>
         <li><a onclick="footerNavGuard(() => { if (typeof openCustomerPicker === 'function') openCustomerPicker(); });" data-i18n="footer_link_customers">Müşteriler &amp; Denetimler</a></li>
         <li><a onclick="if (typeof openPrivacyPolicyModal === 'function') openPrivacyPolicyModal();" data-i18n="footer_link_privacy">KVKK Gizlilik Politikası</a></li>
         <li><a onclick="if (typeof openCookiePolicyModal === 'function') openCookiePolicyModal();" data-i18n="footer_link_cookies">Çerez Politikası</a></li>
@@ -5707,7 +5707,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
         <li><a onclick="closeTeamHub(); if (typeof goHome === 'function') goHome();" data-i18n="footer_link_home">Ana Sayfa</a></li>
         <li><a onclick="closeTeamHub(); if (typeof openAboutHub === 'function') openAboutHub();" data-i18n="nav_about_us">Hakkımızda</a></li>
         <li><a onclick="closeTeamHub(); if (typeof openCertHub === 'function') openCertHub();" data-i18n="nav_certificates">Sertifikalar</a></li>
-        <li><a onclick="footerNavGuard(() => { if (typeof openDocumentLibrary === 'function') openDocumentLibrary('training_videos'); });" data-i18n="nav_training_videos">Eroğlu Akademi</a></li>
+        <li><a onclick="footerNavGuard(() => { if (typeof openDocumentLibrary === 'function') openDocumentLibrary('training_videos'); });" data-i18n="nav_training_videos">NSCS Akademi</a></li>
         <li><a onclick="closeTeamHub(); footerNavGuard(() => { if (typeof openCustomerPicker === 'function') openCustomerPicker(); });" data-i18n="footer_link_customers">Müşteriler &amp; Denetimler</a></li>
         <li><a onclick="if (typeof openPrivacyPolicyModal === 'function') openPrivacyPolicyModal();" data-i18n="footer_link_privacy">KVKK Gizlilik Politikası</a></li>
         <li><a onclick="if (typeof openCookiePolicyModal === 'function') openCookiePolicyModal();" data-i18n="footer_link_cookies">Çerez Politikası</a></li>
@@ -8200,9 +8200,9 @@ const UI_TRANSLATIONS = {
     ar: "نظام إدارة الجودة"
   },
   nav_training_videos: {
-    tr: "Eroğlu Akademi",
-    en: "Eroglu Academy",
-    ar: "أكاديمية إيروغلو"
+    tr: "NSCS Akademi",
+    en: "NSCS Academy",
+    ar: "أكاديمية NSCS"
   },
   nav_top_mgmt: {
     tr: "Haftalık Toplantı Raporları",
@@ -48810,8 +48810,8 @@ function postProcessData() {
   }
   // Depo adı "emsportal" oldu: eski /ems/ adresli tanıtım videosu kaydı yeni adrese taşınır / the repository was renamed to "emsportal": move the old /ems/ promo video link to the new address
   if (Array.isArray(trainingVideosDocs)) trainingVideosDocs.forEach(d => { if (d && typeof d.videoLink === "string" && d.videoLink.indexOf("abdllhbydgn.github.io/ems/tanitim/") >= 0) d.videoLink = d.videoLink.replace("abdllhbydgn.github.io/ems/tanitim/", "abdllhbydgn.github.io/emsportal/tanitim/"); });
-  // NSCS portal tanıtım videosu (tek video, TR/EN/AR dil düğmeli) Eroğlu Akademi'nin en başına bir kez eklenir /
-  // NSCS portal introduction video (one video, TR/EN/AR language switch) is added once at the very top of Eroğlu Academy
+  // NSCS portal tanıtım videosu (tek video, TR/EN/AR dil düğmeli) NSCS Akademi'nin en başına bir kez eklenir /
+  // NSCS portal introduction video (one video, TR/EN/AR language switch) is added once at the very top of NSCS Academy
   if (currentUserRole === "admin" && Array.isArray(trainingVideosDocs) && (!_cdl0 || _cdl0.trainingVideos) && !_defaultedDocs.has("trainingVideos") && _TANITIM_VIDEO_READY && _sg("tv:tanitim:2026-10-25", true)) {
     const _tvu = "https://abdllhbydgn.github.io/emsportal/tanitim/EMS_Tanitim_video.mp4";
     if (!trainingVideosDocs.some(d => d && d.videoLink === _tvu)) {
@@ -57099,7 +57099,7 @@ function openDocumentLibrary(storeKey, legacy) {
     top_mgmt: t3("📈 Haftalık Toplantı Raporları", "📈 Weekly Meeting Reports", "📈 تقارير الاجتماعات الأسبوعية"),
     risk: t3("⚠️ Üretim Risk Analizleri", "⚠️ Production Risk Analyses", "⚠️ تحليلات مخاطر الإنتاج"),
     quality: t3("📘 Kalite El Kitapları", "📘 Quality Handbooks", "📘 كتيبات الجودة"),
-    training_videos: t3("🎓 Eroğlu Akademi", "🎓 Eroglu Academy", "🎓 أكاديمية إيروغلو")
+    training_videos: t3("🎓 NSCS Akademi", "🎓 NSCS Academy", "🎓 أكاديمية NSCS")
   };
   const descMap = {
     forms: t3("Formları klasörler halinde burada saklayın. Her forma bir önizleme fotoğrafı/PDF yükleyebilir, forma tıklayınca açılacak linki ekleyebilirsiniz.", "Store forms here, organized into folders. You can upload a preview photo/PDF for each form and add the link that opens when the form is clicked.", "احفظ النماذج هنا في مجلدات. تقدر ترفع صورة/PDF معاينة لكل نموذج وتضيف الرابط اللي بيتفتح لما تضغط عليه."),
@@ -61388,7 +61388,7 @@ function _tvLoadStoredThumbs(storeKey, list, prefix) {
 }
 const DOC_GALLERY_STORES = { company: 1, top_mgmt: 1, quality: 1, training_videos: 1 };
 const _DOC_GALLERY_TITLES = {
-  training_videos: () => t3("Eroğlu Akademi", "Eroglu Academy", "أكاديمية إيروغلو"),
+  training_videos: () => t3("NSCS Akademi", "NSCS Academy", "أكاديمية NSCS"),
   company: () => t3("Şirket Profili", "Company Profile", "ملف الشركة"),
   top_mgmt: () => t3("Haftalık Toplantı Raporları", "Weekly Meeting Reports", "تقارير الاجتماعات الأسبوعية"),
   risk: () => t3("Üretim Risk Analizleri", "Production Risk Analyses", "تحليلات مخاطر الإنتاج"),
@@ -81771,7 +81771,7 @@ async function _trecWarnForm(email) {
     xml = _trecFillAfter(xml, "Bölüm / Görev", r.dept || "");
     xml = _trecFillAfter(xml, "İşe Giriş Tarihi", _trecD(r.start));
     xml = _trecFillAfter(xml, "Olay Tarihi / Saati", _trecDate(now.toISOString()));
-    xml = _trecFillAfter(xml, "Yer / Bölüm", "NSCS Portalı · Eroğlu Akademi");
+    xml = _trecFillAfter(xml, "Yer / Bölüm", "NSCS Portalı · NSCS Akademi");
     const lines = [ "Zorunlu eğitim tamamlanmadı: " + r.missing.join(", ") + "." ];
     if (r.over.length) lines.push("Süresi geçen: " + r.over.join(", ") + ".");
     if (r.part.length) lines.push("Yarıda bırakılan: " + r.part.join(", ") + ".");
@@ -81841,7 +81841,7 @@ function _trecRemind() {
     const A = _trecRowsAll((trainingVideosDocs || []).filter(_trecRequired)), L = _trecUI.tab === "over" ? A.over : _trecUI.tab === "half" ? A.partial : _trecUI.tab === "need" ? A.need : A.part;
     if (!L.length) { try { showEmsToast(t3("Eksiği olan kimse yok.", "No one has missing trainings.", "مفيش حد عنده نقص.")); } catch (e) {} return; }
     const subj = t3("Zorunlu eğitim hatırlatması", "Mandatory training reminder", "تذكير بالتدريبات الإلزامية");
-    const body = t3("Merhaba,\n\nNSCS portalındaki Eroğlu Akademi bölümünde yasal olarak zorunlu eğitim videolarından tamamlamadığınız var. Lütfen giriş yapıp videoların tamamını izleyerek tamamlayın.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nTeşekkürler.", "Hello,\n\nThere are legally mandatory training videos you have not completed in the Eroğlu Academy section of the EMS portal. Please sign in and complete them by watching the whole videos.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nThank you.", "أهلاً،\n\nعندك تدريبات إلزامية قانونيًا لسه ما أكملتهاش في قسم أكاديمية إيروغلو على بوابة EMS. من فضلك سجّل دخول وأكملها بمشاهدة الفيديوهات كاملة.\n\nالبوابة: https://abdllhbydgn.github.io/emsportal/\n\nشكراً.");
+    const body = t3("Merhaba,\n\nNSCS portalındaki NSCS Akademi bölümünde yasal olarak zorunlu eğitim videolarından tamamlamadığınız var. Lütfen giriş yapıp videoların tamamını izleyerek tamamlayın.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nTeşekkürler.", "Hello,\n\nThere are legally mandatory training videos you have not completed in the NSCS Academy section of the NSCS portal. Please sign in and complete them by watching the whole videos.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nThank you.", "أهلاً،\n\nعندك تدريبات إلزامية قانونيًا لسه ما أكملتهاش في قسم أكاديمية NSCS على بوابة NSCS. من فضلك سجّل دخول وأكملها بمشاهدة الفيديوهات كاملة.\n\nالبوابة: https://abdllhbydgn.github.io/emsportal/\n\nشكراً.");
     window.location.href = "mailto:?bcc=" + encodeURIComponent(L.map(r => r.email).join(";")) + "&subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
     return;
   }
@@ -81849,7 +81849,7 @@ function _trecRemind() {
   if (!R.miss.length) { try { showEmsToast(t3("Herkes eğitimi tamamlamış.", "Everyone has completed the training.", "الكل أكمل التدريب.")); } catch (e) {} return; }
   const cur = (trainingVideosDocs || []).find(d => _trecVKey(d) === _trecUI.vkey), vn = cur ? _dyn(cur.name || "") : "";
   const subj = t3("Zorunlu eğitim hatırlatması: ", "Mandatory training reminder: ", "تذكير بتدريب إلزامي: ") + vn;
-  const body = t3("Merhaba,\n\nNSCS portalındaki Eroğlu Akademi bölümünde \"" + vn + "\" eğitimini henüz tamamlamadığınız görünüyor. Yasal olarak zorunlu bu eğitimi en kısa sürede, giriş yaparak ve videonun tamamını izleyerek tamamlamanızı rica ederiz.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nTeşekkürler.", "Hello,\n\nIt looks like you have not yet completed the \"" + vn + "\" training in the Eroğlu Academy section of the EMS portal. Please complete this legally mandatory training as soon as possible by signing in and watching the whole video.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nThank you.", "أهلاً،\n\nواضح إنك لسه ما أكملتش تدريب \"" + vn + "\" في قسم أكاديمية إيروغلو على بوابة EMS. من فضلك أكمل التدريب الإلزامي قانونيًا في أقرب وقت بتسجيل الدخول ومشاهدة الفيديو كامل.\n\nالبوابة: https://abdllhbydgn.github.io/emsportal/\n\nشكراً.");
+  const body = t3("Merhaba,\n\nNSCS portalındaki NSCS Akademi bölümünde \"" + vn + "\" eğitimini henüz tamamlamadığınız görünüyor. Yasal olarak zorunlu bu eğitimi en kısa sürede, giriş yaparak ve videonun tamamını izleyerek tamamlamanızı rica ederiz.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nTeşekkürler.", "Hello,\n\nIt looks like you have not yet completed the \"" + vn + "\" training in the NSCS Academy section of the NSCS portal. Please complete this legally mandatory training as soon as possible by signing in and watching the whole video.\n\nPortal: https://abdllhbydgn.github.io/emsportal/\n\nThank you.", "أهلاً،\n\nواضح إنك لسه ما أكملتش تدريب \"" + vn + "\" في قسم أكاديمية NSCS على بوابة NSCS. من فضلك أكمل التدريب الإلزامي قانونيًا في أقرب وقت بتسجيل الدخول ومشاهدة الفيديو كامل.\n\nالبوابة: https://abdllhbydgn.github.io/emsportal/\n\nشكراً.");
   window.location.href = "mailto:?bcc=" + encodeURIComponent(R.miss.map(r => r.email).join(";")) + "&subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
 }
 </script>
@@ -85191,7 +85191,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-17 00:48";
+const EMS_BUILD = "2026-11-17 00:57";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
