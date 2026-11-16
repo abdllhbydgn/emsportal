@@ -48799,11 +48799,24 @@ function postProcessData() {
     // Soru seti ve fotoğraf dosyaları (ems_csr_files) silinmez. Silinenlerin özeti bu tarayıcıda saklanır.
     // User request: only the H&M CAP Acknowledgement audit and its contents stay; other H&M audit records are removed ONCE (admin session only, only if the CAP record exists). Question set and photo files are not deleted.
     const _hmKeep = customerAudits.find(a => a.customerKey === hc.key && /CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || "")));
-    if (currentUserRole === "admin" && _hmKeep && _sg("cleanup:hm-only-cap-20261116", customerAudits.some(a => a.customerKey === hc.key && a !== _hmKeep))) {
-      const _hmGone = customerAudits.filter(a => a.customerKey === hc.key && a !== _hmKeep);
-      try { localStorage.setItem("ems_removed_hm_audits_20261116", JSON.stringify(_hmGone.map(a => ({ id: a.id, date: a.date, note: a.note, findings: (a.findings || []).length })))); } catch (e) {}
-      customerAudits = customerAudits.filter(a => !(a.customerKey === hc.key && a !== _hmKeep));
-      _ppSeeded++;
+    // Her açılışta H&M'in CAP dışındaki denetim kayıtları listeden çıkarılır (bulut birleştirmesi geri getirse bile); yönetici girişinde bulutta DOĞRUDAN, bir kez silinir (v2: ilk sürüm yalnız hafızada siliyordu, birleştirme geri getiriyordu).
+    // On every load the non-CAP H&M audit records are dropped from the list (even if a cloud merge brings them back); on admin login they are removed DIRECTLY in the cloud, once (v2: v1 removed them in memory only and the merge restored them).
+    const _hmNotCap = a => a && a.customerKey === hc.key && !/CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || ""));
+    // Silinen "Doküman Kontrol Listesi taraması" hazır kaydı bir daha eklenmesin / the deleted built-in "Document Checklist review" record must not be seeded again
+    if (_hmKeep && !appliedSeedKeys.includes("aud:hm:10")) appliedSeedKeys.push("aud:hm:10");
+    if (_hmKeep && customerAudits.some(_hmNotCap)) {
+      const _hmGone = customerAudits.filter(_hmNotCap);
+      customerAudits = customerAudits.filter(a => !_hmNotCap(a));
+      if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:hm-only-cap-v2-20261116", true)) {
+        try { localStorage.setItem("ems_removed_hm_audits_20261116", JSON.stringify(_hmGone.map(a => ({ id: a.id, date: a.date, note: a.note, findings: (a.findings || []).length })))); } catch (e) {}
+        const _aref = fbDb.collection("ems_csr").doc("customerAudits"), _hk = hc.key;
+        _runTransactionWithRetry(tx => tx.get(_aref).then(snap => {
+          const data = snap.exists ? snap.data() : {};
+          const arr = Array.isArray(data.customerAudits) ? data.customerAudits : [];
+          tx.set(_aref, Object.assign({}, data, { customerAudits: arr.filter(a => !(a && a.customerKey === _hk && !/CAP\s+(Onay\s+Raporu|Acknowledg)/i.test(String(a.note || "")))) }), { merge: true });
+        })).catch(e => console.warn("[H&M denetim silme / H&M audit delete]", e && e.code));
+        _ppSeeded++;
+      }
     }
     // H&M "Denetim Soruları" bölümü (188 soru) kaldırıldı (kullanıcı isteği 16.11.2026, yedek alındı): CAP Onay Raporu bulgularına bağlı sorular dışındaki tüm H&M soruları her açılışta listeden çıkarılır,
     // hazır satırlar geri gelmesin diye silinenler listesine yazılır; yönetici girişinde bulutta bir kez toplu silinir. Fotoğraf dosyalarına (ems_csr_files) dokunulmaz.
@@ -48819,7 +48832,7 @@ function postProcessData() {
         auditQuestions = auditQuestions.filter(q => !_hmQ(q));
         const _dflt = new Set(defaultAuditQuestions.map(d => d.id));
         _hmQGone.forEach(id => { if (_dflt.has(id) && !deletedDefaultQuestionIds.includes(id)) deletedDefaultQuestionIds.push(id); });
-        if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:hm-questions-20261116", true)) {
+        if (currentUserRole === "admin" && FIREBASE_ENABLED && fbDb && _sg("cleanup:hm-questions-v2-20261116", true)) {
           try { localStorage.setItem("ems_removed_hm_questions_20261116", JSON.stringify(_hmQGone)); } catch (e) {}
           const _gset = new Set(_hmQGone.map(String));
           [ [ "customerQuestions", "customerQuestions" ], [ "questions", "auditQuestions" ] ].forEach(([ dn, fld ]) => {
@@ -84243,7 +84256,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 11:43";
+const EMS_BUILD = "2026-11-16 12:04";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
