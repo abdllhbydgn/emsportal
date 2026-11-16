@@ -48513,9 +48513,12 @@ function postProcessData() {
     if (_po) _po.appr = "yes"; else customersList.push({ key: "uspolo", name: "U.S. Polo Assn.", init: "US", color: "#0B2A6F", appr: "yes" });
     _ppSeeded++;
   }
-  // H&M, George ve Next onaylı müşteri olarak işaretlenir (kullanıcı bilgisi, 16.11.2026; bir kez; sonra yönetici kartlardan değiştirir) / H&M and George are marked approved (one-time)
-  if (Array.isArray(customersList) && _sg("cust:appr-hm-george-20261116", customersList.some(c => (c.key === "hm" || c.key === "next" || /^george/.test(c.key) || /^\s*(h\s*&\s*m|george|next)\b/i.test(c.name || "")) && c.appr !== "yes"))) {
-    customersList.forEach(c => { if (c.key === "hm" || c.key === "next" || /^george/.test(c.key) || /^\s*(h\s*&\s*m|george|next)\b/i.test(c.name || "")) c.appr = "yes"; });
+  // Onaylı müşteriler (kullanıcı bilgisi, 16.11.2026; bir kez; sonra yönetici kartlardan değiştirir): H&M, George, Next, VS, LC Waikiki, Koton, Mavi. Siparişi olanlar: VS, LC Waikiki. /
+  // Approved customers (one-time; the admin changes them on the cards afterwards): H&M, George, Next, VS, LC Waikiki, Koton, Mavi. With orders: VS, LC Waikiki.
+  const _custIs = (c, re) => re.test(String(c.key || "")) || re.test(String(c.name || ""));
+  const _reAppr = /^\s*(hm|h\s*&\s*m|george|next|vs|victoria|lcwaikiki|lc\s*waikiki|koton|mavi)\b/i, _reOrd = /^\s*(vs|victoria|lcwaikiki|lc\s*waikiki)\b/i;
+  if (Array.isArray(customersList) && _sg("cust:appr-ord-20261116", customersList.some(c => _custIs(c, _reAppr) && c.appr !== "yes"))) {
+    customersList.forEach(c => { if (_custIs(c, _reAppr)) c.appr = "yes"; if (_custIs(c, _reOrd)) c.ord = "yes"; });
     _ppSeeded++;
   }
   // Kiğılı müşterisi kayıtlı listede yoksa eklenir / Adds the Kiğılı customer when missing
@@ -84340,7 +84343,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 12:25";
+const EMS_BUILD = "2026-11-16 12:26";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
