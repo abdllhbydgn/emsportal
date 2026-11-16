@@ -10,9 +10,9 @@
   "bullets": [
    {
     "icon": "🏭",
-    "tr": "Eroğlu Manufacturing Studio",
-    "en": "Eroğlu Manufacturing Studio",
-    "ar": "إيروغلو مانوفاكتشرينغ ستوديو"
+    "tr": "NSCS",
+    "en": "NSCS",
+    "ar": "NSCS"
    },
    {
     "icon": "🎯",
@@ -29,9 +29,9 @@
   ],
   "s": [
    {
-    "tr": "Eroğlu Manufacturing Studio ailesine hoş geldiniz.",
-    "en": "Welcome to the Eroğlu Manufacturing Studio family.",
-    "ar": "أهلاً بكم في عائلة إيروغلو مانوفاكتشرينغ ستوديو.",
+    "tr": "NSCS ailesine hoş geldiniz.",
+    "en": "Welcome to the NSCS family.",
+    "ar": "أهلاً بكم في عائلة NSCS.",
     "show": [
      0
     ]
@@ -634,9 +634,9 @@
   "id": "portal",
   "icon": "💻",
   "title": {
-   "tr": "EMS Kalite Portalı",
-   "en": "The EMS Quality Portal",
-   "ar": "بوابة EMS للجودة"
+   "tr": "NSCS Kalite Portalı",
+   "en": "The NSCS Quality Portal",
+   "ar": "بوابة NSCS للجودة"
   },
   "bullets": [
    {
@@ -660,9 +660,9 @@
   ],
   "s": [
    {
-    "tr": "Şirketin kalite portalı EMS'te prosedür, talimat ve formların hepsini bulabilirsiniz.",
-    "en": "On the company's EMS quality portal, you can find every procedure, instruction and form.",
-    "ar": "على بوابة EMS للجودة هتلاقوا كل الإجراءات والتعليمات والنماذج.",
+    "tr": "Şirketin kalite portalı NSCS'te prosedür, talimat ve formların hepsini bulabilirsiniz.",
+    "en": "On the company's NSCS quality portal, you can find every procedure, instruction and form.",
+    "ar": "على بوابة NSCS للجودة هتلاقوا كل الإجراءات والتعليمات والنماذج.",
     "show": [
      0
     ]
@@ -779,9 +779,9 @@
     "show": []
    },
    {
-    "tr": "EMS ailesine hoş geldiniz. Güvenli ve başarılı bir başlangıç diliyoruz.",
-    "en": "Welcome to the EMS family. We wish you a safe and successful start.",
-    "ar": "أهلاً بيكم في عائلة EMS. بنتمنالكم بداية آمنة وناجحة.",
+    "tr": "NSCS ailesine hoş geldiniz. Güvenli ve başarılı bir başlangıç diliyoruz.",
+    "en": "Welcome to the NSCS family. We wish you a safe and successful start.",
+    "ar": "أهلاً بيكم في عائلة NSCS. بنتمنالكم بداية آمنة وناجحة.",
     "show": []
    },
    {
@@ -791,9 +791,9 @@
     "show": []
    },
    {
-    "tr": "EMS. Kalite sizinle başlar.",
-    "en": "EMS. Quality starts with you.",
-    "ar": "EMS. الجودة تبدأ منكم.",
+    "tr": "NSCS. Kalite sizinle başlar.",
+    "en": "NSCS. Quality starts with you.",
+    "ar": "NSCS. الجودة تبدأ منكم.",
     "show": []
    }
   ]
