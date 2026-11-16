@@ -8,9 +8,9 @@
   ],
   "s": [
    {
-    "en": "Welcome to EMS, the quality and compliance portal of Eroğlu Manufacturing Studio.",
-    "tr": "Eroğlu Manufacturing Studio'nun kalite ve uygunluk portalı EMS'e hoş geldiniz.",
-    "ar": "أهلاً بكم في EMS، بوابة الجودة والالتزام الخاصة بشركة إيروغلو مانوفاكتشرينغ ستوديو."
+    "en": "Welcome to NSCS, the quality and compliance portal of NSCS.",
+    "tr": "NSCS'nun kalite ve uygunluk portalı NSCS'e hoş geldiniz.",
+    "ar": "أهلاً بكم في NSCS، بوابة الجودة والالتزام الخاصة بشركة NSCS."
    },
    {
     "en": "In the next few minutes, you will see everything it can do for you.",
@@ -33,9 +33,9 @@
   ],
   "s": [
    {
-    "en": "Before EMS, audit questions, documents and forms lived in different files, in different hands.",
-    "tr": "EMS'ten önce denetim soruları, belgeler ve formlar farklı dosyalarda, farklı kişilerdeydi.",
-    "ar": "قبل EMS كانت أسئلة التدقيق والمستندات والنماذج في ملفات مختلفة وعند أشخاص مختلفين."
+    "en": "Before NSCS, audit questions, documents and forms lived in different files, in different hands.",
+    "tr": "NSCS'ten önce denetim soruları, belgeler ve formlar farklı dosyalarda, farklı kişilerdeydi.",
+    "ar": "قبل NSCS كانت أسئلة التدقيق والمستندات والنماذج في ملفات مختلفة وعند أشخاص مختلفين."
    },
    {
     "en": "Now they live in one place.",
@@ -108,9 +108,9 @@
   ],
   "s": [
    {
-    "en": "Using EMS takes just four steps.",
-    "tr": "EMS'i kullanmak yalnızca dört adım.",
-    "ar": "استخدام EMS يتطلب أربع خطوات فقط."
+    "en": "Using NSCS takes just four steps.",
+    "tr": "NSCS'i kullanmak yalnızca dört adım.",
+    "ar": "استخدام NSCS يتطلب أربع خطوات فقط."
    },
    {
     "en": "One. Open your section from the side menu.",
@@ -582,15 +582,15 @@
  {
   "id": "academy",
   "title": [
-   "Eroğlu Academy",
-   "Eroğlu Akademi",
-   "أكاديمية إيروغلو"
+   "NSCS Academy",
+   "NSCS Akademi",
+   "أكاديمية NSCS"
   ],
   "s": [
    {
-    "en": "Eroğlu Academy is our training library.",
-    "tr": "Eroğlu Akademi eğitim kütüphanemizdir.",
-    "ar": "أكاديمية إيروغلو هي مكتبة التدريب لدينا."
+    "en": "NSCS Academy is our training library.",
+    "tr": "NSCS Akademi eğitim kütüphanemizdir.",
+    "ar": "أكاديمية NSCS هي مكتبة التدريب لدينا."
    },
    {
     "en": "Safety, quality, environment, chemicals and more, in English, Turkish and Arabic.",
@@ -723,9 +723,9 @@
     "ar": "لديكم أسئلة؟ تواصلوا مع فريق ضمان الجودة."
    },
    {
-    "en": "EMS. Quality starts with you.",
-    "tr": "EMS. Kalite sizinle başlar.",
-    "ar": "EMS. الجودة تبدأ منكم."
+    "en": "NSCS. Quality starts with you.",
+    "tr": "NSCS. Kalite sizinle başlar.",
+    "ar": "NSCS. الجودة تبدأ منكم."
    }
   ]
  }
