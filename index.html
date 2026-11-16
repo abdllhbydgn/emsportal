@@ -4349,7 +4349,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
       </div>
     </div>
     <div class="ent-foot">
-      <div>© Copyright EMS Eroğlu, Inc. All rights reserved.</div>
+      <div>© 2023 NSCS - New Surveillance Consultant Systems. All rights reserved.</div>
       <div class="ent-build" id="ent-build" translate="no">Sürüm / Build: —</div>
     </div>
   </section>
@@ -4971,7 +4971,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
   </div>
   </div>
   <div class="site-footer-bottom">
-    <span>&copy; <span id="footer-year"></span> EMS &ndash; Eroğlu Knitting. <span data-i18n="footer_rights">Tüm hakları saklıdır.</span></span>
+    <span>&copy; <span id="footer-year">2023</span> NSCS &ndash; New Surveillance Consultant Systems. <span data-i18n="footer_rights">Tüm hakları saklıdır.</span></span>
     <span style="opacity:0.55; margin-inline-start:10px; padding-inline-start:10px; border-inline-start:1px solid rgba(16,19,28,0.25);" data-i18n="footer_design_credit">Designer by Abdullah Baydogan</span>
     <span class="ems-build-foot" translate="no" style="opacity:0.55; margin-inline-start:10px; padding-inline-start:10px; border-inline-start:1px solid rgba(16,19,28,0.25);"></span>
   </div>
@@ -4979,7 +4979,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
 <script>
 (function() {
   var y = document.getElementById("footer-year");
-  if (y) y.textContent = (new Date).getFullYear();
+  // Telif yılı sabit: 2023 (kullanıcı kararı, 16.11.2026) / copyright year is fixed to 2023
   // Alt bilgi sütunları taşarsa yazıyı kademeli küçült / shrink footer text until the columns fit
   var _ftRaf = 0;
   function fitFooter() {
@@ -5731,7 +5731,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
     </div>
   </div>
   <div class="site-footer-bottom">
-    <span>&copy; <span id="team-footer-year-full"></span> EMS &ndash; Eroğlu Knitting. <span data-i18n="footer_rights">Tüm hakları saklıdır.</span></span>
+    <span>&copy; <span id="team-footer-year-full">2023</span> NSCS &ndash; New Surveillance Consultant Systems. <span data-i18n="footer_rights">Tüm hakları saklıdır.</span></span>
     <span style="opacity:0.55; margin-inline-start:10px; padding-inline-start:10px; border-inline-start:1px solid rgba(16,19,28,0.25);" data-i18n="footer_design_credit">Designer by Abdullah Baydogan</span>
   </div>
 </footer>
@@ -42529,7 +42529,6 @@ function openTeamHub() {
     saveLastView("teamHub");
     document.getElementById("team-hub-modal").classList.add("open");
     const fy = document.getElementById("team-footer-year-full");
-    if (fy) fy.textContent = (new Date).getFullYear();
     requestAnimationFrame(() => requestAnimationFrame(() => {
       teamSwitchTab("dashboard", document.getElementById("team-tab-dashboard"));
       _teamUpdateActiveBadges();
@@ -85159,7 +85158,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-16 20:55";
+const EMS_BUILD = "2026-11-16 20:57";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
