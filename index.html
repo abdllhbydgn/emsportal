@@ -81379,6 +81379,8 @@ const _trecUser = () => String(currentUserEmail || "").toLowerCase();
 const _trecVKey = d => String(d && (d.videoLink || "id:" + d.id) || "").replace(/\/tanitim\/NSCS_(Tanitim_video|Oryantasyon_Yeni_Baslayan)\.mp4/, "/tanitim/EMS_$1.mp4");
 function _trecRequired(d) {
   if (!d || d.mediaType === "office") return false;
+  // Yönetici eğitim izleme zorunluluğundan ve "bölüm atladınız" uyarısından muaftır (kullanıcı isteği, 17.11.2026) / the administrator is exempt from watch tracking and the skip warning
+  if (typeof currentUserRole !== "undefined" && currentUserRole === "admin") return false;
   try { if (_TREC_KINDS.indexOf(_tvSource(d).kind) < 0) return false; } catch (e) { return false; }
   // Kullanıcı kararı (26.10.2026): portala giriş yapan herkes için TÜM eğitim videoları varsayılan olarak zorunludur; yönetici bir videoyu "zorunlu değil" yapabilir (trackWatch=false) /
   // User decision: ALL training videos are mandatory by default for signed-in users; the admin can exempt a video (trackWatch=false)
@@ -85283,7 +85285,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-17 14:06";
+const EMS_BUILD = "2026-11-17 15:53";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
