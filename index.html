@@ -48829,12 +48829,14 @@ function postProcessData() {
   if (currentUserRole === "admin" && Array.isArray(trainingVideosDocs) && typeof window._nscsBrandFix === "function" && _sg("rename:nscs-tv-20261117", true)) {
     trainingVideosDocs.forEach(d => { if (!d) return; ["name", "description"].forEach(k => { if (typeof d[k] === "string") { const v = window._nscsBrandFix(d[k]); if (v !== d[k]) { d[k] = v; _ppSeeded++; } } }); });
   }
+  // Video dosya adları NSCS oldu (17.11.2026): buluttaki eski EMS_ adlı bağlantılar yeni ada taşınır / video files renamed to NSCS_: old cloud links move to the new names
+  if (Array.isArray(trainingVideosDocs)) trainingVideosDocs.forEach(d => { if (d && typeof d.videoLink === "string" && /\/tanitim\/EMS_(Tanitim_video|Oryantasyon_Yeni_Baslayan)\.mp4/.test(d.videoLink)) d.videoLink = d.videoLink.replace(/\/tanitim\/EMS_/, "/tanitim/NSCS_"); });
   // Depo adı "emsportal" oldu: eski /ems/ adresli tanıtım videosu kaydı yeni adrese taşınır / the repository was renamed to "emsportal": move the old /ems/ promo video link to the new address
   if (Array.isArray(trainingVideosDocs)) trainingVideosDocs.forEach(d => { if (d && typeof d.videoLink === "string" && d.videoLink.indexOf("abdllhbydgn.github.io/ems/tanitim/") >= 0) d.videoLink = d.videoLink.replace("abdllhbydgn.github.io/ems/tanitim/", "abdllhbydgn.github.io/emsportal/tanitim/"); });
   // NSCS portal tanıtım videosu (tek video, TR/EN/AR dil düğmeli) NSCS Akademi'nin en başına bir kez eklenir /
   // NSCS portal introduction video (one video, TR/EN/AR language switch) is added once at the very top of NSCS Academy
   if (currentUserRole === "admin" && Array.isArray(trainingVideosDocs) && (!_cdl0 || _cdl0.trainingVideos) && !_defaultedDocs.has("trainingVideos") && _TANITIM_VIDEO_READY && _sg("tv:tanitim:2026-10-25", true)) {
-    const _tvu = "https://abdllhbydgn.github.io/emsportal/tanitim/EMS_Tanitim_video.mp4";
+    const _tvu = "https://abdllhbydgn.github.io/emsportal/tanitim/NSCS_Tanitim_video.mp4";
     if (!trainingVideosDocs.some(d => d && d.videoLink === _tvu)) {
       const _mt = trainingVideosDocs.reduce((m, d) => { const n = Number(d && d.id); return isFinite(n) && n > m ? n : m; }, 0);
       trainingVideosDocs.unshift({ id: String(_mt + 1), name: "NSCS Portal Tanıtımı / NSCS Portal Introduction", videoLink: _tvu, description: "İngilizce anlatım, Türkçe ve Arapça altyazı. / English narration with Turkish and Arabic subtitles." });
@@ -48844,7 +48846,7 @@ function postProcessData() {
   // Eroğlu'nun kendi Yeni Başlayan Oryantasyonu videosu (İngilizce anlatım, TR + AR altyazı, EMS logolu); bir kez, yönetici oturumu /
   // Eroğlu's own New Employee Orientation video (English narration, TR + AR subtitles, EMS branded); once, admin session
   if (currentUserRole === "admin" && Array.isArray(trainingVideosDocs) && (!_cdl0 || _cdl0.trainingVideos) && !_defaultedDocs.has("trainingVideos") && _sg("tv:orient:2026-10-26", true)) {
-    const _ovu = "https://abdllhbydgn.github.io/emsportal/tanitim/EMS_Oryantasyon_Yeni_Baslayan.mp4";
+    const _ovu = "https://abdllhbydgn.github.io/emsportal/tanitim/NSCS_Oryantasyon_Yeni_Baslayan.mp4";
     if (!trainingVideosDocs.some(d => d && d.videoLink === _ovu)) {
       const _mo = trainingVideosDocs.reduce((m, d) => { const n = Number(d && d.id); return isFinite(n) && n > m ? n : m; }, 0);
       trainingVideosDocs.unshift({ id: String(_mo + 1), name: "Yeni Başlayan Oryantasyonu / New Employee Orientation", videoLink: _ovu, description: "İngilizce anlatım, Türkçe ve Arapça altyazı. / English narration with Turkish and Arabic subtitles." });
@@ -61275,7 +61277,7 @@ function renderDocLibraryGrid(targetGridId, storeKeyOverride, opts) {
   }
   // Eğitim Videoları: videolar üstte, form / sınav / katılım listesi gibi Office dosyaları en altta (kararlı sıralama; oynatıcı aynı diziyi kullanır) /
   // Training videos: videos on top, Office files (forms, exams, attendance lists) at the bottom (stable sort; the player uses the same array)
-  if (storeKey === "training_videos" && Array.isArray(arr)) { const _ok = d => d && d.mediaType === "office" && d.officeFileName ? 1 : /\/tanitim\/EMS_Oryantasyon_Yeni_Baslayan\.mp4/.test(String(d && d.videoLink || "")) ? -4 : /\/tanitim\/EMS_Tanitim_video\.mp4/.test(String(d && d.videoLink || "")) ? -3 : /oryantasyon|orientation|توجيه الموظفين/i.test(String(d && d.name || "")) ? -2 : 0; arr.sort((a, b) => _ok(a) - _ok(b)); }
+  if (storeKey === "training_videos" && Array.isArray(arr)) { const _ok = d => d && d.mediaType === "office" && d.officeFileName ? 1 : /\/tanitim\/(?:EMS|NSCS)_Oryantasyon_Yeni_Baslayan\.mp4/.test(String(d && d.videoLink || "")) ? -4 : /\/tanitim\/(?:EMS|NSCS)_Tanitim_video\.mp4/.test(String(d && d.videoLink || "")) ? -3 : /oryantasyon|orientation|توجيه الموظفين/i.test(String(d && d.name || "")) ? -2 : 0; arr.sort((a, b) => _ok(a) - _ok(b)); }
   html += arr.map((doc, _di) => {
     const isOffice = doc.mediaType === "office" && !!doc.officeFileName;
     const hasMedia = !!(doc.photo || doc.hasPhoto || doc.mediaType === "video" && doc.hasVideo || doc.videoLink || isOffice || doc.mediaType === "pdf" && doc.hasFullPdf);
@@ -81372,7 +81374,8 @@ let _trecLoaded = false, _trecStarted = false, _trecCur = null;
 const _TREC_KINDS = [ "direct", "stored", "yt", "vimeo", "drive", "msembed", "msdoc" ];
 const _TREC_LS = "ems_trec_prog_v1", _TREC_PEND = "ems_trec_pend_v1";
 const _trecUser = () => String(currentUserEmail || "").toLowerCase();
-const _trecVKey = d => String(d && (d.videoLink || "id:" + d.id) || "");
+// Anahtar eski EMS_ adıyla sabit kalır (kayıtlar bozulmasın) / key stays on the old EMS_ file name so completion records keep matching
+const _trecVKey = d => String(d && (d.videoLink || "id:" + d.id) || "").replace(/\/tanitim\/NSCS_(Tanitim_video|Oryantasyon_Yeni_Baslayan)\.mp4/, "/tanitim/EMS_$1.mp4");
 function _trecRequired(d) {
   if (!d || d.mediaType === "office") return false;
   try { if (_TREC_KINDS.indexOf(_tvSource(d).kind) < 0) return false; } catch (e) { return false; }
@@ -81381,7 +81384,7 @@ function _trecRequired(d) {
   return d.trackWatch !== false;
 }
 // Varsayılan zorunlu eğitim: yalnız Eroğlu'nun KENDİ oryantasyon videosu (hazır/genel YouTube videoları otomatik zorunlu olmaz) / default mandatory: only Eroğlu's OWN orientation video
-const _trecOwnOrient = d => /\/tanitim\/EMS_Oryantasyon_Yeni_Baslayan\.mp4/i.test(String(d && d.videoLink || ""));
+const _trecOwnOrient = d => /\/tanitim\/(?:EMS|NSCS)_Oryantasyon_Yeni_Baslayan\.mp4/i.test(String(d && d.videoLink || ""));
 function _trecMine(vkey) { const u = _trecUser(); return trainingRecords.find(r => r && r.vkey === vkey && String(r.email || "").toLowerCase() === u) || null; }
 // ── Süre (son tarih): işe giriş tarihinden itibaren N gün; varsayılan: Yeni Başlayan Oryantasyonu 7 gün, diğerleri süresiz ──
 // ── Deadline: N days from the hire date; default: New Employee Orientation 7 days, others unlimited ──
@@ -85279,7 +85282,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-17 12:20";
+const EMS_BUILD = "2026-11-17 13:20";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
