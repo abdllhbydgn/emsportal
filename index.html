@@ -4657,7 +4657,7 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
   
   <div class="main-content">
     <div class="dept-banner">
-      <div class="dept-heading" data-i18n="dept_heading">KALİTE GÜVENCE MÜDÜRLÜĞÜ</div>
+      <div class="dept-heading" data-i18n="dept_heading">KALİTE YÖNETİM SİSTEMİ</div>
       <div class="dept-sub" data-i18n="dept_sub">Sürdürülebilirlik, Çevre, Kimyasal ve İş Güvenliği Yönetimi</div>
       <div class="dept-clocks" id="dept-clocks" aria-label="Türkiye ve Mısır saati">
         <div class="dc" data-tz="Europe/Istanbul" data-name="tr" translate="no" aria-label="TÜRKİYE"><div class="dc-svg"></div><div class="dc-lab"><span class="dc-name" data-n="TÜRKİYE"></span></div></div>
@@ -9137,9 +9137,9 @@ const UI_TRANSLATIONS = {
     ar: "الإجراء / الحالة"
   },
   dept_heading: {
-    tr: "KALİTE GÜVENCE MÜDÜRLÜĞÜ",
-    en: "QUALITY ASSURANCE DEPARTMENT",
-    ar: "إدارة ضمان الجودة"
+    tr: "KALİTE YÖNETİM SİSTEMİ",
+    en: "QUALITY MANAGEMENT SYSTEM",
+    ar: "نظام إدارة الجودة"
   },
   dept_sub: {
     tr: "Sürdürülebilirlik, Çevre, Kimyasal ve İş Güvenliği Yönetimi",
@@ -10463,9 +10463,9 @@ const UI_TRANSLATIONS = {
     ar: "📩 إرسال"
   },
   visitor_hub_title: {
-    tr: "Kalite Güvence Müdürlüğü",
-    en: "Quality Assurance Department",
-    ar: "إدارة ضمان الجودة"
+    tr: "Kalite Yönetim Sistemi",
+    en: "Quality Management System",
+    ar: "نظام إدارة الجودة"
   },
   btn_visitor_logout: {
     tr: "🚪 Çıkış Yap",
@@ -54850,7 +54850,11 @@ function _showEntryScreen() {
   } catch (e) {}
 }
 if (FIREBASE_ENABLED && fbAuth) {
-  fbAuth.onAuthStateChanged(user => {
+  // Yönetici hesabı: e-posta doğrulandıktan sonra eski (doğrulanmamış) oturum belirteci Firestore kurallarında yönetici sayılmaz.
+  // Her açılışta kullanıcı bilgisi yenilenir ve belirteç zorla tazelenir; doğrulanmamışsa net bir uyarı gösterilir.
+  // After the admin e-mail is verified, an old (unverified) session token is not treated as admin by Firestore rules: reload the user and force-refresh the token on every start.
+  let _adminTokenRefreshed = false;
+  const _onAuthUser = user => {
     if (user && !user.isAnonymous && _cloudDataLoadStarted && _cloudLoadMode === "visitor") {
       location.reload();
       return;
@@ -54898,7 +54902,28 @@ if (FIREBASE_ENABLED && fbAuth) {
     if (welcome && (mainAppEl2 ? mainAppEl2.style.display !== "block" : welcome.style.display !== "none") && !_suppressAutoEnter) enterApp();
     _suppressAutoEnter = false;
     _fbAuthResolved = true;
+  };
+  fbAuth.onAuthStateChanged(user => {
+    if (user && !user.isAnonymous && user.email && _isAdminEmail(user.email) && !_adminTokenRefreshed) {
+      _adminTokenRefreshed = true;
+      user.reload().catch(() => {}).then(() => (fbAuth.currentUser || user).getIdToken(true)).catch(() => {}).then(() => {
+        const u2 = fbAuth.currentUser || user;
+        if (!u2.emailVerified) { try { _adminVerifyNotice(u2); } catch (e) {} }
+        _onAuthUser(u2);
+      });
+      return;
+    }
+    _onAuthUser(user);
   });
+}
+function _adminVerifyNotice(u) {
+  if (document.getElementById("admin-verify-banner")) return;
+  const b = document.createElement("div"); b.id = "admin-verify-banner";
+  b.style.cssText = "position:fixed; left:50%; transform:translateX(-50%); top:12px; z-index:99998; max-width:min(680px, calc(100vw - 24px)); background:#7C2D12; color:#fff; padding:14px 18px; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,.35); font-size:13.5px; line-height:1.5;";
+  b.innerHTML = "<b>" + escHtml(t3("Yönetici e-postanız henüz doğrulanmamış görünüyor.", "Your admin e-mail does not look verified yet.", "بريد المسؤول بتاعك لسه شكله مش متأكد منه.")) + "</b><br>" + escHtml(t3("Doğrulanmadan veri kaydedemezsiniz. Doğrulama e-postası gönderip bağlantıya tıklayın, sonra çıkış yapıp tekrar girin.", "You cannot save data until it is verified. Send the verification e-mail, click the link, then sign out and sign in again.", "مش هتقدر تحفظ بيانات قبل التأكيد. ابعت إيميل التأكيد، اضغط على الرابط، وبعدين اخرج وادخل تاني.")) + '<div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"><button type="button" id="avb-send" style="background:#FF8000; color:#1b1b1b; border:0; border-radius:9px; padding:8px 14px; font-weight:800; cursor:pointer;">' + escHtml(t3("Doğrulama e-postası gönder", "Send verification e-mail", "ابعت إيميل التأكيد")) + '</button><button type="button" id="avb-out" style="background:#fff; color:#7C2D12; border:0; border-radius:9px; padding:8px 14px; font-weight:800; cursor:pointer;">' + escHtml(t3("Çıkış yap", "Sign out", "تسجيل خروج")) + '</button><button type="button" onclick="this.closest(\'#admin-verify-banner\').remove()" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,.5); border-radius:9px; padding:8px 12px; cursor:pointer;">✕</button></div>';
+  document.body.appendChild(b);
+  b.querySelector("#avb-send").onclick = () => { u.sendEmailVerification().then(() => showEmsToast(t3("📧 Doğrulama e-postası gönderildi; Gelen ve Spam klasörüne bakın.", "📧 Verification e-mail sent; check Inbox and Spam.", "📧 اتبعت إيميل التأكيد؛ بص على الوارد والسبام."), 8000)).catch(e => alert((e && e.message) || e)); };
+  b.querySelector("#avb-out").onclick = () => { try { fbAuth.signOut().then(() => location.reload()); } catch (e) { location.reload(); } };
 }
 function checkExistingSession() {
   if (FIREBASE_ENABLED) return false;
@@ -64729,7 +64754,7 @@ function _qMarkMailed(qids) {
 // E-MAIL FORMAT (user's example): fixed subject, bold greeting, red bold question, bulleted details, red bold due date when overdue,
 //    link to the page of the item, "For your information". It is HTML, so it opens in Outlook as a draft file (.eml).
 const EMS_MAIL_RED = "#C00000";
-function _mailSubject() { return t3("EMS KALİTE GÜVENCE MÜDÜRLÜĞÜ AKSİYON TALEBİ", "EMS QUALITY ASSURANCE DEPARTMENT ACTION REQUEST", "طلب إجراء - إدارة ضمان الجودة EMS"); }
+function _mailSubject() { return t3("NSCS KALİTE YÖNETİM SİSTEMİ AKSİYON TALEBİ", "NSCS QUALITY MANAGEMENT SYSTEM ACTION REQUEST", "طلب إجراء - نظام إدارة الجودة NSCS"); }
 function _mailLinkBase() { return EMS_SITE_URL + "?v=" + encodeURIComponent(typeof EMS_BUILD !== "undefined" ? EMS_BUILD : "1"); }
 function _qMailLink(q) {
   let hash = "";
