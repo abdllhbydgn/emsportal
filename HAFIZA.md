@@ -945,3 +945,4 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 - 17.11.2026: nscstr.com Yasal sütunu YAYINDA (kullanıcı: 'mernis ekleme'; ticari unvan/MERSİS eklenmedi).
 - 17.11.2026: nscstr.com referanslar: PRYM FASHION kaldırıldı, İNCİ TEKSTİL (alt yazı 'Tekstil') eklendi.
 - 17.11.2026: nscstr.com alt bilgi üstünde ortalı büyük başlık 'Türkiye & Uluslararası Danışmanlık' (turuncu çizgi); iletişim listesinden çıkarıldı.
+- 17.11.2026: NSCS Portal favicon: ince turuncu n (NSCS logosundaki n şekli, #FF8000, şeffaf); kalın n kaldırıldı.
