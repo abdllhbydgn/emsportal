@@ -933,3 +933,4 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 - 17.11.2026: portal alt bilgisindeki NSCSTR logosu yalnız 'nscs' harfleri (çizgi ve alt yazılar kırpıldı; 335x96 PNG, sınıf nscstr-only).
 - 17.11.2026: nscstr.com alt bilgideki 'NSCS Kalite Yönetim Portalı' kutusu kullanıcı isteğiyle kaldırıldı (alt çubuktaki logolar kaldı).
 - 17.11.2026: nscstr.com alt çubuk logoları: beyaz arka plan kaldırıldı, 56px, aralar 24-32px, şeffaf portal logosu (portal-logo-seffaf.png).
+- 17.11.2026: nscstr.com: Arapça logosu yeni (turuncu ع + çizgi + ARAPÇA, arapca-logo-yeni.png), alt çubukta 6 logo aynı boyutta; üst menüde 'NSCS Portal' düz bağlantı.
