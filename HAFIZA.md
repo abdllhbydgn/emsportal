@@ -935,3 +935,14 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 - 17.11.2026: nscstr.com alt çubuk logoları: beyaz arka plan kaldırıldı, 56px, aralar 24-32px, şeffaf portal logosu (portal-logo-seffaf.png).
 - 17.11.2026: nscstr.com: Arapça logosu yeni (turuncu ع + çizgi + ARAPÇA, arapca-logo-yeni.png), alt çubukta 6 logo aynı boyutta; üst menüde 'NSCS Portal' düz bağlantı.
 - 17.11.2026: nscstr.com logo turuncusu sitenin turuncusu #EA580C (yukarı çık düğmesiyle aynı); NSCS Portal sitesi markası #FF8000 kalır. Portal alt bilgisi Arapça logosu yeni (turuncu ع + lacivert ARAPÇA, açık zemin için).
+- 17.11.2026: nscstr.com alt bilgi logosu: turuncu (#EA580C) n + beyaz scs/yazılar (nscs-logo-beyaz.png), h-16; eski tamamen beyaz (invert) logo kaldırıldı.
+- 17.11.2026: nscstr.com favicon: ince SİYAH n (NSCS logosundaki n'nin şekli, şeffaf). Portal (nscsportal) favicon'u kalın turuncu n olarak kaldı.
+- 17.11.2026: nscstr.com üst menü logosu alt bilgi ile aynı boyutta (h-16) ve turuncusu #EA580C.
+- 17.11.2026: nscstr.com alt bilgi 4 sütun: logo+açıklama+standart etiketleri (Inditex…ISO), Hızlı Gezinti (+Teklif, NSCS Portal), Hizmetlerimiz (9 hizmet başlığı), İletişim (e-posta, web, tel +20 120 640 37 42, WhatsApp, adres 30.092750,31.677761 Google Haritalar, kapsam). Portalın alt bilgisinden alıntı: telefon/WhatsApp/adres.
+- 17.11.2026: nscstr.com alt bilgi: üstte logo+açıklama+etiket satırı, altında 3 sütun (Hızlı Gezinti | Hizmetlerimiz | İletişim), en altta telif+logolar+slogan.
+- 17.11.2026: nscstr.com alt bilgi DOĞRU DÜZEN (kullanıcı: 'araya bir sütun daha koy bu kadar'): eski 3 sütunun (logo+açıklama | Hızlı Gezinti | İletişim) ARASINA Hizmetlerimiz sütunu eklendi = 4 sütun; üst logo satırı ve etiketler kaldırıldı. DERS: 'sıra/sütun' = sütun; kısa isteği olduğu gibi yap.
+- 17.11.2026: nscstr.com 'Yasal' sütunu (KVKK Aydınlatma, Gizlilik, Çerez, Kullanım Koşulları, Veri Sahibi Başvurusu; TR+EN, modal) HAZIR, dalda; main'e ALINMADI (kullanıcı onayı + ticari unvan/vergi no/MERSİS bilgisi bekleniyor).
+- 17.11.2026: nscstr.com Yasal sütunu YAYINDA (kullanıcı: 'mernis ekleme'; ticari unvan/MERSİS eklenmedi).
+- 17.11.2026: nscstr.com referanslar: PRYM FASHION kaldırıldı, İNCİ TEKSTİL (alt yazı 'Tekstil') eklendi.
+- 17.11.2026: nscstr.com alt bilgi üstünde ortalı büyük başlık 'Türkiye & Uluslararası Danışmanlık' (turuncu çizgi); iletişim listesinden çıkarıldı.
+- 17.11.2026: NSCS Portal favicon: ince turuncu n (NSCS logosundaki n şekli, #FF8000, şeffaf); kalın n kaldırıldı.
