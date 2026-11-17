@@ -634,9 +634,9 @@
   "id": "portal",
   "icon": "💻",
   "title": {
-   "tr": "NSCS Kalite Portalı",
-   "en": "The NSCS Quality Portal",
-   "ar": "بوابة NSCS للجودة"
+   "tr": "NSCS Kalite Yönetim Sistemleri Portalı",
+   "en": "The NSCS Quality Management Systems Portal",
+   "ar": "بوابة NSCS لأنظمة إدارة الجودة"
   },
   "bullets": [
    {
@@ -660,9 +660,9 @@
   ],
   "s": [
    {
-    "tr": "Şirketin kalite portalı NSCS'te prosedür, talimat ve formların hepsini bulabilirsiniz.",
-    "en": "On the company's NSCS quality portal, you can find every procedure, instruction and form.",
-    "ar": "على بوابة NSCS للجودة هتلاقوا كل الإجراءات والتعليمات والنماذج.",
+    "tr": "NSCS Kalite Yönetim Sistemleri Portalı'nda tüm kalite sistemlerimiz tek yerde toplanır; her prosedür, talimat ve form buradadır.",
+    "en": "On the NSCS Quality Management Systems Portal, all our quality systems come together, with every procedure, instruction and form in one place.",
+    "ar": "في بوابة NSCS لأنظمة إدارة الجودة كل أنظمة الجودة عندنا في مكان واحد، وهتلاقوا فيها كل الإجراءات والتعليمات والنماذج.",
     "show": [
      0
     ]

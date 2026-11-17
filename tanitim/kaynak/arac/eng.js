@@ -2,13 +2,13 @@ module.exports=`(()=>{
 if(window.ENG)return;
 const st=document.createElement('style');st.textContent=\`
 #fx-cur{position:fixed;left:0;top:0;z-index:2147483600;pointer-events:none;width:30px;height:30px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45))}
-#fx-ring{position:fixed;z-index:2147483500;pointer-events:none;border:4px solid #E11D2E;border-radius:14px;box-shadow:0 0 0 6000px rgba(8,12,24,.36),0 0 24px 5px rgba(225,29,46,.65);opacity:0}
-#fx-lab{position:fixed;z-index:2147483550;pointer-events:none;background:#E11D2E;color:#fff;font:800 20px/1.25 Arial,sans-serif;padding:9px 16px;border-radius:11px;box-shadow:0 8px 22px rgba(0,0,0,.4);opacity:0;white-space:nowrap}
-#fx-rip{position:fixed;z-index:2147483580;pointer-events:none;border:4px solid #E11D2E;border-radius:50%;opacity:0}
+#fx-ring{position:fixed;z-index:2147483500;pointer-events:none;border:4px solid #FF8000;border-radius:14px;box-shadow:0 0 0 6000px rgba(8,12,24,.36),0 0 24px 5px rgba(225,29,46,.65);opacity:0}
+#fx-lab{position:fixed;z-index:2147483550;pointer-events:none;background:#FF8000;color:#fff;font:800 20px/1.25 Arial,sans-serif;padding:9px 16px;border-radius:11px;box-shadow:0 8px 22px rgba(0,0,0,.4);opacity:0;white-space:nowrap}
+#fx-rip{position:fixed;z-index:2147483580;pointer-events:none;border:4px solid #FF8000;border-radius:50%;opacity:0}
 #fx-cap{position:fixed;left:6%;right:6%;bottom:18px;z-index:2147483640;pointer-events:none;text-align:center;opacity:0}
 #fx-cap div{display:block;margin-top:5px}#fx-cap span{display:inline-block;background:rgba(8,12,24,.86);color:#fff;font-weight:700;line-height:1.35;padding:6px 16px;border-radius:10px;font-family:Arial,sans-serif}
 #fx-cap .tr span{font-size:21px;color:#fff}#fx-cap .ar span{font-size:23px;color:#ffe9a8}
-#fx-chap{position:fixed;left:18px;bottom:128px;z-index:2147483630;pointer-events:none;background:#E11D2E;color:#fff;font:800 17px Arial,sans-serif;padding:7px 14px;border-radius:99px;box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:0}
+#fx-chap{position:fixed;left:18px;bottom:128px;z-index:2147483630;pointer-events:none;background:#FF8000;color:#fff;font:800 17px Arial,sans-serif;padding:7px 14px;border-radius:99px;box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:0}
 \`;document.head.appendChild(st);
 const mk=(id,h)=>{const e=document.createElement('div');e.id=id;if(h)e.innerHTML=h;document.body.appendChild(e);return e};
 const cur=mk('fx-cur','<svg viewBox="0 0 24 24" width="30" height="30"><path d="M3 2l7 19 3-8 8-3z" fill="#111827" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>');

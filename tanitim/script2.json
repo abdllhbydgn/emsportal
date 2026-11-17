@@ -8,19 +8,19 @@
   ],
   "s": [
    {
-    "en": "Welcome to NSCS, the quality and compliance portal of NSCS.",
-    "tr": "NSCS'nun kalite ve uygunluk portalı NSCS'e hoş geldiniz.",
-    "ar": "أهلاً بكم في NSCS، بوابة الجودة والالتزام الخاصة بشركة NSCS."
+    "en": "Welcome to NSCS, the portal that brings all our quality management systems together in one place.",
+    "tr": "NSCS'e hoş geldiniz; tüm kalite yönetim sistemlerimizi tek yerde toplayan portal.",
+    "ar": "أهلاً بكم في NSCS، البوابة التي تجمع كل أنظمة إدارة الجودة لدينا في مكان واحد."
    },
    {
-    "en": "In the next few minutes, you will see everything it can do for you.",
-    "tr": "Önümüzdeki birkaç dakikada portalın sizin için neler yaptığını göreceksiniz.",
-    "ar": "خلال دقائق قليلة سترون كل ما تقدمه لكم هذه البوابة."
+    "en": "In the next few minutes, you will see how it works.",
+    "tr": "Önümüzdeki birkaç dakikada nasıl çalıştığını göreceksiniz.",
+    "ar": "خلال دقائق قليلة سترون كيف تعمل."
    },
    {
-    "en": "How to sign in, where to find your tasks, and how we keep every audit ready, every single day.",
-    "tr": "Nasıl giriş yapılır, görevleriniz nerede ve her denetimi her gün nasıl hazır tutarız.",
-    "ar": "كيف تسجلون الدخول، وأين تجدون مهامكم، وكيف نُبقي كل تدقيق جاهزاً كل يوم."
+    "en": "How to sign in, where to find your tasks, and how every audit, document and training stays ready, every single day.",
+    "tr": "Nasıl giriş yapılır, görevleriniz nerede ve her denetim, belge ve eğitim her gün nasıl hazır tutulur.",
+    "ar": "كيف تسجلون الدخول، وأين تجدون مهامكم، وكيف يبقى كل تدقيق ومستند وتدريب جاهزاً كل يوم."
    }
   ]
  },
@@ -33,14 +33,14 @@
   ],
   "s": [
    {
-    "en": "Before NSCS, audit questions, documents and forms lived in different files, in different hands.",
-    "tr": "NSCS'ten önce denetim soruları, belgeler ve formlar farklı dosyalarda, farklı kişilerdeydi.",
-    "ar": "قبل NSCS كانت أسئلة التدقيق والمستندات والنماذج في ملفات مختلفة وعند أشخاص مختلفين."
+    "en": "Before NSCS, quality systems, audit questions, documents and forms lived in different files, in different hands.",
+    "tr": "NSCS'ten önce kalite sistemleri, denetim soruları, belgeler ve formlar farklı dosyalarda, farklı kişilerdeydi.",
+    "ar": "قبل NSCS كانت أنظمة الجودة وأسئلة التدقيق والمستندات والنماذج في ملفات مختلفة وعند أشخاص مختلفين."
    },
    {
-    "en": "Now they live in one place.",
-    "tr": "Şimdi hepsi tek yerde.",
-    "ar": "الآن أصبحت كلها في مكان واحد."
+    "en": "Now every quality management system lives in one portal.",
+    "tr": "Şimdi tüm kalite yönetim sistemleri tek portalda.",
+    "ar": "الآن أصبحت كل أنظمة إدارة الجودة في بوابة واحدة."
    },
    {
     "en": "Use the side menu to move between sections.",
@@ -388,9 +388,9 @@
   ],
   "s": [
    {
-    "en": "Higg FEM measures the environmental performance of our facility.",
-    "tr": "Higg FEM tesisimizin çevresel performansını ölçer.",
-    "ar": "يقيس هيج FEM الأداء البيئي لمنشأتنا."
+    "en": "Higg FEM measures the environmental performance of a facility.",
+    "tr": "Higg FEM bir tesisin çevresel performansını ölçer.",
+    "ar": "يقيس هيج FEM الأداء البيئي للمنشأة."
    },
    {
     "en": "Energy, water, waste, chemicals and emissions.",
