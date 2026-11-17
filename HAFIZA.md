@@ -931,3 +931,7 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 - 17.11.2026: PORTAL ALT BİLGİ: sosyal ikon satırına NSCSTR logosu (https://www.nscstr.com/) geri eklendi (Arapça logodan önce); mobilde ikonlar küçültüldü, taşma yok. nscstr.com deposu: üst ve alt logo yeni NSCS logosu (nscs-logo.png), favicon, NSCS Portal düğmeleri, slogan kaldırıldı.
 - 17.11.2026: nscstr.com alt çubuk: ortada yuvarlak LinkedIn/Instagram/Facebook/WhatsApp + NSCS Portal logosu + Arapça logosu (arapca-logo.svg). Canlı site (www.nscstr.com) depoyla aynı: kullanıcı ekran görüntüsünde portal düğmesini gördü.
 - 17.11.2026: portal alt bilgisindeki NSCSTR logosu yalnız 'nscs' harfleri (çizgi ve alt yazılar kırpıldı; 335x96 PNG, sınıf nscstr-only).
+- 17.11.2026: nscstr.com alt bilgideki 'NSCS Kalite Yönetim Portalı' kutusu kullanıcı isteğiyle kaldırıldı (alt çubuktaki logolar kaldı).
+- 17.11.2026: nscstr.com alt çubuk logoları: beyaz arka plan kaldırıldı, 56px, aralar 24-32px, şeffaf portal logosu (portal-logo-seffaf.png).
+- 17.11.2026: nscstr.com: Arapça logosu yeni (turuncu ع + çizgi + ARAPÇA, arapca-logo-yeni.png), alt çubukta 6 logo aynı boyutta; üst menüde 'NSCS Portal' düz bağlantı.
+- 17.11.2026: nscstr.com logo turuncusu sitenin turuncusu #EA580C (yukarı çık düğmesiyle aynı); NSCS Portal sitesi markası #FF8000 kalır. Portal alt bilgisi Arapça logosu yeni (turuncu ع + lacivert ARAPÇA, açık zemin için).
