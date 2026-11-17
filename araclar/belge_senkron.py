@@ -8,9 +8,11 @@ Kullanım: python3 araclar/belge_senkron.py [--yaz]   (--yaz verilmezse yalnız 
 import json, re, os, sys, glob, zipfile
 import docx, openpyxl
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-CODE = re.compile(r"EMS\.[A-ZÜİÖÇŞĞ]{2,3}\.(?:PRO|POL|TL|FRM|SOP|RPR|KRT)\.\d{2}\.\d{2}")
+CODE = re.compile(r"(?:EMS|NSCS)\.[A-ZÜİÖÇŞĞ]{2,3}\.(?:PRO|POL|TL|FRM|SOP|RPR|KRT)\.\d{2}\.\d{2}")
+# Belgelerin İÇİNDE kod öneki NSCS (17.11.2026); dosya adı, manifest ve refs.json anahtarları EMS önekli kalır: karşılaştırmada NSCS. → EMS. sayılır
+CANON = lambda c: re.sub(r"^NSCS\.", "EMS.", c)
 J = lambda p: json.load(open(os.path.join(ROOT, p), encoding="utf-8"))
-norm = lambda c: c.rstrip(".")
+norm = lambda c: CANON(c.rstrip("."))
 def docx_text(path):
     d = docx.Document(path); out = [p.text for p in d.paragraphs]
     for t in d.tables:
@@ -70,7 +72,7 @@ def main(write=False):
         if c in inv and fp.endswith(".docx") and not x.get("file", "").startswith("N/A"):
             h = docx.Document(fp).sections[0].header
             hc = " ".join(p.text for t in h.tables for r in t.rows for cell in r.cells for p in cell.paragraphs)
-            if fp.startswith(os.path.join(ROOT, "prosedurler")) and c.split(".")[0] == "EMS" and c not in hc.replace(" ", ""):
+            if fp.startswith(os.path.join(ROOT, "prosedurler")) and c.split(".")[0] == "EMS" and c not in re.sub(r"NSCS\.", "EMS.", hc).replace(" ", ""):
                 problems.append(["Word başlığında kod farklı/yok", c])
         found = sorted({norm(t) for t in CODE.findall(txt)} - {c})
         for t in found:
