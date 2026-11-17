@@ -11,10 +11,10 @@ const CFG={
  welcome:{kind:'card',card:'title'},
  why:{kind:'home',acts:[[1,"scrollMain(260)"],[2,"scrollMain(0)"]]},
  signin:{kind:'entry',acts:[[1,"showLoginForm('')"],[2,"typeIn('login-username','name@nscstr.com')"],[3,"typeIn('login-password','••••••••••')"]]},
- steps:{kind:'home',acts:[[1,"openDetailModal('category','hse')"]]},
- overview:{kind:'home',acts:[[1,"scrollMain(0)"],[3,"scrollMain(520)"]]},
- about:{kind:'page',acts:[[0,"openAboutHub()"]]},
- certs:{kind:'page',pre:"certificatesData=defaultCertificatesData.map((c,i)=>Object.assign({},c,{issuedDate:'2025-0'+(1+i%9)+'-15',expiryDate:'2027-0'+(1+i%9)+'-14',status:i%5===2?'critical':'compliant'}));_cloudDocsLoaded.certificates=true;",acts:[[0,"openCertHub()"],[2,"scrollTop(260)"]]},
+ steps:{kind:'home',acts:[[1,"openDetailModal('category','hse')"],[2,"scrollTop(380)"]]},
+ overview:{kind:'home',acts:[[1,"scrollMain(0)"],[2,"scrollMain(220)"],[3,"scrollMain(560)"]]},
+ about:{kind:'page',acts:[[0,"openAboutHub()"],[2,"scrollTop(300)"]]},
+ certs:{kind:'page',pre:"certificatesData=defaultCertificatesData.map((c,i)=>Object.assign({},c,{issuedDate:'2025-0'+(1+i%9)+'-15',expiryDate:'2027-0'+(1+i%9)+'-14',status:i%5===2?'critical':'compliant'}));_cloudDocsLoaded.certificates=true;",acts:[[0,"openCertHub()"],[1,"scrollTop(380)"]]},
  csr:{kind:'page',acts:[[0,OPEN.csr],[1,"scrollTop(0)"],[2,"scrollTop(380)"]]},
  hse:{kind:'page',acts:[[0,OPEN.hse],[2,"scrollTop(300)"]]},
  env:{kind:'page',acts:[[0,OPEN.env],[1,"scrollTop(300)"]]},
@@ -23,7 +23,7 @@ const CFG={
  higg:{kind:'page',acts:[[0,OPEN.higg],[2,"scrollTop(300)"]]},
  oeko:{kind:'page',acts:[[0,OPEN.oeko],[2,"scrollTop(300)"]]},
  sedex:{kind:'page',acts:[[0,OPEN.sedex],[2,"scrollTop(300)"]]},
- organic:{kind:'page',acts:[[0,OPEN.organic],[1,"scrollTop(260)"]]},
+ organic:{kind:'page',acts:[[0,OPEN.organic],[1,"scrollTop(380)"]]},
  docs:{kind:'page',pre:"window._qmsVisitor=()=>false;",acts:[[0,"openQmsPage();setTimeout(()=>{sessionStorage.setItem('ems_qms_unlocked','1');_qmsRender()},500)"],[2,"sessionStorage.setItem('ems_qms_unlocked','1');_qmsState.view='idx';_qmsState.tab='all';_qmsRender()"]]},
  customers:{kind:'page',acts:[[0,"openCustomerPicker()"],[1,"scrollTop(300)"]]},
  internal:{kind:'page',acts:[[0,"openDailyAuditHub()"],[2,"openDepartmentsHub()"]]},
@@ -32,13 +32,52 @@ const CFG={
  lang:{kind:'home',acts:[[1,"setLanguage('tr')"],[2,"setLanguage('ar')"]]},
  closing:{kind:'card',card:'close'}
 };
+
+// İmleç hedefleri: her cümle için ekranda anlatılan yeri gösterir. Biçim: "t:Metin" (üstteki pencerede/ sayfada görünen metin), "n:Metin" (sol menü), "q:css" (ilk görünen), "x:X,Y"
+const CUR={
+ why:{0:["t:ALL AUDIT QUESTIONS"],1:["t:COMPLETED"],2:["n:Quality Management System"],3:["n:Overall Status","n:About Us","n:Company Profile","n:Certificates","n:Quality Management System"]},
+ signin:{0:["t:Staff Login"],1:["t:Staff Login"],2:["q:#login-username"],3:["q:#login-password"],4:["q:#login-card .btn-admin-login-submit"],5:["t:New Account Request"]},
+ steps:{0:["t:ALL AUDIT QUESTIONS"],1:["n:Audit & Compliance"],2:["q:.modal-overlay.open tbody tr:first-child td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"],5:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"]},
+ overview:{0:["t:Overall Status"],1:["t:ALL AUDIT QUESTIONS","t:Completed","t:In progress","t:Not started"],2:["t:OVERALL COMPLIANCE"],3:["x:760,330"],4:["x:560,420","x:980,420"]},
+ about:{0:["t:Our Story"],1:["t:Our Story","t:Chairman's Message","t:Vision & Mission"],2:["t:Our Values","t:Sustainability","t:Quality Assurance"],3:["x:760,500"]},
+ certs:{0:["t:Our Certificates"],1:["t:SEDEX","t:BSCI","t:BCI"],2:["t:Logo","t:Issued","t:Certificate"],3:["t:Valid Until"]},
+ csr:{0:["t:Total Questions"],1:["t:Compliance"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(3) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]","q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
+ hse:{0:["t:Total Questions"],1:["q:.modal-overlay.open table th:nth-child(3)"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
+ env:{0:["t:Total Questions"],1:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],2:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"]},
+ chem:{0:["t:Printing Chemical Consumption Report"],1:["t:Total Materials","t:Current Stock","t:Consumed This Month"],2:["x:760,360"],3:["x:760,500"]},
+ cd:{0:["t:Total Questions"],1:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],2:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
+ higg:{0:["t:Total Questions"],1:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],2:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"]},
+ oeko:{0:["t:Total Questions"],1:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],2:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
+ sedex:{0:["t:Total Questions"],1:["t:Compliance"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
+ organic:{0:["t:Organic Audit"],1:["t:Organic Raw Material","t:Organic Yarn Storage","t:Organic Knitting"],2:["t:Details","t:Details"],3:["x:640,330"]},
+ docs:{0:["t:Quality Management System"],1:["q:#qms-page input"],2:["t:Total documents"],3:["t:Forms"],4:["t:Documents by department and folder"]},
+ customers:{0:["t:Customer Portal"],1:["x:430,420","x:760,420"],2:["x:1000,420"]},
+ internal:{0:["t:START NEW AUDIT"],1:["t:Start Audit"],2:["x:640,400"]},
+ academy:{0:["t:NSCS Academy"],1:["t:English","t:Arabic","t:Turkish"],2:["x:640,600"]},
+ rules:{0:["t:Total Questions"],1:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"],2:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"],3:["q:.modal-overlay.open tbody tr:first-child .cust-q-del"]},
+ lang:{0:["q:.lang-btn"],1:["q:.lang-btn:nth-child(1)","q:.lang-btn:nth-child(3)"],2:["x:760,340"]}
+};
 const SETUP=`(()=>{
+ window.showEmsToast=function(){};{const st=document.createElement('style');st.textContent='[onclick*="enterAsViewer"],.ent-visitor{display:none!important}';document.head.appendChild(st)}
  window.scrollMain=y=>{const m=document.querySelector('.main-content');(m||document.scrollingElement).scrollTo({top:y,behavior:'smooth'})};
  window.scrollTop=y=>{const o=[...document.querySelectorAll('.modal-overlay.open,.qa-dept-overlay.open,#qms-page.open')].pop();if(!o)return;let best=null,bh=0;o.querySelectorAll('*').forEach(e=>{if(e.scrollHeight>e.clientHeight+40&&e.clientHeight>200&&getComputedStyle(e).overflowY!=='visible'){if(e.scrollHeight>bh){bh=e.scrollHeight;best=e}}});(best||o).scrollTo({top:y,behavior:'smooth'})};
+
+ window.tvFind=spec=>{const k=spec.slice(0,2),v=spec.slice(2);
+  const vis=e=>{const r=e.getBoundingClientRect();if(r.width<4||r.height<4)return false;const cs=getComputedStyle(e);return cs.visibility!=='hidden'&&cs.display!=='none'};
+  if(k==='x:'){const a=v.split(',');return {x:+a[0],y:+a[1]}}
+  if(k==='q:'){const l=[...document.querySelectorAll(v)].filter(vis);const e=l.find(e=>{const r=e.getBoundingClientRect();return r.top>40&&r.bottom<700})||l[0];return e||null}
+  const ovs=[...document.querySelectorAll('.modal-overlay.open,.qa-dept-overlay.open,#qms-page.open')];const root=k==='n:'?document:(ovs.length?ovs[ovs.length-1]:document);
+  const low=v.toLowerCase();let best=null;
+  root.querySelectorAll('body *').forEach(e=>{if(/^(SCRIPT|STYLE|SVG|PATH|TEXT)$/i.test(e.tagName))return;if(!vis(e))return;const r=e.getBoundingClientRect();if(k==='n:'&&r.left>320)return;if(r.bottom<30||r.top>700||r.right<0||r.left>1280)return;
+   const own=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent.trim()).join(' ').trim().toLowerCase();if(!own||own.indexOf(low)<0)return;
+   const sc=own.length-low.length;if(!best||sc<best.sc)best={sc,e}});
+  return best?best.e:null};
+ window.tvPt=spec=>{const t=window.tvFind(spec);if(!t)return 'MISS '+spec;let x,y;if(t.x!==undefined){x=t.x;y=t.y}else{const r=t.getBoundingClientRect();x=Math.min(r.left+Math.min(r.width*0.5,200),1250);y=r.top+r.height/2}
+  x=Math.max(20,Math.min(1250,x));y=Math.max(20,Math.min(690,y));window.tvCur(x,y);const c=document.getElementById('tv-cur');c.classList.remove('hit');void c.offsetWidth;setTimeout(()=>c.classList.add('hit'),950);return 'ok '+Math.round(x)+','+Math.round(y)};
  window.typeIn=(id,txt)=>{const e=document.getElementById(id);if(!e)return;let i=0;e.focus();const t=setInterval(()=>{e.value=txt.slice(0,++i);if(i>=txt.length)clearInterval(t)},70)};
 })()`;
 const OVER=(L)=>`
-(()=>{if(document.getElementById('tv-ovl'))return;const st=document.createElement('style');st.textContent='#tv-ovl{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font-family:Inter,Arial,sans-serif}#tv-sub{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);width:min(1120px,92vw);display:flex;flex-direction:column;gap:6px;align-items:center;opacity:0;transition:opacity .25s}#tv-sub.on{opacity:1}#tv-sub div{padding:6px 14px;border-radius:7px;font-weight:700;font-size:21px;line-height:1.3;text-align:center;max-width:100%}#tv-tr{background:rgba(11,18,32,.82);color:#fff}#tv-ar{background:rgba(11,18,32,.82);color:#FFD66B;direction:rtl}#tv-cur{position:absolute;left:1100px;top:700px;width:26px;height:26px;transition:left .9s cubic-bezier(.4,.1,.2,1),top .9s cubic-bezier(.4,.1,.2,1);filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}';document.head.appendChild(st);
+(()=>{if(document.getElementById('tv-ovl'))return;const st=document.createElement('style');st.textContent='#tv-ovl{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font-family:Inter,Arial,sans-serif}#tv-sub{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);width:min(1120px,92vw);display:flex;flex-direction:column;gap:6px;align-items:center;opacity:0;transition:opacity .25s}#tv-sub.on{opacity:1}#tv-sub div{padding:6px 14px;border-radius:7px;font-weight:700;font-size:21px;line-height:1.3;text-align:center;max-width:100%}#tv-tr{background:rgba(11,18,32,.82);color:#fff}#tv-ar{background:rgba(11,18,32,.82);color:#FFD66B;direction:rtl}#tv-cur.hit{animation:tvhit .6s ease-out}@keyframes tvhit{0%{filter:drop-shadow(0 0 0 rgba(255,128,0,0))}40%{filter:drop-shadow(0 0 14px #FF8000)}100%{filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}}#tv-cur{position:absolute;left:1100px;top:700px;width:40px;height:40px;transition:left .9s cubic-bezier(.4,.1,.2,1),top .9s cubic-bezier(.4,.1,.2,1);filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}';document.head.appendChild(st);
 const o=document.createElement('div');o.id='tv-ovl';o.innerHTML='<div id="tv-sub"><div id="tv-tr"></div><div id="tv-ar"></div></div><svg id="tv-cur" viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.4L20 11z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>';document.body.appendChild(o);
 window.tvSub=(tr,ar)=>{document.getElementById('tv-tr').textContent=tr||'';document.getElementById('tv-ar').textContent=ar||'';document.getElementById('tv-sub').classList.toggle('on',!!(tr||ar))};
 window.tvCur=(x,y)=>{const c=document.getElementById('tv-cur');c.style.left=x+'px';c.style.top=y+'px'};})()`;
@@ -67,18 +106,20 @@ for(const n of only){const s=SC[n-1],cfg=CFG[s.id];if(!cfg){console.log('NO CFG'
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
  const cur=[[820,300],[520,420],[900,520],[640,260],[1000,380],[420,520]];
  const events=[];
- sent.forEach((x,k)=>{events.push([x.start,'sub',k]);events.push([x.end,'unsub',k]);events.push([x.start+0.15,'cur',k]);});
+ sent.forEach((x,k)=>{events.push([x.start,'sub',k]);events.push([x.end,'unsub',k]);
+  const tg=(CUR[s.id]&&CUR[s.id][k])||[];const d=x.end-x.start;const step=tg.length>1?Math.max(0.9,Math.min(1.8,(d-1.3)/(tg.length))):0;
+  tg.forEach((sp,i)=>events.push([x.start+1.0+i*step,'curt',sp]));});
  (cfg.acts||[]).forEach(a=>events.push([sent[Math.min(a[0],sent.length-1)].start+0.2,'act',a[1]]));
  events.sort((a,b)=>a[0]-b[0]);
  if(cfg.kind!=='card'||cfg.card==='close'){}
- for(const ev of events){const dt=ev[0]*1000-(Date.now()-t0);if(dt>0)await wait(dt);
+ let _prev=0;for(const ev of events){const dt=process.env.DRY?Math.min(700,(ev[0]-_prev)*1000):ev[0]*1000-(Date.now()-t0);_prev=ev[0];if(dt>0)await wait(dt);
   try{
    if(ev[1]==='sub')await p.evaluate(([a,b])=>window.tvSub&&window.tvSub(a,b),[sent[ev[2]].tr,sent[ev[2]].ar]);
    else if(ev[1]==='unsub')await p.evaluate(()=>window.tvSub&&window.tvSub('',''));
-   else if(ev[1]==='cur'){const c=cur[ev[2]%cur.length];await p.evaluate(([x,y])=>window.tvCur&&window.tvCur(x,y),c)}
+   else if(ev[1]==='curt'){const r=await p.evaluate(sp=>window.tvPt(sp),ev[2]);if(/^MISS/.test(r))err.push(r);if(process.env.DRY){await p.waitForTimeout(1000);await p.screenshot({path:`dry/${s.id}_${String(ev[0]).slice(0,5)}.png`})}}
    else await p.evaluate(ev[2]);
   }catch(e){err.push(String(e.message).slice(0,80))}}
- const rest=total*1000-(Date.now()-t0);if(rest>0)await wait(rest);
+ const rest=process.env.DRY?300:total*1000-(Date.now()-t0);if(rest>0)await wait(rest);
  const vid=p.video();await ctx.close();const path=await vid.path();
  fs.writeFileSync(`out/${nn}.json`,JSON.stringify({off,total,sent:sent.map(x=>[x.start,x.end])}));
  fs.renameSync(path,`out/${nn}.webm`);fs.rmSync('out/raw'+nn,{recursive:true,force:true});
