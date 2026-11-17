@@ -946,3 +946,4 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 - 17.11.2026: nscstr.com referanslar: PRYM FASHION kaldırıldı, İNCİ TEKSTİL (alt yazı 'Tekstil') eklendi.
 - 17.11.2026: nscstr.com alt bilgi üstünde ortalı büyük başlık 'Türkiye & Uluslararası Danışmanlık' (turuncu çizgi); iletişim listesinden çıkarıldı.
 - 17.11.2026: NSCS Portal favicon: ince turuncu n (NSCS logosundaki n şekli, #FF8000, şeffaf); kalın n kaldırıldı.
+- 17.11.2026: nscstr.com DİL: önceden yalnız 48 öğe (data-i18n) çevriliyordu; şimdi PAGE_DICT ile tüm metin düğümleri, placeholder/alt/title/aria-label, seçenekler ve form mesajları TR/EN/AR çevriliyor (translatePage). Yeni metin eklenince PAGE_DICT'e EN+AR eklenmeli. Marka adları (AYDINLI GRUP vb.) çevrilmez.
