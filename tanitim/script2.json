@@ -430,6 +430,31 @@
   ]
  },
  {
+  "id": "hr",
+  "title": [
+   "HR audit",
+   "İK denetimi",
+   "تدقيق الموارد البشرية"
+  ],
+  "s": [
+   {
+    "en": "The HR audit checks how we recruit, hire and treat our people.",
+    "tr": "İK denetimi işe alımı, sözleşmeleri ve çalışanlara davranışımızı kontrol eder.",
+    "ar": "يتحقق تدقيق الموارد البشرية من التوظيف والعقود ومعاملة العاملين."
+   },
+   {
+    "en": "Contracts, working hours, wages, leave and workers' rights.",
+    "tr": "Sözleşmeler, çalışma saatleri, ücretler, izinler ve işçi hakları.",
+    "ar": "العقود وساعات العمل والأجور والإجازات وحقوق العمال."
+   },
+   {
+    "en": "Every question works the same way: owner, evidence and status.",
+    "tr": "Her soru aynı şekilde çalışır: sorumlu, kanıt ve durum.",
+    "ar": "كل سؤال يعمل بنفس الطريقة: المسؤول والإثبات والحالة."
+   }
+  ]
+ },
+ {
   "id": "organic",
   "title": [
    "Organic production",
@@ -551,6 +576,66 @@
     "en": "Department audits give each production area its own compliance score.",
     "tr": "Departman denetimleri her üretim alanına kendi uyum puanını verir.",
     "ar": "تمنح تدقيقات الأقسام كل منطقة إنتاج نتيجة التزام خاصة بها."
+   }
+  ]
+ },
+ {
+  "id": "prod",
+  "title": [
+   "Production reports",
+   "Üretim raporları",
+   "تقارير الإنتاج"
+  ],
+  "s": [
+   {
+    "en": "Production reports follow every stage, from yarn to garment.",
+    "tr": "Üretim raporları iplikten konfeksiyona her aşamayı izler.",
+    "ar": "تتابع تقارير الإنتاج كل مرحلة من الغزل حتى الملابس."
+   },
+   {
+    "en": "Open a section, such as Knitting, and see its live production board.",
+    "tr": "Örgü gibi bir bölümü açın, canlı üretim panosunu görün.",
+    "ar": "افتحوا قسماً مثل التريكو لترَوا لوحة الإنتاج الحية."
+   },
+   {
+    "en": "Totals, monthly figures and the last entry are shown at a glance.",
+    "tr": "Toplamlar, aylık rakamlar ve son giriş tek bakışta görünür.",
+    "ar": "تظهر الإجماليات والأرقام الشهرية وآخر إدخال في نظرة واحدة."
+   },
+   {
+    "en": "Download the production reports as one signed PDF.",
+    "tr": "Üretim raporlarını tek imzalı PDF olarak indirin.",
+    "ar": "نزّلوا تقارير الإنتاج كملف PDF واحد موقّع."
+   }
+  ]
+ },
+ {
+  "id": "defs",
+  "title": [
+   "Definitions",
+   "Tanımlamalar",
+   "التعريفات"
+  ],
+  "s": [
+   {
+    "en": "Definitions explain every production section in plain words.",
+    "tr": "Tanımlamalar her üretim bölümünü sade bir dille anlatır.",
+    "ar": "تشرح التعريفات كل قسم إنتاج بكلمات بسيطة."
+   },
+   {
+    "en": "Yarn, knitting, dyeing, printing, sewing and more, twelve sections in total.",
+    "tr": "İplik, örgü, boyama, baskı, dikim ve daha fazlası; toplam on iki bölüm.",
+    "ar": "الغزل والتريكو والصباغة والطباعة والخياطة وغيرها، اثنا عشر قسماً."
+   },
+   {
+    "en": "Each card shows the process steps, and what the product looks like at that moment.",
+    "tr": "Her kart süreç adımlarını ve ürünün o andaki hâlini gösterir.",
+    "ar": "تعرض كل بطاقة خطوات العملية وشكل المنتج في تلك اللحظة."
+   },
+   {
+    "en": "Search for any section, and new employees learn the process faster.",
+    "tr": "Bir bölümü aratın; yeni çalışanlar süreci daha hızlı öğrenir.",
+    "ar": "ابحثوا عن أي قسم فيتعلم الموظفون الجدد العملية أسرع."
    }
   ]
  },
