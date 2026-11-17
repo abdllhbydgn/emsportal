@@ -54884,6 +54884,7 @@ if (FIREBASE_ENABLED && fbAuth) {
     }
     if (user && user.email && _isAdminEmail(user.email)) {
       currentUserRole = "admin";
+      currentUserEmail = user.email;
       currentUserDepartments = [];
       currentUserPending = false;
       currentUserIsNamedAccount = true;
