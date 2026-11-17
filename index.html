@@ -56211,11 +56211,11 @@ function openDetailModal(type, value, catFilter, statusFilter) {
       const optLabels = item.type === "c" ? {
         compliant: "✅ " + t3("Alındı", "Received", "تم الاستلام"),
         minor: "⏳ " + t3("Devam Ediyor", "In Progress", "قيد التنفيذ"),
-        critical: "❌ " + t3("Başvuru Yapılmadı", "Not Applied", "ماتقدمش")
+        critical: "✖︎ " + t3("Başvuru Yapılmadı", "Not Applied", "ماتقدمش")
       } : {
         compliant: "✅ " + t3("Tamamlandı", "Completed", "مكتمل"),
         minor: "⏳ " + t3("Devam Ediyor", "In Progress", "قيد التنفيذ"),
-        critical: "❌ " + t3("Başlanmadı", "Not Started", "لسه ما بدأش")
+        critical: "✖︎ " + t3("Başlanmadı", "Not Started", "لسه ما بدأش")
       };
       let relatedCustomersHtml = '<span style="color:var(--muted); font-size:11px;">—</span>';
       const _qg = item.type === "q" ? _qGroup(item.id) : null;
@@ -67019,7 +67019,7 @@ function renderCustomerTable() {
     // Soruya bağlı bu müşterinin bulguları: tıklayınca bulguya gider / This customer's findings linked to the question: click to open
     const _g = _qGroup(r.q.id);
     const fChips = (_g ? _g.members.map(m => m.id) : [ r.q.id ]).flatMap(id => fIdx.get(id) || []).map(x => `<button type="button" data-nochip="1" style="margin:6px 4px 0 0; font-size:11px; font-weight:800; border:1px solid var(--border); background:var(--surface, #fff); color:${x.f.status === "closed" ? "var(--success)" : x.f.status === "in_progress" ? "var(--warning)" : "var(--danger)"}; border-radius:7px; padding:3px 8px; cursor:pointer;">🕵️ ${escHtml(x.f.category || "")} #${x.f.no} · ${new Date(x.a.date).toLocaleDateString(currentLang === "ar" ? "ar-EG" : currentLang === "en" ? "en-GB" : "tr-TR")}</button>`).join("");
-    return _catHead + `<tr>\n      <td><strong>${idx + 1}</strong></td>\n      <td><span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted);">${escHtml(String(rowCat).replace(/&amp;/g, "&"))}</span></td>\n      <td><strong>${escHtml(r.text)}</strong>${_qMergeBadgeHtml(r.q.id)}${_qOwnerChipHtml(r.q.id)}${currentUserRole === "admin" ? `<div><button type="button" class="cust-q-del" onclick="deleteCustomerQuestion(${r.q.id})" title="${escHtml(t3("Bu soruyu sil (yönetici)", "Delete this question (admin)", "امسح السؤال ده (المدير)"))}">🗑️ ${escHtml(t3("Soruyu sil", "Delete question", "مسح السؤال"))}</button></div>` : ""}${fChips ? `<div>${fChips}</div>` : ""}</td>\n      <td><div class="cust-photo-box">${(() => { const ps = _custPhotoSource(r.q); return ps.lf ? _findingPhotoCellHtml(ps.lf.a.id, ps.lf.f.no, null, false) : _questionPhotoCellHtml(ps.q.id, true); })()}</div></td>\n      <td style="white-space:nowrap;">\n        <select class="status-sel ${st}" onchange="changeBrandQuestionStatus(${r.q.id}, this)">\n          <option value="compliant" ${st === "compliant" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="minor" ${st === "minor" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="critical" ${st === "critical" ? "selected" : ""}>❌ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>\n      </td>\n    </tr>`;
+    return _catHead + `<tr>\n      <td><strong>${idx + 1}</strong></td>\n      <td><span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted);">${escHtml(String(rowCat).replace(/&amp;/g, "&"))}</span></td>\n      <td><strong>${escHtml(r.text)}</strong>${_qMergeBadgeHtml(r.q.id)}${_qOwnerChipHtml(r.q.id)}${currentUserRole === "admin" ? `<div><button type="button" class="cust-q-del" onclick="deleteCustomerQuestion(${r.q.id})" title="${escHtml(t3("Bu soruyu sil (yönetici)", "Delete this question (admin)", "امسح السؤال ده (المدير)"))}">🗑️ ${escHtml(t3("Soruyu sil", "Delete question", "مسح السؤال"))}</button></div>` : ""}${fChips ? `<div>${fChips}</div>` : ""}</td>\n      <td><div class="cust-photo-box">${(() => { const ps = _custPhotoSource(r.q); return ps.lf ? _findingPhotoCellHtml(ps.lf.a.id, ps.lf.f.no, null, false) : _questionPhotoCellHtml(ps.q.id, true); })()}</div></td>\n      <td style="white-space:nowrap;">\n        <select class="status-sel ${st}" onchange="changeBrandQuestionStatus(${r.q.id}, this)">\n          <option value="compliant" ${st === "compliant" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="minor" ${st === "minor" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="critical" ${st === "critical" ? "selected" : ""}>✖︎ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>\n      </td>\n    </tr>`;
   }).join("");
   list.forEach(r => {
     if (r.x) {
@@ -67080,9 +67080,9 @@ function _custFindingRowHtml(r, idx) {
   const ca = x.kind === "f" ? _brandFindingCa(x) : "";
   let sel;
   if (x.kind === "f") {
-    sel = `<select class="status-sel ${st}" onchange="changeCustFindingStatus(${JSON.stringify(x.a.id).replace(/"/g, "&quot;")}, ${x.f.no}, this)">\n          <option value="compliant" ${st === "compliant" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="minor" ${st === "minor" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="critical" ${st === "critical" ? "selected" : ""}>❌ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>`;
+    sel = `<select class="status-sel ${st}" onchange="changeCustFindingStatus(${JSON.stringify(x.a.id).replace(/"/g, "&quot;")}, ${x.f.no}, this)">\n          <option value="compliant" ${st === "compliant" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="minor" ${st === "minor" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="critical" ${st === "critical" ? "selected" : ""}>✖︎ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>`;
   } else {
-    sel = `<span class="status-sel ${st}" style="display:inline-block; padding:8px 12px;">${st === "compliant" ? "✅ " + t3("Tamamlandı", "Completed", "مكتمل") : st === "minor" ? "⏳ " + t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : "❌ " + t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</span>`;
+    sel = `<span class="status-sel ${st}" style="display:inline-block; padding:8px 12px;">${st === "compliant" ? "✅ " + t3("Tamamlandı", "Completed", "مكتمل") : st === "minor" ? "⏳ " + t3("Devam Ediyor", "In Progress", "قيد التنفيذ") : "✖︎ " + t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</span>`;
   }
   const photo = x.kind === "f" ? _findingPhotoCellHtml(x.a.id, x.f.no, null, false) : '<span style="color:var(--muted); font-size:11px;">—</span>';
   return `<tr>\n      <td><strong>${idx + 1}</strong></td>\n      <td><span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted);">${t3("Müşteri Denetim Bulgusu", "Customer Audit Finding", "نتيجة تدقيق العميل")}</span><div style="font-size:11px; font-weight:900; color:${sevCol[sc] || "var(--muted)"}; margin-top:3px;">${escHtml(sc || "")}</div></td>\n      <td><strong>${escHtml(r.text)}</strong><div style="font-size:11px; color:var(--muted); margin-top:4px;">📅 ${when}${_custAuditor(x.a) ? " · 👤 " + escHtml(_custAuditor(x.a)) : ""}</div>${ca ? `<div style="font-size:12px; color:var(--muted); margin-top:6px;">🛠️ ${escHtml(ca)}</div>` : ""}${x.kind === "f" ? _fndOwnerChipHtml(x.f, x.f.status !== "closed" && x.f.dueDate && x.f.dueDate < _localISODate(), x.a.id) : ""}</td>\n      <td><div class="cust-photo-box">${photo}</div></td>\n      <td style="white-space:nowrap;">\n        ${sel}\n      </td>\n    </tr>`;
@@ -67273,7 +67273,7 @@ function renderAuditFindingsTable() {
     const caText = currentLang === "tr" ? f.caTr : currentLang === "ar" ? _dyn(f.caEn || f.caTr) : f.caEn;
     const linkedQ = f.linkedQuestionId ? auditQuestions.find(x => x.id === f.linkedQuestionId) : null;
     const linkedQHasPhoto = linkedQ ? _qPhotoFilledCount(linkedQ) > 0 : false;
-    return `<tr id="finding-row-${f.no}">\n    <td><strong>${f.no}</strong></td>\n    <td><span style="font-size:11px; font-weight:800; color:${catColorMap[f.category] || "var(--muted)"};">${f.category}</span></td>\n    <td style="text-align:justify;">\n      ${escHtml(findingText)}\n      ${statusLabelHtml}\n      ${overdueHtml}\n      ${_fndOwnerChipHtml(f, _overdue)}\n      ${_findingFollowUpsHtml(f)}\n    </td>\n    <td style="text-align:justify;">\n      ${escHtml(caText)}\n    </td>\n    <td>\n      <div style="display:flex; align-items:center; gap:4px;">\n        ${_findingPhotoCellHtml(a.id, f.no, linkedQ, linkedQHasPhoto)}\n      </div>\n    </td>\n    <td style="white-space:nowrap;">\n        <select id="finding-sel-${f.no}" class="status-sel ${capStatusClass[f.status] || "critical"}" onchange="changeFindingStatus(${f.no}, this)">\n          <option value="closed" ${f.status === "closed" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="in_progress" ${f.status === "in_progress" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="open" ${f.status === "open" || !f.status ? "selected" : ""}>❌ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>\n    </td>\n  </tr>`;
+    return `<tr id="finding-row-${f.no}">\n    <td><strong>${f.no}</strong></td>\n    <td><span style="font-size:11px; font-weight:800; color:${catColorMap[f.category] || "var(--muted)"};">${f.category}</span></td>\n    <td style="text-align:justify;">\n      ${escHtml(findingText)}\n      ${statusLabelHtml}\n      ${overdueHtml}\n      ${_fndOwnerChipHtml(f, _overdue)}\n      ${_findingFollowUpsHtml(f)}\n    </td>\n    <td style="text-align:justify;">\n      ${escHtml(caText)}\n    </td>\n    <td>\n      <div style="display:flex; align-items:center; gap:4px;">\n        ${_findingPhotoCellHtml(a.id, f.no, linkedQ, linkedQHasPhoto)}\n      </div>\n    </td>\n    <td style="white-space:nowrap;">\n        <select id="finding-sel-${f.no}" class="status-sel ${capStatusClass[f.status] || "critical"}" onchange="changeFindingStatus(${f.no}, this)">\n          <option value="closed" ${f.status === "closed" ? "selected" : ""}>✅ ${t3("Tamamlandı", "Completed", "مكتمل")}</option>\n          <option value="in_progress" ${f.status === "in_progress" ? "selected" : ""}>⏳ ${t3("Devam Ediyor", "In Progress", "قيد التنفيذ")}</option>\n          <option value="open" ${f.status === "open" || !f.status ? "selected" : ""}>✖︎ ${t3("Başlanmadı", "Not Started", "لسه ما بدأش")}</option>\n        </select>\n    </td>\n  </tr>`;
   }).join("");
   applyScopedElementVisibility(tbody);
   findings.forEach(f => {
@@ -85332,25 +85332,25 @@ const EMS_BUILD = "2026-11-17 18:49";
 <style id="status-colors-css">
 /* DURUM KUTULARI (kullanıcı kararı 22.10.2026, tüm site): Devam Ediyor = turuncu, Başlanmadı/Açık = kırmızı, Tamamlandı/Kapandı = yeşil; yazı siyah /
    STATUS BOXES (site-wide): In progress = orange, Not started/Open = red, Completed/Closed = green; black text */
-:root { --st-ok: #1EA03C; --st-prog: #FF8C1E; --st-no: #FF8000; }
+:root { --st-ok: #1EA03C; --st-prog: #FF8C1E; --st-no: #FF4D4D; }
 .status-sel.compliant, .status-sel.closed { background: var(--st-ok) !important; border-color: var(--st-ok) !important; }
 .status-sel.minor, .status-sel.in_progress { background: var(--st-prog) !important; border-color: var(--st-prog) !important; }
 .status-sel.critical, .status-sel.open { background: var(--st-no) !important; border-color: var(--st-no) !important; }
 .status-sel.compliant, .status-sel.closed, .status-sel.minor, .status-sel.in_progress { color: #000 !important; }
-.status-sel.critical, .status-sel.open { color: #fff !important; }
+.status-sel.critical, .status-sel.open { color: #000 !important; }
 /* dar sütunda yazı kesilmesin / keep the label from being clipped in narrow columns */
 .findings-table .status-sel, #cust-q-section .status-sel, #modal-table-wrap .status-sel { font-size: 11px !important; padding-left: 5px !important; padding-right: 16px !important; text-overflow: clip; letter-spacing: -.1px; }
 .findings-table th:nth-child(3), .findings-table td:nth-child(3) { width: 27% !important; }
 .findings-table th:nth-child(4), .findings-table td:nth-child(4) { width: 22% !important; }
 .findings-table th:nth-child(6), .findings-table td:nth-child(6) { width: 21% !important; min-width: 170px; }
 select.status-sel option:checked, select.status-sel option:hover { color: #000 !important; }
-select.status-sel option[value="critical"]:checked, select.status-sel option[value="open"]:checked { color: #fff !important; }
+select.status-sel option[value="critical"]:checked, select.status-sel option[value="open"]:checked { color: #000 !important; }
 select.status-sel option { color: #000 !important; font-weight: 700; background: #fff !important; }
 select.status-sel option[value="compliant"], select.status-sel option[value="closed"] { background: var(--st-ok) !important; color: #000 !important; }
 select.status-sel option[value="minor"], select.status-sel option[value="in_progress"] { background: var(--st-prog) !important; color: #000 !important; }
-select.status-sel option[value="critical"], select.status-sel option[value="open"] { background: var(--st-no) !important; color: #fff !important; }
+select.status-sel option[value="critical"], select.status-sel option[value="open"] { background: var(--st-no) !important; color: #000 !important; }
 /* Organik sayfası yeşil teması durum kutusunu değiştirmesin / the Organic page green theme must not recolour the status box */
-html body #global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal.org-theme .status-sel.critical { color: #fff !important; border-color: var(--st-no) !important; background: var(--st-no) !important; }
+html body #global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal#global-filter-modal.org-theme .status-sel.critical { color: #000 !important; border-color: var(--st-no) !important; background: var(--st-no) !important; }
 /* SAĞ SÜTUNLAR (kullanıcı kararı 22.10.2026): durum kutusu diğer düğmeler boyunda, fotoğraf alanı büyük / RIGHT COLUMNS: status box button-sized, bigger photo area */
 .findings-table .status-sel, #cust-q-section .status-sel, #modal-table-wrap .status-sel { min-height: 36px !important; height: 36px !important; padding-top: 4px !important; padding-bottom: 4px !important; border-radius: 10px !important; font-size: 12px !important; }
 .findings-table th:nth-child(5), .findings-table td:nth-child(5) { width: 24% !important; min-width: 190px; }

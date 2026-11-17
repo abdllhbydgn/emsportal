@@ -516,6 +516,16 @@
     "en": "One customer's finding never affects another.",
     "tr": "Bir müşterinin bulgusu diğerini etkilemez.",
     "ar": "ملاحظة عميل لا تؤثر أبداً على عميل آخر."
+   },
+   {
+    "en": "Open an audit, and every finding has two photos: one for the finding, and one for the correction.",
+    "tr": "Bir denetimi açın; her bulgunun iki fotoğrafı vardır: biri bulgu, biri düzeltme için.",
+    "ar": "افتحوا التدقيق، ولكل ملاحظة صورتان: واحدة للملاحظة وأخرى للتصحيح."
+   },
+   {
+    "en": "Add both photos, then choose the status of the corrective action.",
+    "tr": "İki fotoğrafı da ekleyin, sonra düzeltici faaliyetin durumunu seçin.",
+    "ar": "أضيفوا الصورتين ثم اختاروا حالة الإجراء التصحيحي."
    }
   ]
  },
@@ -566,6 +576,136 @@
     "en": "Watch the training, and refresh your knowledge anytime.",
     "tr": "Eğitimi izleyin, bilginizi istediğiniz zaman tazeleyin.",
     "ar": "شاهدوا التدريب وجدّدوا معلوماتكم في أي وقت."
+   }
+  ]
+ },
+ {
+  "id": "owner",
+  "title": [
+   "Assigning an owner",
+   "Sorumlu atama",
+   "تعيين المسؤول"
+  ],
+  "s": [
+   {
+    "en": "Let us see how to assign an owner to a question.",
+    "tr": "Bir soruya sorumlu nasıl atanır, görelim.",
+    "ar": "لنرَ كيف نعيّن مسؤولاً لأي سؤال."
+   },
+   {
+    "en": "Open the question, and click Assign owner.",
+    "tr": "Soruyu açın ve Sorumlu Ata düğmesine tıklayın.",
+    "ar": "افتحوا السؤال واضغطوا على تعيين المسؤول."
+   },
+   {
+    "en": "Pick the person from the contact directory, or type the name.",
+    "tr": "Kişiyi Kişi Rehberi'nden seçin ya da adını yazın.",
+    "ar": "اختاروا الشخص من دليل جهات الاتصال أو اكتبوا اسمه."
+   },
+   {
+    "en": "The e-mail address fills in by itself. Then set the due date.",
+    "tr": "E-posta adresi kendiliğinden gelir. Sonra termini belirleyin.",
+    "ar": "يظهر البريد الإلكتروني تلقائياً. ثم حدّدوا الموعد النهائي."
+   },
+   {
+    "en": "Press Save, and the owner receives an e-mail with the deadline.",
+    "tr": "Kaydet'e basın; sorumluya terminle birlikte e-posta gider.",
+    "ar": "اضغطوا حفظ، فيصل المسؤول بريد إلكتروني بالموعد النهائي."
+   }
+  ]
+ },
+ {
+  "id": "photo",
+  "title": [
+   "Adding a photo",
+   "Fotoğraf ekleme",
+   "إضافة صورة"
+  ],
+  "s": [
+   {
+    "en": "Evidence photos are added in the Photo column.",
+    "tr": "Kanıt fotoğrafları Fotoğraf sütununa eklenir.",
+    "ar": "تُضاف صور الإثبات في عمود الصورة."
+   },
+   {
+    "en": "Click the plus button, and choose a photo or a document from your computer.",
+    "tr": "Artı düğmesine tıklayın, bilgisayarınızdan bir fotoğraf ya da belge seçin.",
+    "ar": "اضغطوا على زر الزائد واختاروا صورة أو مستنداً من جهازكم."
+   },
+   {
+    "en": "The photo appears in the row right away.",
+    "tr": "Fotoğraf hemen satırda görünür.",
+    "ar": "تظهر الصورة في الصف فوراً."
+   },
+   {
+    "en": "You can also add a PDF, Word, Excel or PowerPoint file.",
+    "tr": "PDF, Word, Excel ya da PowerPoint dosyası da ekleyebilirsiniz.",
+    "ar": "ويمكنكم إضافة ملف PDF أو Word أو Excel أو PowerPoint."
+   },
+   {
+    "en": "Evidence is required to mark a question Completed or In progress.",
+    "tr": "Bir soruyu Tamamlandı ya da Devam Ediyor yapmak için kanıt gerekir.",
+    "ar": "الإثبات مطلوب لجعل السؤال مكتملاً أو قيد التنفيذ."
+   }
+  ]
+ },
+ {
+  "id": "status",
+  "title": [
+   "Updating the status",
+   "Durum güncelleme",
+   "تحديث الحالة"
+  ],
+  "s": [
+   {
+    "en": "Now the status. Every row has a drop-down list.",
+    "tr": "Şimdi durum. Her satırda bir açılır liste vardır.",
+    "ar": "الآن الحالة. لكل صف قائمة منسدلة."
+   },
+   {
+    "en": "Click it, and three options open: Completed, In progress and Not started.",
+    "tr": "Tıklayın; üç seçenek açılır: Tamamlandı, Devam Ediyor ve Başlanmadı.",
+    "ar": "اضغطوا عليها فتنفتح ثلاثة خيارات: مكتمل وقيد التنفيذ ولم يبدأ."
+   },
+   {
+    "en": "Completed is green, In progress is orange, and Not started is red.",
+    "tr": "Tamamlandı yeşil, Devam Ediyor turuncu, Başlanmadı kırmızıdır.",
+    "ar": "مكتمل أخضر، وقيد التنفيذ برتقالي، ولم يبدأ أحمر."
+   },
+   {
+    "en": "Choose one, and the dashboard at the top updates instantly.",
+    "tr": "Birini seçin; üstteki pano anında güncellenir.",
+    "ar": "اختاروا واحداً فتتحدث اللوحة العلوية فوراً."
+   }
+  ]
+ },
+ {
+  "id": "report",
+  "title": [
+   "Downloading reports",
+   "Rapor indirme",
+   "تنزيل التقارير"
+  ],
+  "s": [
+   {
+    "en": "Every page has a Download Report button at the top.",
+    "tr": "Her sayfanın üstünde Rapor İndir düğmesi vardır.",
+    "ar": "في أعلى كل صفحة زر تنزيل التقرير."
+   },
+   {
+    "en": "Click it, and the PDF report is prepared and downloaded.",
+    "tr": "Tıklayın; PDF rapor hazırlanır ve indirilir.",
+    "ar": "اضغطوا عليه فيُجهَّز تقرير PDF ويُنزَّل."
+   },
+   {
+    "en": "Every report starts with the period, and ends with the signature band.",
+    "tr": "Her rapor dönem başlığıyla başlar, imza bandıyla biter.",
+    "ar": "يبدأ كل تقرير بعنوان الفترة وينتهي بشريط التوقيع."
+   },
+   {
+    "en": "You will also find all reports in the side menu, under Download Reports.",
+    "tr": "Tüm raporları sol menüde, Rapor İndir bölümünde de bulursunuz.",
+    "ar": "ستجدون كل التقارير أيضاً في القائمة الجانبية تحت تنزيل التقارير."
    }
   ]
  },
