@@ -4948,7 +4948,6 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
         <li><a onclick="footerNavGuard(() => { if (typeof openDetailModal === 'function') openDetailModal('category','sedex'); });" data-i18n="nav_sedex">Sedex Denetimi</a></li>
         <li><a onclick="footerNavGuard(() => { if (typeof openDetailModal === 'function') openDetailModal('category','hr'); });" data-i18n="nav_hr_audit">İK Denetimi</a></li>
         <li><a onclick="footerNavGuard(() => { if (typeof openDetailModal === 'function') openDetailModal('category','organic'); });" data-i18n="nav_organic">Organik Denetimi</a></li>
-        <li><a onclick="footerNavGuard(() => { if (typeof openDetailModal === 'function') openDetailModal('status','all'); });" data-i18n="nav_all_questions">Tüm Denetim Soruları</a></li>
       </ul>
     </div>
     <div class="site-footer-col">
@@ -85285,7 +85284,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-17 15:53";
+const EMS_BUILD = "2026-11-17 18:31";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -85637,11 +85636,11 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
       t += '<text x="' + x.toFixed(1) + '" y="' + (y + 6.3).toFixed(1) + '" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#1A3660">' + i + '</text>';
     }
     return '<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="97" fill="#1A3660"/><circle cx="100" cy="100" r="92" fill="#fff"/>' + t +
-      '<text x="100" y="84" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="1.5" fill="#FF8000">NSCS</text>' +
+      '<text x="100" y="84" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="1.5" fill="#000000">NSCS</text>' +
       '<line class="dc-h" x1="100" y1="108" x2="100" y2="58" stroke="#1A3660" stroke-width="8" stroke-linecap="round"/>' +
       '<line class="dc-m" x1="100" y1="112" x2="100" y2="34" stroke="#1A3660" stroke-width="5.5" stroke-linecap="round"/>' +
-      '<line class="dc-s" x1="100" y1="118" x2="100" y2="22" stroke="#FF8000" stroke-width="2.4" stroke-linecap="round"/>' +
-      '<circle cx="100" cy="100" r="7" fill="#FF8000"/><circle cx="100" cy="100" r="2.6" fill="#fff"/></svg>';
+      '<line class="dc-s" x1="100" y1="118" x2="100" y2="22" stroke="#E11D2E" stroke-width="2.4" stroke-linecap="round"/>' +
+      '<circle cx="100" cy="100" r="7" fill="#E11D2E"/><circle cx="100" cy="100" r="2.6" fill="#fff"/></svg>';
   }
   box.querySelectorAll(".dc-svg").forEach(function (el) { el.innerHTML = faceSvg(); });
   var fmt = {};
