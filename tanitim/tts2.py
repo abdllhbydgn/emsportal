@@ -2,7 +2,7 @@
 """Tanıtım videosu v4: tanitim/script2.json -> tanitim/audio2/en_<sahne>_<cümle>.mp3 (yalnız İngilizce anlatım, yapay zekâ sesi).
 GitHub Actions'ta çalışır; sandbox'tan Bing TTS engelli."""
 import asyncio, json, os, edge_tts
-VOICE, RATE = "en-US-AriaNeural", "+0%"
+VOICE, RATE = "en-US-GuyNeural", "+0%"
 async def main():
     sc = json.load(open("tanitim/script2.json", encoding="utf-8"))
     os.makedirs("tanitim/audio2", exist_ok=True)
