@@ -35,11 +35,11 @@ const CFG={
 
 // İmleç hedefleri: her cümle için ekranda anlatılan yeri gösterir. Biçim: "t:Metin" (üstteki pencerede/ sayfada görünen metin), "n:Metin" (sol menü), "q:css" (ilk görünen), "x:X,Y"
 const CUR={
- why:{0:["t:ALL AUDIT QUESTIONS"],1:["t:COMPLETED"],2:["n:Quality Management System"],3:["n:Overall Status","n:About Us","n:Company Profile","n:Certificates","n:Quality Management System"]},
+ why:{0:["t:ALL AUDIT QUESTIONS"],1:["t:COMPLETED"],2:["n:Quality Management System"],3:["n:Overall Status","n:Company Profile","n:Certificates","n:Quality Management System"]},
  signin:{0:["t:Staff Login"],1:["t:Staff Login"],2:["q:#login-username"],3:["q:#login-password"],4:["q:#login-card .btn-admin-login-submit"],5:["t:New Account Request"]},
  steps:{0:["t:ALL AUDIT QUESTIONS"],1:["n:Audit & Compliance"],2:["q:.modal-overlay.open tbody tr:first-child td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"],5:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"]},
  overview:{0:["t:Overall Status"],1:["t:ALL AUDIT QUESTIONS","t:Completed","t:In progress","t:Not started"],2:["t:OVERALL COMPLIANCE"],3:["x:760,330"],4:["x:560,420","x:980,420"]},
- about:{0:["t:Our Story"],1:["t:Our Story","t:Chairman's Message","t:Vision & Mission"],2:["t:Our Values","t:Sustainability","t:Quality Assurance"],3:["x:760,500"]},
+
  certs:{0:["t:Our Certificates"],1:["t:SEDEX","t:BSCI","t:BCI"],2:["t:Logo","t:Issued","t:Certificate"],3:["t:Valid Until"]},
  csr:{0:["t:Total Questions"],1:["t:Compliance"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(3) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]","q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
  hse:{0:["t:Total Questions"],1:["q:.modal-overlay.open table th:nth-child(3)"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},

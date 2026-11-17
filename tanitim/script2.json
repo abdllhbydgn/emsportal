@@ -48,9 +48,9 @@
     "ar": "تنتقلون بين الأقسام من القائمة الجانبية."
    },
    {
-    "en": "Overview, About Us, Company Profile, Certificates, the Quality Management System, and every audit.",
-    "tr": "Genel durum, Hakkımızda, Şirket profili, Sertifikalar, Kalite Yönetim Sistemi ve tüm denetimler.",
-    "ar": "النظرة العامة، من نحن، ملف الشركة، الشهادات، نظام إدارة الجودة، وجميع التدقيقات."
+    "en": "Overview, Company Profile, Certificates, the Quality Management System, and every audit.",
+    "tr": "Genel durum, Şirket profili, Sertifikalar, Kalite Yönetim Sistemi ve tüm denetimler.",
+    "ar": "النظرة العامة، ملف الشركة، الشهادات، نظام إدارة الجودة، وجميع التدقيقات."
    }
   ]
  },
@@ -166,36 +166,6 @@
     "en": "Red means attention. Green means we are ready.",
     "tr": "Kırmızı dikkat demek. Yeşil hazır olduğumuz anlamına gelir.",
     "ar": "الأحمر يعني الانتباه، والأخضر يعني أننا جاهزون."
-   }
-  ]
- },
- {
-  "id": "about",
-  "title": [
-   "About Us",
-   "Hakkımızda",
-   "من نحن"
-  ],
-  "s": [
-   {
-    "en": "The About Us section tells who we are.",
-    "tr": "Hakkımızda bölümü kim olduğumuzu anlatır.",
-    "ar": "يعرّف قسم من نحن بنا."
-   },
-   {
-    "en": "Our story, the Chairman's message, and our vision and mission.",
-    "tr": "Hikâyemiz, Yönetim Kurulu Başkanı'nın mesajı, vizyon ve misyonumuz.",
-    "ar": "قصتنا، ورسالة رئيس مجلس الإدارة، ورؤيتنا ومهمتنا."
-   },
-   {
-    "en": "Our values, our sustainability commitments, and our quality assurance promise.",
-    "tr": "Değerlerimiz, sürdürülebilirlik taahhütlerimiz ve kalite güvence sözümüz.",
-    "ar": "قيمنا، والتزاماتنا في الاستدامة، ووعدنا بضمان الجودة."
-   },
-   {
-    "en": "Every employee should know what we stand for.",
-    "tr": "Her çalışan neyi savunduğumuzu bilmeli.",
-    "ar": "يجب أن يعرف كل موظف ما الذي نمثله."
    }
   ]
  },
