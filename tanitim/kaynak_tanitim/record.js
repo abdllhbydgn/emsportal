@@ -12,7 +12,7 @@ const CFG={
  why:{kind:'home',acts:[[1,"scrollMain(260)"],[2,"scrollMain(0)"]]},
  signin:{kind:'entry',acts:[[1,"showLoginForm('')"],[2,"typeIn('login-username','name@nscstr.com')"],[3,"typeIn('login-password','••••••••••')"]]},
  steps:{kind:'home',acts:[[1,"openDetailModal('category','hse')"],[2,"scrollTop(380)"]]},
- overview:{kind:'home',acts:[[1,"scrollMain(0)"],[2,"scrollMain(220)"],[3,"scrollMain(560)"]]},
+ overview:{kind:'home',acts:[[1,"scrollMain(0)"],[3,"scrollMain(330)"]]},
  about:{kind:'page',acts:[[0,"openAboutHub()"],[2,"scrollTop(300)"]]},
  certs:{kind:'page',pre:"certificatesData=defaultCertificatesData.map((c,i)=>Object.assign({},c,{issuedDate:'2025-0'+(1+i%9)+'-15',expiryDate:'2027-0'+(1+i%9)+'-14',status:i%5===2?'critical':'compliant'}));_cloudDocsLoaded.certificates=true;",acts:[[0,"openCertHub()"],[1,"scrollTop(380)"]]},
  csr:{kind:'page',acts:[[0,OPEN.csr],[1,"scrollTop(0)"],[2,"scrollTop(380)"]]},
@@ -24,7 +24,7 @@ const CFG={
  oeko:{kind:'page',acts:[[0,OPEN.oeko],[2,"scrollTop(300)"]]},
  sedex:{kind:'page',acts:[[0,OPEN.sedex],[2,"scrollTop(300)"]]},
  organic:{kind:'page',acts:[[0,OPEN.organic],[1,"scrollTop(380)"]]},
- docs:{kind:'page',pre:"window._qmsVisitor=()=>false;",acts:[[0,"openQmsPage();setTimeout(()=>{sessionStorage.setItem('ems_qms_unlocked','1');_qmsRender()},500)"],[2,"sessionStorage.setItem('ems_qms_unlocked','1');_qmsState.view='idx';_qmsState.tab='all';_qmsRender()"]]},
+ docs:{kind:'page',pre:"window._qmsVisitor=()=>false;",acts:[[0,"openQmsPage();setTimeout(()=>{sessionStorage.setItem('ems_qms_unlocked','1');_qmsRender()},500)"],[2,"sessionStorage.setItem('ems_qms_unlocked','1');_qmsState.view='idx';_qmsState.tab='all';_qmsRender()"],[4,"_qmsState.view='hub';_qmsRender();setTimeout(()=>scrollTop(180),500)"]]},
  customers:{kind:'page',acts:[[0,"openCustomerPicker()"],[1,"scrollTop(300)"]]},
  internal:{kind:'page',acts:[[0,"openDailyAuditHub()"],[2,"openDepartmentsHub()"]]},
  academy:{kind:'page',acts:[[0,"openDocumentLibrary('training_videos')"]]},
@@ -35,11 +35,11 @@ const CFG={
 
 // İmleç hedefleri: her cümle için ekranda anlatılan yeri gösterir. Biçim: "t:Metin" (üstteki pencerede/ sayfada görünen metin), "n:Metin" (sol menü), "q:css" (ilk görünen), "x:X,Y"
 const CUR={
- why:{0:["t:ALL AUDIT QUESTIONS"],1:["t:COMPLETED"],2:["n:Quality Management System"],3:["n:Overall Status","n:About Us","n:Company Profile","n:Certificates","n:Quality Management System"]},
+ why:{0:["t:ALL AUDIT QUESTIONS"],1:["t:COMPLETED"],2:["n:Quality Management System"],3:["n:Overall Status","n:Company Profile","n:Certificates","n:Quality Management System"]},
  signin:{0:["t:Staff Login"],1:["t:Staff Login"],2:["q:#login-username"],3:["q:#login-password"],4:["q:#login-card .btn-admin-login-submit"],5:["t:New Account Request"]},
  steps:{0:["t:ALL AUDIT QUESTIONS"],1:["n:Audit & Compliance"],2:["q:.modal-overlay.open tbody tr:first-child td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"],5:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"]},
- overview:{0:["t:Overall Status"],1:["t:ALL AUDIT QUESTIONS","t:Completed","t:In progress","t:Not started"],2:["t:OVERALL COMPLIANCE"],3:["x:760,330"],4:["x:560,420","x:980,420"]},
- about:{0:["t:Our Story"],1:["t:Our Story","t:Chairman's Message","t:Vision & Mission"],2:["t:Our Values","t:Sustainability","t:Quality Assurance"],3:["x:760,500"]},
+ overview:{0:["t:Overall Status"],1:["t:ALL AUDIT QUESTIONS","t:Completed","t:In progress","t:Not started"],2:["t:OVERALL COMPLIANCE"],3:["t:SECTION DASHBOARDS","t:ORGANIC AUDIT"],4:["t:CSR & COMPLIANCE","t:ORGANIC AUDIT"]},
+
  certs:{0:["t:Our Certificates"],1:["t:SEDEX","t:BSCI","t:BCI"],2:["t:Logo","t:Issued","t:Certificate"],3:["t:Valid Until"]},
  csr:{0:["t:Total Questions"],1:["t:Compliance"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(3) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child [onclick*=openQOwnerDialog]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]","q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
  hse:{0:["t:Total Questions"],1:["q:.modal-overlay.open table th:nth-child(3)"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label=PHOTO]"],4:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
@@ -50,7 +50,7 @@ const CUR={
  oeko:{0:["t:Total Questions"],1:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],2:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
  sedex:{0:["t:Total Questions"],1:["t:Compliance"],2:["q:.modal-overlay.open tbody tr:nth-child(1) td[data-label^=CRITERIA] strong","q:.modal-overlay.open tbody tr:nth-child(2) td[data-label^=CRITERIA] strong"],3:["q:.modal-overlay.open tbody tr:first-child td[data-label^=ACTION]"]},
  organic:{0:["t:Organic Audit"],1:["t:Organic Raw Material","t:Organic Yarn Storage","t:Organic Knitting"],2:["t:Details","t:Details"],3:["x:640,330"]},
- docs:{0:["t:Quality Management System"],1:["q:#qms-page input"],2:["t:Total documents"],3:["t:Forms"],4:["t:Documents by department and folder"]},
+ docs:{0:["t:Quality Management System"],1:["q:#qms-page input"],2:["t:Total documents"],3:["t:Forms"],4:["t:Order & Pre","t:Purchasing","t:Spinning","t:Dyehouse"]},
  customers:{0:["t:Customer Portal"],1:["x:430,420","x:760,420"],2:["x:1000,420"]},
  internal:{0:["t:START NEW AUDIT"],1:["t:Start Audit"],2:["x:640,400"]},
  academy:{0:["t:NSCS Academy"],1:["t:English","t:Arabic","t:Turkish"],2:["x:640,600"]},
@@ -97,7 +97,7 @@ for(const n of only){const s=SC[n-1],cfg=CFG[s.id];if(!cfg){console.log('NO CFG'
   if(cfg.kind!=='entry'){await p.evaluate(()=>{currentUserRole='admin';currentUserIsNamedAccount=true;currentUserEmail='abdullah.baydogan@nscstr.com';currentUserName='Abdullah Baydoğan';enterApp();setLanguage('en');document.querySelectorAll('.open').forEach(x=>x.classList.remove('open'));const a=document.getElementById('site-announcement-popup');if(a)a.style.display='none';
    let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};auditQuestions=defaultAuditQuestions.map(q=>{const r=rnd();return Object.assign({},q,{status:r<.55?'compliant':r<.8?'minor':'critical'})});calcMetrics();applyFilter();refreshAllDashboards();
    trainingVideosDocs=[{id:'1',name:'NSCS Portal Introduction',videoLink:'https://www.youtube.com/watch?v=xtnfclCbmkk',description:'English narration with Turkish and Arabic subtitles.'},{id:'2',name:'General · Personal Protective Equipment (EN)',videoLink:'https://www.youtube.com/watch?v=4BLN-fspikM',description:'Health and safety training'},{id:'3',name:'General · First Aid (EN)',videoLink:'https://www.youtube.com/watch?v=5OKFljZ2GQE',description:'Basic first aid'},{id:'4',name:'New Employee Orientation',videoLink:'https://abdllhbydgn.github.io/emsportal/tanitim/EMS_Oryantasyon_Yeni_Baslayan.mp4',description:'Orientation video'}];});
-   await p.waitForTimeout(800);}
+   await p.waitForTimeout(800);if(cfg.kind==='home')await p.evaluate(()=>{const m=document.querySelector('.main-content');if(m)m.style.zoom=0.8});}
   if(cfg.pre)await p.evaluate(cfg.pre);
   await p.evaluate(SETUP);await p.evaluate(OVER());ready=Date.now();
  }
