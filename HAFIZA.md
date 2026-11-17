@@ -942,3 +942,4 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 - 17.11.2026: nscstr.com alt bilgi: üstte logo+açıklama+etiket satırı, altında 3 sütun (Hızlı Gezinti | Hizmetlerimiz | İletişim), en altta telif+logolar+slogan.
 - 17.11.2026: nscstr.com alt bilgi DOĞRU DÜZEN (kullanıcı: 'araya bir sütun daha koy bu kadar'): eski 3 sütunun (logo+açıklama | Hızlı Gezinti | İletişim) ARASINA Hizmetlerimiz sütunu eklendi = 4 sütun; üst logo satırı ve etiketler kaldırıldı. DERS: 'sıra/sütun' = sütun; kısa isteği olduğu gibi yap.
 - 17.11.2026: nscstr.com 'Yasal' sütunu (KVKK Aydınlatma, Gizlilik, Çerez, Kullanım Koşulları, Veri Sahibi Başvurusu; TR+EN, modal) HAZIR, dalda; main'e ALINMADI (kullanıcı onayı + ticari unvan/vergi no/MERSİS bilgisi bekleniyor).
+- 17.11.2026: nscstr.com Yasal sütunu YAYINDA (kullanıcı: 'mernis ekleme'; ticari unvan/MERSİS eklenmedi).
