@@ -938,3 +938,4 @@ Yöntem: Playwright tarayıcısı (scratchpad `audit/crawl.js`): 38 ekran × TR/
 - 17.11.2026: nscstr.com alt bilgi logosu: turuncu (#EA580C) n + beyaz scs/yazılar (nscs-logo-beyaz.png), h-16; eski tamamen beyaz (invert) logo kaldırıldı.
 - 17.11.2026: nscstr.com favicon: ince SİYAH n (NSCS logosundaki n'nin şekli, şeffaf). Portal (nscsportal) favicon'u kalın turuncu n olarak kaldı.
 - 17.11.2026: nscstr.com üst menü logosu alt bilgi ile aynı boyutta (h-16) ve turuncusu #EA580C.
+- 17.11.2026: nscstr.com alt bilgi 4 sütun: logo+açıklama+standart etiketleri (Inditex…ISO), Hızlı Gezinti (+Teklif, NSCS Portal), Hizmetlerimiz (9 hizmet başlığı), İletişim (e-posta, web, tel +20 120 640 37 42, WhatsApp, adres 30.092750,31.677761 Google Haritalar, kapsam). Portalın alt bilgisinden alıntı: telefon/WhatsApp/adres.
