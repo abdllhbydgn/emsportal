@@ -91,7 +91,7 @@ for(const n of only){const s=SC[n-1],cfg=CFG[s.id];if(!cfg){console.log('NO CFG'
  const ctx=await b.newContext({viewport:{width:1280,height:720},recordVideo:{dir:'out/raw'+nn,size:{width:1280,height:720}}});
  const p=await ctx.newPage();const created=Date.now();const err=[];p.on('pageerror',x=>err.push(x.message));
  let ready;
- if(cfg.kind==='card'){await p.setContent('<html><body></body></html>');await p.setContent(cfg.card==='close'?closeHtml({sentences:sent}):titleHtml());ready=Date.now();}
+ if(cfg.kind==='card'){await p.setContent('<html><body></body></html>');await p.setContent(cfg.card==='close'?closeHtml({sentences:sent}):titleHtml());await p.evaluate(OVER());await p.evaluate(()=>{const c=document.getElementById('tv-cur');if(c)c.style.display='none'});ready=Date.now();}
  else{
   await p.goto('http://localhost:8791/index.html',{waitUntil:'domcontentloaded'});await p.waitForTimeout(2600);
   if(cfg.kind!=='entry'){await p.evaluate(()=>{currentUserRole='admin';currentUserIsNamedAccount=true;currentUserEmail='abdullah.baydogan@nscstr.com';currentUserName='Abdullah Baydoğan';enterApp();setLanguage('en');document.querySelectorAll('.open').forEach(x=>x.classList.remove('open'));const a=document.getElementById('site-announcement-popup');if(a)a.style.display='none';
