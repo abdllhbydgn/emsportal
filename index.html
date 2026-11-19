@@ -80046,19 +80046,24 @@ function _fxInit() {
       if (HS.i < HS.max) history.forward();
     };
     $("#etb-home").onclick = () => {
-      // Ana sayfa simgesi her durumda ana sayfaya götürür ve en üste kaydırır / the home icon always goes to the home page and scrolls to top
+      // Ana sayfa simgesi: pencere açıksa ana sayfaya götürür; zaten ana sayfadaysa en üste çıkarıp sayfayı yeniler (kullanıcı kuralı 19.11.2026) / home icon: from a window it goes home; if already home it scrolls to the very top and refreshes the page
+      let wasHome = true;
+      try { wasHome = !document.querySelector('.modal-overlay.open, .qa-dept-overlay.open, [id$="-overlay"].open, [id$="-fullpage"].open'); } catch (e) {}
       try {
         goHome();
       } catch (e) {}
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-      const mc = $(".main-content");
-      if (mc) mc.scrollTo && mc.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      const top0 = () => {
+        try { window.scrollTo(0, 0); } catch (e) {}
+        try { document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch (e) {}
+        const mc = $(".main-content");
+        if (mc) mc.scrollTop = 0;
+      };
+      top0();
+      setTimeout(top0, 80);
+      if (wasHome) {
+        try { clearLastView(true); } catch (e) {}
+        setTimeout(() => { location.reload(); }, 160);
+      }
     };
     $("#etb-burger").onclick = () => {
       try {
@@ -85293,7 +85298,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 14:00";
+const EMS_BUILD = "2026-11-19 14:26";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
