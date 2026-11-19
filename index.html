@@ -82627,6 +82627,9 @@ async function urgeDownloadPDF() {
 .hp-cl small { display: block; font-size: 9.5px; letter-spacing: .12em; font-weight: 800; color: #A9BBDD; line-height: 1; white-space: nowrap; }
 .hp-tm { font-family: "JetBrains Mono", "DejaVu Sans Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 20px; font-weight: 700; letter-spacing: .05em; line-height: 1.15; text-shadow: 0 0 12px rgba(255,138,31,.5); direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
 .hp-tm i { font-style: normal; }
+.hp-tm .hp-d { display: inline-block; width: .64em; text-align: center; font-variant-numeric: tabular-nums; }
+.hp-tm .hp-c { display: inline-block; width: .34em; text-align: center; }
+.hp-tm { min-width: 8.2em; font-variant-numeric: tabular-nums; letter-spacing: 0; }
 .hp-tm .hp-c { color: #FF8A1F; animation: hpBlink 1s steps(1) infinite; }
 .hp-tm .hp-s { color: #FFB066; }
 @keyframes hpBlink { 50% { opacity: .25; } }
@@ -82718,7 +82721,8 @@ html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi
       var tz = el.getAttribute("data-hp-clk");
       var f = fmtCache[tz] || (fmtCache[tz] = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }));
       var p = f.format(new Date()).split(":");
-      var html = "<i>" + p[0] + '</i><i class="hp-c">:</i><i>' + p[1] + '</i><i class="hp-c">:</i><i class="hp-s">' + p[2] + "</i>";
+      var dg = function (s, c) { return s.split("").map(function (x) { return '<i class="hp-d' + (c ? " " + c : "") + '">' + x + "</i>"; }).join(""); };
+      var html = dg(p[0]) + '<i class="hp-c">:</i>' + dg(p[1]) + '<i class="hp-c">:</i>' + dg(p[2], "hp-s");
       if (el.__hp !== html) { el.__hp = html; el.innerHTML = html; }
     });
   }
@@ -85793,7 +85797,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 15:12";
+const EMS_BUILD = "2026-11-19 15:17";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
