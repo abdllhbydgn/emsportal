@@ -82926,6 +82926,8 @@ body.hp-pro #view-dashboard > .kpi-grid, body.hp-pro #view-dashboard #ring-dashb
 .hpx-k b { font-size: 30px; font-weight: 800; line-height: 1.15; }
 .hpx-k em { display: block; font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--c); margin-top: 2px; }
 .hpx-s { padding: 14px 8px 12px; text-align: center; }
+.hpx-s .ic { width: 38px; height: 38px; border-radius: 50%; margin: 0 auto 8px; display: grid; place-items: center; background: #FFF1E5; color: #EA5A00; }
+.hpx-s .ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; width: 20px; height: 20px; }
 .hpx-s b { display: block; font-size: 13.5px; margin-bottom: 4px; line-height: 1.2; min-height: 2.4em; display: flex; align-items: center; justify-content: center; }
 .hpx-s svg { width: 104px; height: 104px; display: block; margin: 0 auto; }
 .hpx-s .tr { fill: none; stroke: #E3E8F1; stroke-width: 11; }
@@ -83041,6 +83043,24 @@ body.hp-anim .hpx-c { animation: hpUp .7s both; }
     });
   }
   var CIRC = 2 * Math.PI * 42;
+  var ICONS = [
+    [ /kimyasal|chemical|كيم/i, "M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3" ],
+    [ /organik|organic|عضوي/i, "M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10ZM2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" ],
+    [ /sivil|civil|دفاع/i, "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z" ],
+    [ /iç denetim|internal|داخلي/i, "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9 16l2 2 4-4" ],
+    [ /departman|department|الأقسام|قسم/i, "M3 21V9l6 4V9l6 4V5h6v16z" ],
+    [ /csr|compliance|الامتثال/i, "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" ],
+    [ /isg|hse|güvenlik|safety|السلامة/i, "M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2zM10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5M4 15v-3a6 6 0 0 1 6-6M14 6a6 6 0 0 1 6 6v3" ],
+    [ /higg|fem/i, "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" ],
+    [ /oeko|tex/i, "M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" ],
+    [ /^ik\b|ik denetim|hr audit|^hr\b|insan|الموارد/i, "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" ],
+    [ /çevre|environment|بيئ/i, "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" ]
+  ];
+  function secIcon(title) {
+    var s = String(title || "").toLowerCase().replace(/\u0307/g, "");
+    for (var i = 0; i < ICONS.length; i++) if (ICONS[i][0].test(s)) return ICONS[i][1];
+    return "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11";
+  }
   function buildSections() {
     var grid = document.getElementById("ring-dashboard-grid"); if (!grid) return;
     var olds = Array.prototype.slice.call(grid.children).filter(function (c) { return c.classList.contains("ring-card"); });
@@ -83054,7 +83074,7 @@ body.hp-anim .hpx-c { animation: hpUp .7s both; }
     if (!items.length) return;
     var r = ensureRow("sc", grid, "hpx-sc");
     var html = items.map(function (x, i) {
-      return '<div class="hpx-c hpx-s" role="button" tabindex="0" data-i="' + i + '"><b>' + esc(x.title) + '</b><svg viewBox="0 0 100 100"><circle class="tr" cx="50" cy="50" r="42"/><circle class="ar" cx="50" cy="50" r="42" stroke-dasharray="' + CIRC.toFixed(1) + '" stroke-dashoffset="' + CIRC.toFixed(1) + '" data-off="' + (CIRC * (1 - x.pct / 100)).toFixed(1) + '"/><text x="50" y="51" text-anchor="middle" dominant-baseline="middle">' + Math.round(x.pct) + '%</text></svg><em>' + esc(x.cnt) + '</em></div>';
+      return '<div class="hpx-c hpx-s" role="button" tabindex="0" data-i="' + i + '"><div class="ic"><svg viewBox="0 0 24 24"><path d="' + secIcon(x.title) + '"/></svg></div><b>' + esc(x.title) + '</b><svg viewBox="0 0 100 100"><circle class="tr" cx="50" cy="50" r="42"/><circle class="ar" cx="50" cy="50" r="42" stroke-dasharray="' + CIRC.toFixed(1) + '" stroke-dashoffset="' + CIRC.toFixed(1) + '" data-off="' + (CIRC * (1 - x.pct / 100)).toFixed(1) + '"/><text x="50" y="51" text-anchor="middle" dominant-baseline="middle">' + Math.round(x.pct) + '%</text></svg><em>' + esc(x.cnt) + '</em></div>';
     }).join("");
     setRow(r, html, function (el) {
       el.querySelectorAll(".hpx-c").forEach(function (c, i) {
@@ -85860,7 +85880,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 15:25";
+const EMS_BUILD = "2026-11-19 15:27";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
