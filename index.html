@@ -82913,7 +82913,7 @@ body.hp-pro #view-dashboard > .kpi-grid, body.hp-pro #view-dashboard #ring-dashb
 .hpx { display: grid; gap: 14px; margin-bottom: 4px; }
 .hpx * { box-sizing: border-box; }
 .hpx-kp { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.hpx-sc { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.hpx-sc { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .hpx-pw { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .hpx-ch { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 .hpx-c { background: #fff; border: 1px solid #E3E8F1; border-radius: 14px; box-shadow: 0 2px 10px rgba(15,33,64,.08); cursor: pointer; position: relative; overflow: hidden; transition: transform .3s, box-shadow .3s; font-family: inherit; text-align: start; color: #0F2140; }
@@ -82955,7 +82955,7 @@ body.hp-pro #view-dashboard > .kpi-grid, body.hp-pro #view-dashboard #ring-dashb
 @keyframes hpLive { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,.6); } 100% { box-shadow: 0 0 0 10px rgba(16,185,129,0); } }
 .hp-modebtn { position: absolute; inset-inline-end: 14px; top: 12px; z-index: 3; border: 1px solid #DCE3EC; background: rgba(255,255,255,.85); color: #475569; border-radius: 8px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .hp-modebtn:hover { background: #fff; color: #0F2140; }
-@media (max-width: 1200px) { .hpx-kp, .hpx-pw { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1200px) { .hpx-kp, .hpx-pw, .hpx-sc { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .hpx-kp, .hpx-pw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hpx-sc { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hpx-k { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px; } .hpx-k b { font-size: 26px; } .hpx-p .t .i { display: none; } .hpx-p .t .pc { font-size: 18px; } .hpx-ch { grid-template-columns: 1fr; } .hpx-m { flex-wrap: wrap; } }
 body.hp-anim .hpx-c { animation: hpUp .7s both; }
 @media (prefers-reduced-motion: reduce) { .hpx-bar i, .hpx-p .s i, .hpx-live i { animation: none; } .hpx-bar i, .hpx-s .ar { transition: none; } }
@@ -85797,7 +85797,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 15:17";
+const EMS_BUILD = "2026-11-19 15:19";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
