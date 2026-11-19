@@ -82751,23 +82751,39 @@ html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi
   // Gerçek geçmiş: bulut günlük yedeklerinin özeti (ems_csr_snapshots). Yedek yoksa ya da okunamazsa çizgi UYDURULMAZ.
   // Real history from the daily cloud snapshots' summary; nothing is invented when it is missing or unreadable
   window._hpMeta = function () { var m = metrics(); return { uT: m.tu, uC: m.cu, uM: m.mu, uX: m.xu }; };
-  var trendPts = null, trendTried = 0, trendLoading = false;
+  var trendPts = null, trendTried = 0, trendLoading = false, tvN = 0;
   function todayId() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function isAdm() { try { return currentUserRole === "admin"; } catch (e) { return false; } }
+  function cloudReady() { try { return !_defaultedDocs.has("questions") && Object.values(_cloudDocsLoaded).every(Boolean); } catch (e) { return false; } }
+  function okPt(x) { return x && /^\d{4}-\d{2}-\d{2}$/.test(x.d) && typeof x.p === "number" && isFinite(x.p); }
+  function mergePts(a, b) { var m = {}; a.concat(b).forEach(function (x) { if (okPt(x)) m[x.d] = { d: x.d, p: x.p }; }); return Object.keys(m).sort().map(function (k) { return m[k]; }); }
+  // Başlangıçtan bugüne gerçek geçmiş: ems_csr/homeTrend belgesi (gün, uyum %). Yönetici ilk açışta eski günlük yedeklerden doldurur, sonra her gün bugünü ekler.
   function loadTrend() {
     if (trendLoading) return;
     try { if (typeof FIREBASE_ENABLED === "undefined" || !FIREBASE_ENABLED || typeof fbDb === "undefined" || !fbDb) return; } catch (e) { return; }
     try { if (!(typeof fbAuth !== "undefined" && fbAuth && fbAuth.currentUser)) return; } catch (e) { return; }
     trendLoading = true; trendTried++;
-    fbDb.collection("ems_csr_snapshots").orderBy(firebase.firestore.FieldPath.documentId(), "desc").limit(45).get().then(function (snap) {
-      var pts = [];
-      snap.forEach(function (d) {
-        var s = d.data() || {};
-        var tot = s.uT != null ? s.uT : (s.qTotal || 0), cmp = s.uT != null ? (s.uC || 0) : (s.qCompliant || 0);
-        if (/^\d{4}-\d{2}-\d{2}$/.test(d.id) && tot > 0) pts.push({ d: d.id, p: Math.round(cmp / tot * 1000) / 10 });
-      });
-      pts.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
-      trendPts = pts; trendLoading = false; drawTrend();
-    }).catch(function () { trendPts = []; trendLoading = false; drawTrend(); });
+    var ref = fbDb.collection("ems_csr").doc("homeTrend");
+    var finish = function (pts) { trendPts = pts; trendLoading = false; drawTrend(); };
+    ref.get().then(function (doc) {
+      var stored = (doc.exists && doc.data() && Array.isArray(doc.data().pts)) ? doc.data().pts.filter(okPt) : [];
+      if (!isAdm()) { finish(stored); return; }
+      var back = stored.length >= 2 ? Promise.resolve([]) : fbDb.collection("ems_csr_snapshots").limit(400).get().then(function (snap) {
+        var out = [];
+        snap.forEach(function (d) { var s = d.data() || {}, tot = s.uT != null ? s.uT : (s.qTotal || 0), cmp = s.uT != null ? (s.uC || 0) : (s.qCompliant || 0); if (/^\d{4}-\d{2}-\d{2}$/.test(d.id) && tot > 0) out.push({ d: d.id, p: Math.round(cmp / tot * 1000) / 10 }); });
+        return out;
+      }).catch(function () { return []; });
+      return back.then(function (old) {
+        var all = mergePts(old, stored), changed = old.length > 0;
+        var m = metrics(), td = todayId();
+        if (cloudReady() && m.tu > 0) {
+          var live = Math.round(m.cu / m.tu * 1000) / 10, last = all.filter(function (x) { return x.d === td; })[0];
+          if (!last || Math.abs(last.p - live) >= 0.1) { all = mergePts(all, [ { d: td, p: live } ]); changed = true; }
+        }
+        if (changed && all.length) return ref.set({ pts: all, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(function () { return all; }, function () { return all; });
+        return all;
+      }).then(finish);
+    }).catch(function () { trendLoading = false; if (trendPts === null) trendPts = []; drawTrend(); });
   }
   function lng() { var l = document.documentElement.lang || "tr"; return l === "ar" ? "ar-EG" : (l === "en" ? "en-GB" : "tr-TR"); }
   function fmtD(id) { var p = id.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString(lng(), { day: "numeric", month: "short" }); }
@@ -82876,14 +82892,224 @@ html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi
     setTimeout(function () { document.body.classList.remove("hp-anim"); }, 4200);
     update();
     mountClocks();
-    var tv = setInterval(function () { loadTrend(); if (trendPts !== null || trendTried > 6) clearInterval(tv); }, 3000);
-    setInterval(function () { trendPts = null; trendLoading = false; loadTrend(); }, 15 * 60 * 1000);
+    var tv = setInterval(function () { loadTrend(); if (trendPts === null && trendTried === 0 && ++tvN > 5) { trendPts = []; drawTrend(); } if (trendPts !== null || trendTried > 6) clearInterval(tv); }, 3000);
+    setInterval(function () { trendLoading = false; loadTrend(); }, 15 * 60 * 1000);
     var tries = 0, iv = setInterval(function () { mountClocks(); if (++tries > 40 || document.querySelector("#ems-topbar .etb-clocks")) clearInterval(iv); }, 500);
     setInterval(tick, 1000);
     // giriş/çıkışta adın güncellenmesi için kısa aralıkla kontrol
     setInterval(function () { try { var m = metrics(); texts(m); } catch (e) {} }, 5000);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+})();
+</script>
+
+<style id="homepro-cards-css">
+/* Ana sayfa kartları: onaylanan tasarım. Veri sitenin kendi kartlarından okunur (eski kartlar gizli kalır, tıklamalar onlara iletilir) */
+body.hp-pro #view-dashboard > .kpi-grid, body.hp-pro #view-dashboard #ring-dashboard-grid { display: none !important; }
+.hpx { display: grid; gap: 14px; margin-bottom: 4px; }
+.hpx * { box-sizing: border-box; }
+.hpx-kp { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.hpx-sc { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.hpx-pw { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.hpx-ch { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.hpx-c { background: #fff; border: 1px solid #E3E8F1; border-radius: 14px; box-shadow: 0 2px 10px rgba(15,33,64,.08); cursor: pointer; position: relative; overflow: hidden; transition: transform .3s, box-shadow .3s; font-family: inherit; text-align: start; color: #0F2140; }
+.hpx-c:hover { transform: translateY(-6px); box-shadow: 0 18px 34px rgba(15,33,64,.16); }
+.hpx-c:focus-visible { outline: 3px solid #FF8000; outline-offset: 2px; }
+.hpx-k { display: flex; align-items: center; gap: 14px; padding: 16px; border-bottom: 4px solid var(--c); min-height: 92px; }
+.hpx-k .i { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--bg); color: var(--c); }
+.hpx-k .i svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hpx-k small { display: block; font-size: 12.5px; color: #475569; font-weight: 600; line-height: 1.2; }
+.hpx-k b { font-size: 30px; font-weight: 800; line-height: 1.15; }
+.hpx-k em { display: block; font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--c); margin-top: 2px; }
+.hpx-s { padding: 14px 8px 12px; text-align: center; }
+.hpx-s b { display: block; font-size: 13.5px; margin-bottom: 4px; line-height: 1.2; min-height: 2.4em; display: flex; align-items: center; justify-content: center; }
+.hpx-s svg { width: 104px; height: 104px; display: block; margin: 0 auto; }
+.hpx-s .tr { fill: none; stroke: #E3E8F1; stroke-width: 11; }
+.hpx-s .ar { fill: none; stroke: var(--c, #F97316); stroke-width: 11; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1); }
+.hpx-s text { font-size: 19px; font-weight: 800; fill: #0F2140; }
+.hpx-s em { display: block; font-style: normal; font-size: 11.5px; color: #64748B; margin-top: 4px; min-height: 1.3em; }
+.hpx-p { padding: 16px; }
+.hpx-p .t { display: flex; align-items: center; gap: 10px; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+.hpx-p .t .i { width: 36px; height: 36px; border-radius: 50%; background: #EEF2FA; display: grid; place-items: center; color: var(--c); flex: none; }
+.hpx-p .t .i svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hpx-p .t .pc { margin-inline-start: auto; font-size: 22px; font-weight: 800; }
+.hpx-bar { height: 10px; border-radius: 99px; background: #E6EBF4; overflow: hidden; margin: 6px 0 10px; }
+.hpx-bar i { display: block; height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 60%, #fff), var(--c)); background-size: 200% 100%; transition: width 1.5s cubic-bezier(.2,.8,.2,1); animation: hpFlow 2.6s linear infinite; }
+@keyframes hpFlow { to { background-position: -200% 0; } }
+.hpx-p .s { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #475569; font-weight: 600; line-height: 1.2; }
+.hpx-p .s i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; animation: hpDot 2s infinite; }
+@keyframes hpDot { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 22%, transparent); } }
+.hpx-p .v { font-size: 26px; font-weight: 800; margin: 2px 0 0; }
+.hpx-m { display: flex; align-items: center; gap: 14px; padding: 16px; }
+.hpx-m .i { width: 50px; height: 50px; border-radius: 50%; background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); display: grid; place-items: center; flex: none; }
+.hpx-m .i svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hpx-m small { display: block; font-size: 12px; color: #64748B; font-weight: 600; line-height: 1.2; }
+.hpx-m b { font-size: 24px; font-weight: 800; line-height: 1.2; display: block; }
+.hpx-m em { display: block; font-style: normal; font-size: 11px; color: #64748B; margin-top: 2px; }
+.hpx-live { margin-inline-start: auto; font-size: 10.5px; font-weight: 800; letter-spacing: .1em; color: #059669; display: inline-flex; align-items: center; gap: 6px; }
+.hpx-live i { width: 8px; height: 8px; border-radius: 50%; background: #10B981; animation: hpLive 1.4s infinite; }
+@keyframes hpLive { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,.6); } 100% { box-shadow: 0 0 0 10px rgba(16,185,129,0); } }
+.hp-modebtn { position: absolute; inset-inline-end: 14px; top: 12px; z-index: 3; border: 1px solid #DCE3EC; background: rgba(255,255,255,.85); color: #475569; border-radius: 8px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.hp-modebtn:hover { background: #fff; color: #0F2140; }
+@media (max-width: 1200px) { .hpx-kp, .hpx-pw { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .hpx-kp, .hpx-pw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hpx-sc { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hpx-k { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px; } .hpx-k b { font-size: 26px; } .hpx-p .t .i { display: none; } .hpx-p .t .pc { font-size: 18px; } .hpx-ch { grid-template-columns: 1fr; } .hpx-m { flex-wrap: wrap; } }
+body.hp-anim .hpx-c { animation: hpUp .7s both; }
+@media (prefers-reduced-motion: reduce) { .hpx-bar i, .hpx-p .s i, .hpx-live i { animation: none; } .hpx-bar i, .hpx-s .ar { transition: none; } }
+</style>
+<script id="homepro-cards">
+(function () {
+  "use strict";
+  var KEY = "ems_hp_pro";
+  function on() { try { return localStorage.getItem(KEY) !== "0"; } catch (e) { return true; } }
+  var T = function (a, b, c) { try { return t3(a, b, c); } catch (e) { return a; } };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var txt = function (sel, root) { var e = $(sel, root); return e ? (e.textContent || "").replace(/\s+/g, " ").trim() : ""; };
+  var svgOf = function (sel) { var e = $(sel + " svg"); return e ? e.innerHTML : ""; };
+  var rows = {};   // anahtar -> { el, sig }
+  function ensureRow(key, before, cls) {
+    var r = rows[key];
+    if (r && r.el.isConnected) return r;
+    var el = document.createElement("div");
+    el.className = "hpx " + cls; el.setAttribute("data-hpx", key);
+    before.parentNode.insertBefore(el, before);
+    rows[key] = r = { el: el, sig: "" };
+    return r;
+  }
+  function fire(oldEl) { return function () { try { oldEl.click(); } catch (e) {} }; }
+  function setRow(r, html, bind) {
+    if (r.sig === html) return;
+    r.sig = html; r.el.innerHTML = html;
+    if (bind) bind(r.el);
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      r.el.querySelectorAll("[data-w]").forEach(function (e) { e.style.width = e.getAttribute("data-w") + "%"; });
+      r.el.querySelectorAll("[data-off]").forEach(function (e) { e.style.strokeDashoffset = e.getAttribute("data-off"); });
+    }); });
+  }
+  var KP = [
+    { id: "kpi-all", v: "kpi-total", c: "#3B82F6", bg: "#E8EFFD" },
+    { id: "kpi-comp", v: "kpi-comp-val", c: "#10B981", bg: "#DDF5EA" },
+    { id: "kpi-min", v: "kpi-min-val", c: "#F59E0B", bg: "#FEF1D4" },
+    { id: "kpi-crit", v: "kpi-crit-val", c: "#6B7280", bg: "#EDEFF3" }
+  ];
+  function buildKpi() {
+    var first = $("#kpi-all"); if (!first) return;
+    var grid = first.parentElement;
+    var tot = parseFloat(txt("#kpi-total")) || 0;
+    var items = [];
+    KP.forEach(function (k) {
+      var old = document.getElementById(k.id); if (!old) return;
+      var val = txt("#" + k.v), n = parseFloat(val) || 0;
+      var sub = k.id === "kpi-all" ? "" : (tot ? Math.round(n / tot * 100) + "%" : "");
+      items.push({ old: old, label: txt(".kpi-label", old), val: val, sub: sub, c: k.c, bg: k.bg, ico: svgOf("#" + k.id + " .kpi-card-icon") });
+    });
+    var certN = 0, certOk = 0;
+    try { certN = certificatesData.length; certOk = certificatesData.filter(function (c) { return c.status === "compliant"; }).length; } catch (e) {}
+    var cert = { old: null, label: T("Sertifikalar", "Certificates", "الشهادات"), val: String(certN), sub: certN ? certOk + " " + T("uyumlu", "compliant", "مطابقة") : "", c: "#8B5CF6", bg: "#EBE3FB", ico: '<path d="M12 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM8 14l-2 7 6-3 6 3-2-7"/>' };
+    items.push(cert);
+    var r = ensureRow("kp", grid, "hpx-kp");
+    var html = items.map(function (x, i) { return '<div class="hpx-c hpx-k" role="button" tabindex="0" data-i="' + i + '" style="--c:' + x.c + ';--bg:' + x.bg + '"><div class="i"><svg viewBox="0 0 24 24">' + x.ico + '</svg></div><div><small>' + esc(x.label) + '</small><b>' + esc(x.val) + '</b>' + (x.sub ? '<em>' + esc(x.sub) + '</em>' : "") + '</div></div>'; }).join("");
+    setRow(r, html, function (el) {
+      el.querySelectorAll(".hpx-c").forEach(function (c, i) {
+        var run = items[i].old ? fire(items[i].old) : function () { try { openCertHub(); } catch (e) {} };
+        c.addEventListener("click", run);
+        c.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); run(); } });
+      });
+    });
+  }
+  var CIRC = 2 * Math.PI * 42;
+  function buildSections() {
+    var grid = document.getElementById("ring-dashboard-grid"); if (!grid) return;
+    var olds = Array.prototype.slice.call(grid.children).filter(function (c) { return c.classList.contains("ring-card"); });
+    var items = olds.map(function (old) {
+      var t = old.querySelector(".donut3 text"), pct = t ? parseFloat(t.textContent) : NaN;
+      if (isNaN(pct)) { var m = (old.textContent || "").match(/(\d+(?:[.,]\d+)?)\s*%/); pct = m ? parseFloat(m[1].replace(",", ".")) : 0; }
+      var bs = Array.prototype.map.call(old.querySelectorAll(".sec-legend .sl-row b"), function (e) { return parseFloat(e.textContent) || 0; }), cnt0 = "";
+      if (bs.length >= 3) cnt0 = bs[0] + " / " + (bs[0] + bs[1] + bs[2]);
+      return { old: old, title: txt(".ring-card-title", old), pct: Math.max(0, Math.min(100, pct)), icon: txt(".ring-card-icon-badge", old), cnt: cnt0 || txt(".ring-card-count:not(.sec-legend)", old) };
+    });
+    if (!items.length) return;
+    var r = ensureRow("sc", grid, "hpx-sc");
+    var html = items.map(function (x, i) {
+      return '<div class="hpx-c hpx-s" role="button" tabindex="0" data-i="' + i + '"><b>' + esc(x.title) + '</b><svg viewBox="0 0 100 100"><circle class="tr" cx="50" cy="50" r="42"/><circle class="ar" cx="50" cy="50" r="42" stroke-dasharray="' + CIRC.toFixed(1) + '" stroke-dashoffset="' + CIRC.toFixed(1) + '" data-off="' + (CIRC * (1 - x.pct / 100)).toFixed(1) + '"/><text x="50" y="51" text-anchor="middle" dominant-baseline="middle">' + Math.round(x.pct) + '%</text></svg><em>' + esc(x.cnt) + '</em></div>';
+    }).join("");
+    setRow(r, html, function (el) {
+      el.querySelectorAll(".hpx-c").forEach(function (c, i) {
+        var run = fire(items[i].old);
+        c.addEventListener("click", run);
+        c.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); run(); } });
+      });
+    });
+  }
+  var PW = [ [ "kpi-wip-cut", "#3B82F6" ], [ "kpi-wip-sew", "#F59E0B" ], [ "kpi-wip-qc", "#10B981" ], [ "kpi-wip-pack", "#3B82F6" ], [ "kpi-wip-ship", "#6366F1" ] ];
+  function buildWip() {
+    var first = document.getElementById("kpi-wip-cut"); if (!first) return;
+    var grid = first.parentElement;
+    var items = PW.map(function (p) {
+      var old = document.getElementById(p[0]); if (!old) return null;
+      var pctTxt = txt("#" + p[0] + "-pct"), m = pctTxt.match(/(\d+(?:[.,]\d+)?)/), pct = m ? parseFloat(m[1].replace(",", ".")) : (p[0] === "kpi-wip-cut" ? 100 : 0);
+      return { old: old, label: txt(".kpi-label", old), val: txt("#" + p[0] + "-val"), pct: Math.max(0, Math.min(100, pct)), note: pctTxt || txt(".kpi-growth-badge", old), c: p[1], ico: svgOf("#" + p[0] + " .kpi-card-icon") };
+    }).filter(Boolean);
+    var r = ensureRow("pw", grid, "hpx-pw");
+    var html = items.map(function (x, i) {
+      return '<div class="hpx-c hpx-p" role="button" tabindex="0" data-i="' + i + '" style="--c:' + x.c + '"><div class="t"><div class="i"><svg viewBox="0 0 24 24">' + x.ico + '</svg></div><span>' + esc(x.label) + '</span></div><div class="v">' + esc(x.val) + '</div><div class="hpx-bar"><i data-w="' + x.pct + '"></i></div><div class="s"><i></i>' + esc(x.note) + '</div></div>';
+    }).join("");
+    setRow(r, html, function (el) {
+      el.querySelectorAll(".hpx-c").forEach(function (c, i) {
+        var run = fire(items[i].old);
+        c.addEventListener("click", run);
+        c.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); run(); } });
+      });
+    });
+  }
+  var CH = [ [ "kpi-chem-print-stock", "#7C3AED" ], [ "kpi-chem-print-report", "#A78BFA" ], [ "kpi-chem-dye-stock", "#0891B2" ], [ "kpi-chem-dye-report", "#22D3EE" ], [ "kpi-chem-general", "#1A3660" ] ];
+  function buildChem() {
+    var first = document.getElementById("kpi-chem-print-stock"); if (!first) return;
+    var grid = first.parentElement;
+    var items = CH.map(function (p) {
+      var old = document.getElementById(p[0]); if (!old) return null;
+      return { old: old, label: txt(".kpi-label", old), val: txt("#" + p[0] + "-val"), sub: txt("#" + p[0] + "-sub"), c: p[1], ico: svgOf("#" + p[0] + " .kpi-card-icon") };
+    }).filter(Boolean);
+    var r = ensureRow("ch", grid, "hpx-ch");
+    var html = items.map(function (x, i) {
+      return '<div class="hpx-c hpx-m" role="button" tabindex="0" data-i="' + i + '" style="--c:' + x.c + '"><div class="i"><svg viewBox="0 0 24 24">' + x.ico + '</svg></div><div><small>' + esc(x.label) + '</small><b>' + esc(x.val) + '</b>' + (x.sub ? '<em>' + esc(x.sub) + '</em>' : "") + '</div></div>';
+    }).join("");
+    setRow(r, html, function (el) {
+      el.querySelectorAll(".hpx-c").forEach(function (c, i) {
+        var run = fire(items[i].old);
+        c.addEventListener("click", run);
+        c.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); run(); } });
+      });
+    });
+  }
+  function modeBtn() {
+    var h = document.getElementById("home-pro-hero"); if (!h) return;
+    var b = h.querySelector(".hp-modebtn");
+    if (!b) { b = document.createElement("button"); b.type = "button"; b.className = "hp-modebtn"; h.appendChild(b); b.addEventListener("click", function () { try { localStorage.setItem(KEY, on() ? "0" : "1"); } catch (e) {} apply(); }); }
+    b.textContent = on() ? T("Klasik görünüm", "Classic view", "العرض الكلاسيكي") : T("Yeni görünüm", "New view", "العرض الجديد");
+  }
+  function build() {
+    if (!document.getElementById("view-dashboard")) return;
+    document.body.classList.toggle("hp-pro", on());
+    modeBtn();
+    if (!on()) return;
+    try { buildKpi(); buildSections(); buildWip(); buildChem(); } catch (e) { console.warn("homepro-cards", e); document.body.classList.remove("hp-pro"); }
+  }
+  function apply() { document.body.classList.toggle("hp-pro", on()); if (on()) { Object.keys(rows).forEach(function (k) { rows[k].sig = ""; }); } build(); }
+  var timer = null;
+  function sched() { clearTimeout(timer); timer = setTimeout(build, 160); }
+  function boot() {
+    build();
+    var v = document.getElementById("view-dashboard");
+    if (v && window.MutationObserver) {
+      var mo = new MutationObserver(function (muts) {
+        for (var i = 0; i < muts.length; i++) { var t = muts[i].target; if (t && t.closest && t.closest(".hpx")) continue; if (t && t.nodeType === 1 && (t.classList.contains("hpx") || t.classList.contains("hp-hero"))) continue; sched(); return; }
+      });
+      mo.observe(v, { childList: true, subtree: true, characterData: true });
+    }
+    setInterval(build, 4000);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 50); }); else setTimeout(boot, 50);
 })();
 </script>
 
@@ -85567,7 +85793,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 15:02";
+const EMS_BUILD = "2026-11-19 15:12";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
