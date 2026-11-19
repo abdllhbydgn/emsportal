@@ -136,10 +136,10 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 }
 .btn-admin-login-submit:hover { background: linear-gradient(180deg, #d3363c 0%, #a02127 100%); transform: translateY(-2px); box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 12px 24px rgba(255,128,0,0.4), 0 4px 8px rgba(255,128,0,0.3); }
 .btn-admin-login-submit:active { transform: translateY(0); box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 10px rgba(255,128,0,0.3); }
-.brand-logo-img { width: 205px; max-width: 60vw; height: auto; display: block; margin: 0 auto; filter: none; transition: filter 0.25s ease; }
+.brand-logo-img { width: 205px; max-width: calc(60 * var(--vw)); height: auto; display: block; margin: 0 auto; filter: none; transition: filter 0.25s ease; }
 .login-card {
   background: rgba(15,22,40,0.72); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(200,164,74,0.28);
-  border-radius: 20px; padding: 26px 26px 24px; margin-top: 22px; width: 320px; max-width: 90vw;
+  border-radius: 20px; padding: 26px 26px 24px; margin-top: 22px; width: 320px; max-width: calc(90 * var(--vw));
   box-shadow: 0 2px 0 rgba(255,255,255,0.06) inset, 0 30px 60px -12px rgba(0,0,0,0.5), 0 18px 36px -18px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25);
   display: flex; flex-direction: column; gap: 12px; z-index: 20; position: relative; overflow: hidden;
   transform: perspective(1200px) rotateX(1.5deg);
@@ -225,10 +225,10 @@ html body .login-error.ok, html body #view-welcome .login-error.ok, html body #l
 @media (max-width: 1100px) { .site-footer-main { grid-template-columns: 1fr 1fr 1fr; } }
 @media (max-width: 900px) { .site-footer-main { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) { .site-footer-main { grid-template-columns: 1fr; padding: 32px 20px 24px; gap: 26px; } .group-logo-footer-row { gap: 12px; } .group-logo-footer-link { padding: 8px 12px; } .group-logo-footer-img { height: 26px; max-width: 84px; } }
-.app-shell { display: flex; align-items: stretch; gap: 0; min-height: 100vh; min-height: 100dvh; margin: -16px -12px; }
+.app-shell { display: flex; align-items: stretch; gap: 0; min-height: calc(100 * var(--vh)); min-height: calc(100 * var(--dvh)); margin: -16px -12px; }
 .side-nav {
   width: var(--sidebar-w); flex-shrink: 0; background: linear-gradient(180deg, #1E2A3D 0%, #16202E 55%, #121A26 100%); color: #fff;
-  min-height: 100vh; min-height: 100dvh; position: sticky; top: 0; display: flex; flex-direction: column;
+  min-height: calc(100 * var(--vh)); min-height: calc(100 * var(--dvh)); position: sticky; top: 0; display: flex; flex-direction: column;
   padding: 26px 18px; gap: 8px; box-shadow: 4px 0 24px rgba(10,14,24,0.28); z-index: 5;
   transition: width 0.25s cubic-bezier(0.16,1,0.3,1), padding 0.25s ease;
 }
@@ -603,7 +603,7 @@ body.qms-open { overflow: hidden; }
 .qms-ff-body::-webkit-scrollbar-thumb { background: #8a94a6; border-radius: 8px; border: 2px solid #e6e9ef; }
 .qms-ff-body::-webkit-scrollbar-track { background: #e6e9ef; }
 @media (max-width: 700px) { .qms-dbn { flex-basis: 45%; } }
-.qms-ff-win { background: #eef1f6; border-radius: 16px; width: min(860px, 100%); max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,.35); border-top: 5px solid #FF8000; overflow: hidden; }
+.qms-ff-win { background: #eef1f6; border-radius: 16px; width: min(860px, 100%); max-height: calc(92 * var(--vh)); display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,.35); border-top: 5px solid #FF8000; overflow: hidden; }
 .qms-ff-bar { display: flex; gap: 8px; align-items: center; padding: 10px 14px; background: #fff; border-bottom: 1px solid #e1e5ec; flex-wrap: wrap; font-size: 13px; }
 .qms-ff-body { overflow: auto; padding: 14px; }
 .qms-ff-paper { background: #fff; border-radius: 6px; padding: 22px 26px; box-shadow: 0 2px 10px rgba(20,25,40,.12); color: #1f2430; }
@@ -626,7 +626,7 @@ body.qms-open { overflow: hidden; }
 .qms-x { background: #FF8000; color: #fff; border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
 .qms-body { flex: 1; overflow-y: auto; padding: 22px 34px 40px; }
 @media (max-width: 700px) { .qms-body { padding: 16px 12px 30px; } .qms-bar { padding: 8px 12px; } .qms-bc { display: none; } .qms-ttl { font-size: 14px; } }
-.qms-gate { max-width: 380px; margin: 12vh auto 0; background: #fff; border-radius: 18px; padding: 30px 26px; text-align: center; box-shadow: 0 10px 30px rgba(20,25,40,.14); border-top: 5px solid #FF8000; }
+.qms-gate { max-width: 380px; margin: calc(12 * var(--vh)) auto 0; background: #fff; border-radius: 18px; padding: 30px 26px; text-align: center; box-shadow: 0 10px 30px rgba(20,25,40,.14); border-top: 5px solid #FF8000; }
 .qms-gate-ic { font-size: 40px; }
 .qms-gate h2 { margin: 8px 0 6px; font-size: 20px; color: #1f2430; }
 .qms-gate p { color: #5b6475; font-size: 13px; margin-bottom: 14px; }
@@ -735,16 +735,16 @@ body.qms-open { overflow: hidden; }
 }
 .side-user-contact-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
 .side-user-contact-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--navy-d); }
-.main-content { flex: 1; min-width: 0; padding: 28px 28px 60px 28px; display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+.main-content { flex: 1; min-width: 0; padding: 28px 28px 60px 28px; display: flex; flex-direction: column; min-height: calc(100 * var(--vh)); min-height: calc(100 * var(--dvh)); }
 .topbar { display: flex; flex-direction: row-reverse; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
 .dept-banner { text-align: center; margin: 2px 0 18px; width: 100%; }
 .dept-heading { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; font-size: 34px; font-weight: 900; color: var(--navy); letter-spacing: 2.5px; text-transform: uppercase; line-height: 1.25; white-space: nowrap; margin-bottom: 8px; }
 @media (max-width: 1100px) { .dept-heading { font-size: 20px; white-space: normal; } }
 @media (max-width: 1100px) {
   .dept-sub {
-    font-size: clamp(9px, 1.9vw, 15px) !important;
+    font-size: clamp(9px, calc(1.9 * var(--vw)), 15px) !important;
     letter-spacing: 0.4px !important;
-    max-width: 94vw;
+    max-width: calc(94 * var(--vw));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -866,7 +866,7 @@ body.qms-open { overflow: hidden; }
 @media (max-width: 900px) {
   .app-shell { margin: 0; }
   .side-nav {
-    display: flex; position: fixed; top: 0; left: 0; height: 100vh; height: 100dvh; width: 82%; max-width: 300px;
+    display: flex; position: fixed; top: 0; left: 0; height: calc(100 * var(--vh)); height: calc(100 * var(--dvh)); width: 82%; max-width: 300px;
     transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
     z-index: 10060; box-shadow: 8px 0 40px rgba(0,0,0,0.4);
   }
@@ -888,7 +888,7 @@ body.qms-open { overflow: hidden; }
 .search-wrap { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 5px 8px; display: flex; gap: 10px; align-items: center; box-shadow: var(--shadow); width: 42px; height: 42px; overflow: hidden; transition: width 0.28s cubic-bezier(0.16,1,0.3,1), padding 0.28s, gap 0.28s, box-shadow 0.2s, border-color 0.2s; cursor: pointer; flex-shrink: 0; box-sizing: border-box; justify-content: center; position: relative; }
 .search-wrap:hover { box-shadow: var(--shadow-hover); border-color: var(--border-h); }
 .search-wrap:not(.open) { gap: 0; }
-.search-wrap.open { width: min(440px, 90vw); cursor: default; justify-content: flex-start; padding: 5px 8px 5px 14px; }
+.search-wrap.open { width: min(440px, calc(90 * var(--vw))); cursor: default; justify-content: flex-start; padding: 5px 8px 5px 14px; }
 .search-wrap.open:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.14), var(--shadow); }
 .search-wrap svg { flex-shrink: 0; cursor: pointer; }
 .search-wrap input, .search-wrap .btn-search-trigger { opacity: 0; pointer-events: none; transition: opacity 0.15s, width 0.28s, padding 0.28s; white-space: nowrap; }
@@ -1012,7 +1012,7 @@ body.visitor-restricted #view-visitor-home { display: block !important; }
 .ann-row { display: flex; align-items: center; gap: 9px; padding: 5px 3px; border-bottom: 1px dashed #E2E8F0; font-size: 12.5px; font-weight: 700; color: #0F172A; line-height: 1.4; } .ann-row:last-child { border-bottom: 0; }
 .ann-no { flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 900; color: #fff; background: var(--c, var(--navy)); }
 .ann-ic { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; background: color-mix(in srgb, var(--c, var(--navy)) 12%, #fff); }
-@media (max-width: 760px) { #site-announcement-popup .modal-container { overflow-y: auto !important; width: 94vw !important; height: auto !important; } .ann-cols { grid-template-columns: 1fr; padding: 10px 10px 14px; } .ann-fixed { overflow: visible; flex: 0 0 auto; } .ann-hero { padding: 12px 14px; } .ann-row { font-size: 12.5px; } }
+@media (max-width: 760px) { #site-announcement-popup .modal-container { overflow-y: auto !important; width: calc(94 * var(--vw)) !important; height: auto !important; } .ann-cols { grid-template-columns: 1fr; padding: 10px 10px 14px; } .ann-fixed { overflow: visible; flex: 0 0 auto; } .ann-hero { padding: 12px 14px; } .ann-row { font-size: 12.5px; } }
 .announcement-popup-body { position: relative; padding: 4px 2px 2px; }
 .announcement-popup-text { position: relative; white-space: pre-wrap; line-height: 1.7; word-break: break-word; min-height: 20px; font-size: 16px; }
 .announcement-popup-empty-hint { color: rgba(15,23,42,0.42); font-size: 13px; font-style: italic; }
@@ -1051,7 +1051,7 @@ body:not(.ems-shell-on) .ahub-overlay { position: fixed; inset: 0; padding: 0; a
 .ahub-pane > * { width: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; transform: none !important; animation: none !important; border-radius: 20px !important; box-shadow: 0 10px 24px rgba(18,37,63,.06) !important; }
 #del-review-dlg { position: fixed; inset: 0; z-index: 100060; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(15,23,42,.55); backdrop-filter: blur(3px); }
 #del-review-dlg.on { display: flex; }
-.drv-card { width: min(520px, 100%); max-height: 92vh; overflow: auto; background: #fff; border-radius: 18px; box-shadow: 0 30px 70px rgba(15,23,42,.35); display: flex; flex-direction: column; }
+.drv-card { width: min(520px, 100%); max-height: calc(92 * var(--vh)); overflow: auto; background: #fff; border-radius: 18px; box-shadow: 0 30px 70px rgba(15,23,42,.35); display: flex; flex-direction: column; }
 .drv-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid #EEF1F6; }
 .drv-ic { width: 42px; height: 42px; border-radius: 12px; background: #FEE2E2; color: #FF8000; display: grid; place-items: center; flex: none; } .drv-ic svg { width: 22px; height: 22px; }
 .drv-head b { display: block; font-size: 17px; color: #12253F; } .drv-head small { font-size: 12.5px; color: #64748B; }
@@ -1084,7 +1084,7 @@ body:not(.ems-shell-on) .ahub-overlay { position: fixed; inset: 0; padding: 0; a
 .ahd-qa { grid-area: qa; display: flex; flex-wrap: wrap; gap: 8px; }
 .ahd-qa button { display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: 999px; border: 1px solid #D5DEEA; background: #fff; color: var(--navy-d); font: inherit; font-weight: 800; font-size: 13px; cursor: pointer; } .ahd-qa button:hover { background: var(--navy-d); color: #fff; border-color: var(--navy-d); } .ahd-qa svg { width: 16px; height: 16px; }
 .ahd-sc-go { margin-top: auto; padding-top: 4px; font-size: 11.5px; font-weight: 800; color: var(--tone); font-style: normal; }
-.ahd { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr); grid-template-areas: "hello todo" "act todo" "qa todo" "kpis todo" "site todo" "recent todo"; grid-template-rows: auto auto auto auto auto 1fr; gap: 18px; min-height: calc(100vh - var(--ahub-head-h, 104px) - 66px); }
+.ahd { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr); grid-template-areas: "hello todo" "act todo" "qa todo" "kpis todo" "site todo" "recent todo"; grid-template-rows: auto auto auto auto auto 1fr; gap: 18px; min-height: calc(calc(100 * var(--vh)) - var(--ahub-head-h, 104px) - 66px); }
 .ahd-hello { grid-area: hello; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 22px 26px; border-radius: 20px; color: #fff; background: radial-gradient(120% 140% at 100% 0%, rgba(200,164,74,.28), transparent 55%), linear-gradient(135deg, var(--navy-d), var(--navy) 70%, #23447a); box-shadow: 0 14px 30px rgba(18,37,63,.18); }
 .ahd-hello h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; } .ahd-hello p { margin: 4px 0 0; font-size: 13.5px; color: #C9D6EA; }
 .ahd-hello-sum { font-size: 13px; font-weight: 700; color: #F3E3B5; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); padding: 8px 14px; border-radius: 999px; }
@@ -1152,7 +1152,7 @@ body:not(.ems-shell-on) .ahub-overlay { position: fixed; inset: 0; padding: 0; a
 .ahub-layout { display: flex; align-items: stretch; min-height: 100%; }
 .ahub-main { flex: 1; min-width: 0; padding: 26px 34px 40px; }
 .ahub-side { width: 272px; flex: none; background: #fff; border-inline-end: 1px solid #E1E7F0; box-shadow: 6px 0 24px rgba(18,37,63,.04); }
-.ahub-side-in { position: sticky; top: var(--ahub-head-h, 104px); max-height: calc(100vh - var(--ahub-head-h, 104px)); overflow-y: auto; padding: 16px 12px 22px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
+.ahub-side-in { position: sticky; top: var(--ahub-head-h, 104px); max-height: calc(calc(100 * var(--vh)) - var(--ahub-head-h, 104px)); overflow-y: auto; padding: 16px 12px 22px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
 .ahub-side-grp { display: flex; flex-direction: column; gap: 2px; }
 .ahub-side-lbl { display: flex; align-items: center; gap: 9px; margin: 16px 6px 6px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #64748B; }
 .ahub-side-lbl .ahub-sec-ic { width: 26px; height: 26px; border-radius: 8px; } .ahub-side-lbl .ahub-sec-ic svg { width: 15px; height: 15px; }
@@ -1226,7 +1226,7 @@ html[dir="rtl"] #ahub-back svg, html[dir="rtl"] #ahub-fwd svg { transform: scale
 .ahub-go { font-size: 26px; color: #94a3b8; line-height: 1; } html[dir="rtl"] .ahub-go { transform: scaleX(-1); }
 .ahub-badge { background: var(--red); color: #fff; border-radius: 999px; font-size: 13px; font-weight: 800; padding: 3px 11px; animation: badgePulseGlow 1.8s ease-in-out infinite; }
 .ahub-soon { display: flex; align-items: center; padding: 16px; font-size: 13px; color: #92400e; background: #fffbeb; border: 1.5px dashed #f59e0b; border-radius: 16px; min-height: 86px; }
-.ahub-lock { max-width: 380px; margin: 6vh auto 0; background: #fff; border: 1px solid #E1E7F0; border-radius: 24px; padding: 34px 30px; text-align: center; box-shadow: 0 24px 50px rgba(18,37,63,.12); }
+.ahub-lock { max-width: 380px; margin: calc(6 * var(--vh)) auto 0; background: #fff; border: 1px solid #E1E7F0; border-radius: 24px; padding: 34px 30px; text-align: center; box-shadow: 0 24px 50px rgba(18,37,63,.12); }
 .ahub-lock.shake { animation: ahubShake .4s; }
 @keyframes ahubShake { 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-4px); } }
 .ahub-lock-ic { width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 20px; background: linear-gradient(135deg, var(--navy-d), var(--navy)); color: #fff; display: flex; align-items: center; justify-content: center; }
@@ -1307,7 +1307,7 @@ body.ahub-on #ems-topbar { display: none !important; }
 .sc-btn:disabled { opacity: .45; cursor: default; } .sc-btn.ghost { background: #fff; color: var(--navy); border: 1.5px solid #E1E7F0; } .sc-btn.red { background: var(--red); } .sc-btn.sm { padding: 7px 13px; font-size: 12.5px; }
 .sc-savebar { position: sticky; bottom: 0; z-index: 3; display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin: 18px -34px -40px; padding: 14px 34px; background: rgba(255,255,255,.97); border-top: 1px solid #E1E7F0; box-shadow: 0 -8px 24px rgba(18,37,63,.06); }
 .sc-savebar span { margin-inline-end: auto; font-weight: 700; color: #64748B; font-size: 14px; } .sc-savebar.on span { color: #b45309; }
-.sc-toast { position: fixed; left: 50%; bottom: 90px; transform: translate(-50%, 20px); z-index: 30000; background: var(--navy-d); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; box-shadow: 0 14px 30px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: all .25s; max-width: calc(100vw - 32px); text-align: center; }
+.sc-toast { position: fixed; left: 50%; bottom: 90px; transform: translate(-50%, 20px); z-index: 30000; background: var(--navy-d); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; box-shadow: 0 14px 30px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: all .25s; max-width: calc(calc(100 * var(--vw)) - 32px); text-align: center; }
 .sc-toast.show { opacity: 1; transform: translate(-50%, 0); } .sc-toast.bad { background: var(--red); }
 @media (max-width: 900px) { .sc-row { grid-template-columns: 1fr 40px; } .sc-row-k { grid-column: 1 / -1; } .sc-row .sc-f { grid-column: 1 / 2; } .sc-row .sc-reset { grid-row: 1; grid-column: 2; align-self: start; }
   .sc-mrow { grid-template-columns: 34px 1fr; } .sc-mrow .sc-f, .sc-mrow .sc-tog { grid-column: 2; } .sc-mrow.sc-mrow2, .sc-msec-h { grid-template-columns: 1fr; } .sc-mrow.sc-mrow2 .sc-f { grid-column: 1; } .sc-mtools { justify-content: space-between; } .sc-mvs { flex-direction: row; } .sc-mv { width: 40px; height: 34px; } .sc-mopts select { max-width: 160px; } .sc-lrow { grid-template-columns: 1fr; } .sc-savebar { margin: 18px -14px -30px; padding: 12px 14px; } .sc-danger { flex-direction: column; align-items: stretch; } }
@@ -1616,7 +1616,7 @@ tr:hover td { background: #fafbfd; }
 .ann-prog-del:hover { color:#FF8000; }
 .ann-autoshow-btn.off { border-color:#CBD5E1; background:#F1F5F9; color:#64748B; }
 .modal-container {
-  background: #fff; width: 100%; max-width: min(1960px, 98vw); max-height: 94vh;
+  background: #fff; width: 100%; max-width: min(1960px, calc(98 * var(--vw))); max-height: calc(94 * var(--vh));
   border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
   display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; position: relative;
   animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1716,8 +1716,8 @@ body.ems-modal-resizing, body.ems-modal-resizing * { user-select: none !importan
 .modal-fullscreen-toggle-btn:hover { background: #e2e8f0; color: var(--text); }
 .modal-fullscreen-toggle-btn svg { width: 18px; height: 18px; stroke-width: 2.3; }
 .modal-container.modal-fullscreen {
-  width: 100vw !important; height: 100vh !important;
-  max-width: 100vw !important; max-height: 100vh !important;
+  width: calc(100 * var(--vw)) !important; height: calc(100 * var(--vh)) !important;
+  max-width: calc(100 * var(--vw)) !important; max-height: calc(100 * var(--vh)) !important;
   top: 0 !important; left: 0 !important; margin: 0 !important;
   border-radius: 0 !important;
 }
@@ -1819,7 +1819,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
   .panel { padding: 14px; border-radius: 12px; }
   .modal-overlay { align-items: flex-end; }
   .modal-container { 
-    max-height: 95vh; 
+    max-height: calc(95 * var(--vh)); 
     border-radius: 20px 20px 0 0; 
     animation: modalSlideMobile 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -1905,14 +1905,14 @@ input, select, textarea { transition: border-color 0.18s ease, box-shadow 0.18s 
 input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
 button { transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease; }
 @media (max-width: 600px) {
-  .modal-title { font-size: clamp(13px, 4.2vw, 18.5px) !important; }
-  .customer-kpi-val { font-size: clamp(20px, 6.5vw, 32px) !important; }
-  .customer-kpi-label { font-size: clamp(9px, 2.6vw, 11.5px) !important; }
-  .ring-card-title { font-size: clamp(9.5px, 3.2vw, 14px) !important; white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; width: 100%; padding: 0 4px; box-sizing: border-box; }
+  .modal-title { font-size: clamp(13px, calc(4.2 * var(--vw)), 18.5px) !important; }
+  .customer-kpi-val { font-size: clamp(20px, calc(6.5 * var(--vw)), 32px) !important; }
+  .customer-kpi-label { font-size: clamp(9px, calc(2.6 * var(--vw)), 11.5px) !important; }
+  .ring-card-title { font-size: clamp(9.5px, calc(3.2 * var(--vw)), 14px) !important; white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; width: 100%; padding: 0 4px; box-sizing: border-box; }
   .kpi-card-ring .kpi-card-icon, #kpi-all .kpi-card-icon { width: 34px !important; height: 34px !important; border-radius: 10px !important; top: 8px !important; inset-inline-start: 8px !important; }
   .kpi-card-ring .kpi-card-icon svg, #kpi-all .kpi-card-icon svg { width: 17px !important; height: 17px !important; }
-  .ring-card-count { font-size: clamp(9.5px, 2.8vw, 11.5px) !important; }
-  .side-nav-item { font-size: clamp(12px, 3.4vw, 14px) !important; }
+  .ring-card-count { font-size: clamp(9.5px, calc(2.8 * var(--vw)), 11.5px) !important; }
+  .side-nav-item { font-size: clamp(12px, calc(3.4 * var(--vw)), 14px) !important; }
   h1, h2, h3 { overflow-wrap: break-word; word-break: break-word; }
 }
 @media (max-width: 768px) {
@@ -1925,11 +1925,11 @@ button { transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s 
   }
 }
 @media (max-width: 768px) {
-  .kpi-val { font-size: clamp(18px, 6vw, 24px) !important; }
-  .kpi-label { font-size: clamp(9.5px, 2.6vw, 11px) !important; }
-  .kpi-val-pct { font-size: clamp(10px, 3vw, 13px) !important; }
+  .kpi-val { font-size: clamp(18px, calc(6 * var(--vw)), 24px) !important; }
+  .kpi-label { font-size: clamp(9.5px, calc(2.6 * var(--vw)), 11px) !important; }
+  .kpi-val-pct { font-size: clamp(10px, calc(3 * var(--vw)), 13px) !important; }
   .kpi-card-count {
-    font-size: clamp(9.5px, 2.8vw, 11.5px) !important;
+    font-size: clamp(9.5px, calc(2.8 * var(--vw)), 11.5px) !important;
     font-weight: 800 !important;
     color: var(--text) !important;
     background: rgba(15,23,42,0.06) !important;
@@ -1950,18 +1950,18 @@ button:active { transform: scale(0.97); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
-.ems-contact-wrap { max-width:none; width:100%; margin:clamp(36px,4vw,64px) 0 8px; }
+.ems-contact-wrap { max-width:none; width:100%; margin:clamp(36px,calc(4 * var(--vw)),64px) 0 8px; }
 .ems-contact-card { background:var(--white); border-radius:26px; box-shadow:0 18px 50px rgba(20,25,40,.14); overflow:hidden; border:1px solid var(--border); border-top:6px solid #FF8000; }
-.ems-contact-head { background:linear-gradient(135deg, #2B2E33 0%, #1E2024 100%); padding:clamp(26px,3vw,48px) clamp(24px,3.4vw,56px); color:#fff; }
-.ems-contact-head h3 { font-size:clamp(24px,2.2vw,38px); font-weight:900; margin:0; }
-.ems-contact-head p { font-size:clamp(14px,1.1vw,19px); opacity:.85; margin-top:8px; }
-.ems-contact-body { padding:clamp(24px,3vw,52px); display:grid; grid-template-columns:1fr 1.15fr; gap:clamp(24px,3.4vw,60px); align-items:stretch; }
+.ems-contact-head { background:linear-gradient(135deg, #2B2E33 0%, #1E2024 100%); padding:clamp(26px,calc(3 * var(--vw)),48px) clamp(24px,calc(3.4 * var(--vw)),56px); color:#fff; }
+.ems-contact-head h3 { font-size:clamp(24px,calc(2.2 * var(--vw)),38px); font-weight:900; margin:0; }
+.ems-contact-head p { font-size:clamp(14px,calc(1.1 * var(--vw)),19px); opacity:.85; margin-top:8px; }
+.ems-contact-body { padding:clamp(24px,calc(3 * var(--vw)),52px); display:grid; grid-template-columns:1fr 1.15fr; gap:clamp(24px,calc(3.4 * var(--vw)),60px); align-items:stretch; }
 @media (max-width:820px){ .ems-contact-body { grid-template-columns:1fr; } }
-.ems-f label { display:block; font-size:clamp(13.5px,1vw,17px); font-weight:800; color:var(--text); margin:0 0 7px; }
-.ems-f input, .ems-f textarea { width:100%; border:1.5px solid var(--border-h); border-radius:14px; padding:clamp(12px,1vw,18px) clamp(14px,1.2vw,20px); font-size:clamp(15px,1.1vw,18px); font-family:inherit; background:#fbfcfe; transition:border-color .18s ease, box-shadow .18s ease; }
+.ems-f label { display:block; font-size:clamp(13.5px,calc(1 * var(--vw)),17px); font-weight:800; color:var(--text); margin:0 0 7px; }
+.ems-f input, .ems-f textarea { width:100%; border:1.5px solid var(--border-h); border-radius:14px; padding:clamp(12px,calc(1 * var(--vw)),18px) clamp(14px,calc(1.2 * var(--vw)),20px); font-size:clamp(15px,calc(1.1 * var(--vw)),18px); font-family:inherit; background:#fbfcfe; transition:border-color .18s ease, box-shadow .18s ease; }
 .ems-f input:focus, .ems-f textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.12); background:#fff; }
-.ems-f textarea { min-height:clamp(120px,10vw,190px); resize:vertical; }
-.ems-submit { margin-top:18px; width:100%; background:linear-gradient(135deg, #FF8000, #A8161F); color:#fff; border:none; border-radius:14px; padding:clamp(14px,1.2vw,20px); font-size:clamp(16px,1.2vw,20px); font-weight:800; cursor:pointer; }
+.ems-f textarea { min-height:clamp(120px,calc(10 * var(--vw)),190px); resize:vertical; }
+.ems-submit { margin-top:18px; width:100%; background:linear-gradient(135deg, #FF8000, #A8161F); color:#fff; border:none; border-radius:14px; padding:clamp(14px,calc(1.2 * var(--vw)),20px); font-size:clamp(16px,calc(1.2 * var(--vw)),20px); font-weight:800; cursor:pointer; }
 .ems-submit:hover { opacity:.92; }
 .ems-wa-side { display:flex; flex-direction:column; gap:14px; justify-content:stretch; min-height:320px; }
 .ems-wa-side img { width:100% !important; max-width:none !important; height:100% !important; min-height:320px; object-fit:cover; border-radius:20px !important; box-shadow:0 12px 32px rgba(20,25,40,.2); }
@@ -2021,15 +2021,15 @@ body.visitor-mode .ems-visitor-logout:hover { transform: translateY(-2px); box-s
   border-color: var(--card-c1, #4F46E5);
 }
 /* Ziyaretçi kartları: büyük ikon, ekrana göre ölçeklenir / Visitor cards: large icon that scales with the screen */
-#view-visitor-home .visitor-home-card { aspect-ratio: 3 / 3.3; gap: clamp(8px, 1vw, 16px); padding: clamp(20px, 2.2vw, 40px) clamp(14px, 1.6vw, 28px); }
+#view-visitor-home .visitor-home-card { aspect-ratio: 3 / 3.3; gap: clamp(8px, calc(1 * var(--vw)), 16px); padding: clamp(20px, calc(2.2 * var(--vw)), 40px) clamp(14px, calc(1.6 * var(--vw)), 28px); }
 #view-visitor-home .visitor-home-card-icon {
-  width: clamp(84px, 8.4vw, 150px); height: clamp(84px, 8.4vw, 150px); border-radius: clamp(22px, 2.2vw, 38px);
-  font-size: clamp(44px, 4.4vw, 80px); margin: 0 auto clamp(4px, .6vw, 10px);
+  width: clamp(84px, calc(8.4 * var(--vw)), 150px); height: clamp(84px, calc(8.4 * var(--vw)), 150px); border-radius: clamp(22px, calc(2.2 * var(--vw)), 38px);
+  font-size: clamp(44px, calc(4.4 * var(--vw)), 80px); margin: 0 auto clamp(4px, .6vw, 10px);
   box-shadow: 0 14px 28px -8px color-mix(in srgb, var(--card-c1) 60%, transparent), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -6px 14px rgba(0,0,0,.14);
 }
-#view-visitor-home .visitor-home-card-title { font-size: clamp(17px, 1.5vw, 26px); font-weight: 900; }
-#view-visitor-home .visitor-home-card-sub { font-size: clamp(12.5px, 1vw, 17px); margin-top: 2px; }
-#view-visitor-home .visitor-home-card-arrow { font-size: clamp(16px, 1.4vw, 24px); margin-top: clamp(6px, .8vw, 14px); }
+#view-visitor-home .visitor-home-card-title { font-size: clamp(17px, calc(1.5 * var(--vw)), 26px); font-weight: 900; }
+#view-visitor-home .visitor-home-card-sub { font-size: clamp(12.5px, calc(1 * var(--vw)), 17px); margin-top: 2px; }
+#view-visitor-home .visitor-home-card-arrow { font-size: clamp(16px, calc(1.4 * var(--vw)), 24px); margin-top: clamp(6px, .8vw, 14px); }
 @media (max-width: 900px) {
   #view-visitor-home [style*="grid-template-columns"] { grid-template-columns: repeat(2, 1fr) !important; }
 }
@@ -2065,11 +2065,11 @@ body.visitor-mode #view-visitor-home > div { max-width: 100% !important; }
 @media (max-width: 760px) { .vh-media { grid-template-columns: 1fr; gap: 14px; } }
 body.visitor-mode { --cl-h: 106px; }
 @media (max-width:768px){ body.visitor-mode { --cl-h: 54px; } #view-visitor-home .visitor-home-card { aspect-ratio: auto; min-height: 190px; } }
-body.visitor-mode .ems-corner-logo img { width: calc(var(--cl-h) * 1.75); height: auto; max-width: 42vw; }
+body.visitor-mode .ems-corner-logo img { width: calc(var(--cl-h) * 1.75); height: auto; max-width: calc(42 * var(--vw)); }
 @media (min-width:769px){ body.visitor-mode .dept-banner { padding-left: calc(var(--cl-h) * 1.75 + 36px); } }
 @media (min-width:769px){
-  body.visitor-mode .dept-heading { font-size: clamp(34px, 3.4vw, 64px) !important; letter-spacing: .08em; }
-  body.visitor-mode .dept-sub { font-size: clamp(14px, 1.25vw, 24px) !important; max-width: none !important; }
+  body.visitor-mode .dept-heading { font-size: clamp(34px, calc(3.4 * var(--vw)), 64px) !important; letter-spacing: .08em; }
+  body.visitor-mode .dept-sub { font-size: clamp(14px, calc(1.25 * var(--vw)), 24px) !important; max-width: none !important; }
 }
 html[lang="tr"] .i18n-en, html[lang="tr"] .i18n-ar,
 html[lang="en"] .i18n-tr, html[lang="en"] .i18n-ar,
@@ -2244,11 +2244,11 @@ body.ems-shell-on.visitor-mode .ems-corner-logo { z-index: 5; }
 body.visitor-mode.ems-page-open .ems-corner-logo { position: fixed !important; top: calc(var(--nav-h) + 12px) !important; left: 16px !important; transform: none; z-index: 20400 !important; pointer-events: none; display: none; }
 body.visitor-mode.ems-page-open.ems-focus .ems-corner-logo { top: 14px !important; }
 /* Ziyaretçi sayfaları: içerik ve yazılar ekran genişliğine göre büyür / Visitor pages: content and text scale with the screen */
-body.visitor-mode .qa-dept-overlay-inner { max-width: min(100%, 2400px); padding-left: clamp(20px, 3vw, 72px); padding-right: clamp(20px, 3vw, 72px); }
-body.visitor-mode .qa-dept-overlay-body { font-size: clamp(16px, 1.15vw, 24px); }
-body.visitor-mode .qa-dept-overlay-body p, body.visitor-mode .qa-dept-overlay-body li { font-size: clamp(16px, 1.15vw, 24px); line-height: 1.85; }
-body.visitor-mode .qa-dept-overlay-body h3 { font-size: clamp(19px, 1.5vw, 32px) !important; }
-body.visitor-mode .qa-dept-hero { padding: clamp(44px, 4vw, 90px) 30px; }
+body.visitor-mode .qa-dept-overlay-inner { max-width: min(100%, 2400px); padding-left: clamp(20px, calc(3 * var(--vw)), 72px); padding-right: clamp(20px, calc(3 * var(--vw)), 72px); }
+body.visitor-mode .qa-dept-overlay-body { font-size: clamp(16px, calc(1.15 * var(--vw)), 24px); }
+body.visitor-mode .qa-dept-overlay-body p, body.visitor-mode .qa-dept-overlay-body li { font-size: clamp(16px, calc(1.15 * var(--vw)), 24px); line-height: 1.85; }
+body.visitor-mode .qa-dept-overlay-body h3 { font-size: clamp(19px, calc(1.5 * var(--vw)), 32px) !important; }
+body.visitor-mode .qa-dept-hero { padding: clamp(44px, calc(4 * var(--vw)), 90px) 30px; }
 body.visitor-mode.ems-page-open:not(.ems-page-qa) .ems-corner-logo { display: none !important; }
 @media (min-width:900px){ body.visitor-mode.ems-page-open .qa-dept-overlay.open { padding-left: 170px; box-sizing: border-box; } body.visitor-mode.ems-page-open.ems-page-qa .ems-corner-logo { display: block; } body.visitor-mode.ems-page-open .ems-corner-logo img { height: auto; width: 135px; } }
 #modal-table-wrap table th:first-child { white-space: nowrap; }
@@ -2385,7 +2385,7 @@ html[dir="rtl"] .fin-month button svg { transform:scaleX(-1); }
 #certx-viewer.open { display:flex; animation:certxFade .2s ease; }
 @keyframes certxFade { from { opacity:0; } to { opacity:1; } }
 @keyframes certxPop { from { opacity:0; transform:translateY(14px) scale(.98); } to { opacity:1; transform:none; } }
-.certx-v-panel { width:min(980px, 100%); height:min(92vh, 1100px); display:flex; flex-direction:column; background:#fff; border-radius:22px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.45); animation:certxPop .25s cubic-bezier(.16,1,.3,1); }
+.certx-v-panel { width:min(980px, 100%); height:min(calc(92 * var(--vh)), 1100px); display:flex; flex-direction:column; background:#fff; border-radius:22px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.45); animation:certxPop .25s cubic-bezier(.16,1,.3,1); }
 .certx-v-head { display:flex; align-items:center; gap:10px; padding:14px 16px 14px 22px; background:linear-gradient(135deg, #0F2447, var(--navy)); color:#fff; }
 .certx-v-title { flex:1; min-width:0; font-size:15.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .certx-v-dl { display:inline-flex; align-items:center; gap:7px; font-family:inherit; font-size:12.5px; font-weight:800; color:#0F2447; background:#F5D98B; border:none; border-radius:10px; padding:9px 14px; cursor:pointer; }
@@ -2615,7 +2615,7 @@ tr.fx-row-flash > td { animation:fxRowFlash 3s ease; }
 .daq-qbtn.daq-q-ok.active { background:#10B981; border-color:#059669; color:#fff; }
 .daq-qbtn.daq-q-nok.active { background:#DC2626; border-color:#B91C1C; color:#fff; }
 .daq-qbtn.daq-q-na.active { background:#64748B; border-color:#475569; color:#fff; }
-#daq-queue-pill { position:fixed; left:14px; bottom:14px; z-index:100000; display:none; align-items:center; gap:10px; background:#0f172a; color:#fff; font-size:12.5px; font-weight:700; border-radius:14px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,.3); max-width:calc(100vw - 28px); }
+#daq-queue-pill { position:fixed; left:14px; bottom:14px; z-index:100000; display:none; align-items:center; gap:10px; background:#0f172a; color:#fff; font-size:12.5px; font-weight:700; border-radius:14px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,.3); max-width:calc(calc(100 * var(--vw)) - 28px); }
 #daq-queue-pill button { font-family:inherit; font-size:12px; font-weight:800; background:#FF8000; color:#0f172a; border:none; border-radius:8px; padding:6px 10px; cursor:pointer; white-space:nowrap; }
 @media (max-width: 700px) {
   .daq-quick { width:100%; }
@@ -3140,10 +3140,10 @@ body.tvp-lock { overflow:hidden; }
 .tvp-x { flex:none; width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
 .tvp-x:hover { background:#FF8000; border-color:#FF8000; }
 .tvp-x svg { width:18px; height:18px; }
-.tvp-stage { position:relative; width:min(100%, calc((100vh - 150px) * 16 / 9)); margin:0 auto; flex:none; aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; }
+.tvp-stage { position:relative; width:min(100%, calc((calc(100 * var(--vh)) - 150px) * 16 / 9)); margin:0 auto; flex:none; aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; }
 .tvp-stage iframe, .tvp-stage video { position:absolute; inset:0; width:100%; height:100%; border:0; background:#000; }
-.tvp-stage:fullscreen { width:100vw; height:100vh; max-width:none; aspect-ratio:auto; border-radius:0; }
-.tvp-stage:-webkit-full-screen { width:100vw; height:100vh; border-radius:0; }
+.tvp-stage:fullscreen { width:calc(100 * var(--vw)); height:calc(100 * var(--vh)); max-width:none; aspect-ratio:auto; border-radius:0; }
+.tvp-stage:-webkit-full-screen { width:calc(100 * var(--vw)); height:calc(100 * var(--vh)); border-radius:0; }
 .tvp-fs { flex:none; height:38px; display:inline-flex; align-items:center; gap:6px; padding:0 14px; border-radius:99px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.1); color:#fff; cursor:pointer; font:inherit; font-size:12.5px; font-weight:800; }
 .tvp-fs:hover { background:var(--primary, #6366F1); border-color:var(--primary, #6366F1); }
 .tvp-fs svg { width:16px; height:16px; }
@@ -3289,27 +3289,27 @@ html[dir=rtl] .ent-edge{background:linear-gradient(to right,#0E1526,rgba(14,21,3
 #view-welcome.ent-calm .ent-beam,#view-welcome.ent-calm .ent-glow{animation:none!important;opacity:0!important;transition:opacity .6s}
 #view-welcome.ent-calm .ent-sky{animation:none!important;transform:scale(1.03)!important}
 @keyframes entBeam{0%,56%{transform:translateX(-160%) skewX(-18deg);opacity:0}62%{opacity:1}100%{transform:translateX(330%) skewX(-18deg);opacity:0}}
-#view-welcome .ent-logo{position:absolute;top:clamp(24px,4.4vw,56px);inset-inline-start:clamp(24px,3.9vw,56px);width:clamp(130px,13vw,190px);height:auto;margin:0;filter:none}
-.ent-copy{position:absolute;inset-inline-start:clamp(24px,3.9vw,56px);inset-inline-end:clamp(24px,5vw,90px);bottom:clamp(28px,3.7vw,54px);display:flex;flex-direction:column;gap:14px}
+#view-welcome .ent-logo{position:absolute;top:clamp(24px,calc(4.4 * var(--vw)),56px);inset-inline-start:clamp(24px,calc(3.9 * var(--vw)),56px);width:clamp(130px,calc(13 * var(--vw)),190px);height:auto;margin:0;filter:none}
+.ent-copy{position:absolute;inset-inline-start:clamp(24px,calc(3.9 * var(--vw)),56px);inset-inline-end:clamp(24px,calc(5 * var(--vw)),90px);bottom:clamp(28px,calc(3.7 * var(--vw)),54px);display:flex;flex-direction:column;gap:14px}
 .ent-eyebrow{font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#FF8000}
-.ent-hello{font-size:clamp(16px,1.5vw,22px);font-weight:500;color:rgba(255,255,255,.86)}
-.ent-brand{margin:0;font-size:clamp(28px,3.6vw,52px);font-weight:800;line-height:1.08;letter-spacing:-.01em;color:#fff}
+.ent-hello{font-size:clamp(16px,calc(1.5 * var(--vw)),22px);font-weight:500;color:rgba(255,255,255,.86)}
+.ent-brand{margin:0;font-size:clamp(28px,calc(3.6 * var(--vw)),52px);font-weight:800;line-height:1.08;letter-spacing:-.01em;color:#fff}
 .ent-opt.ent-off{opacity:.38;filter:grayscale(.85);pointer-events:none;cursor:not-allowed}
-.ent-brand-sub{margin:6px 0 0;font-size:clamp(14px,1.5vw,21px);font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.92);direction:ltr;text-align:start}
+.ent-brand-sub{margin:6px 0 0;font-size:clamp(14px,calc(1.5 * var(--vw)),21px);font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.92);direction:ltr;text-align:start}
 .ent-goldline{width:96px;height:4px;border-radius:4px;background:linear-gradient(90deg,#FFB366,#FF8000);transform-origin:left center;animation:entGrow 1.4s .5s cubic-bezier(.2,.8,.2,1) both}
 html[dir=rtl] .ent-goldline{transform-origin:right center}
 @keyframes entGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.ent-tags{position:relative;height:36px;font-size:clamp(16px,1.7vw,24px);font-weight:700;color:#fff}
+.ent-tags{position:relative;height:36px;font-size:clamp(16px,calc(1.7 * var(--vw)),24px);font-weight:700;color:#fff}
 .ent-tags span{position:absolute;top:0;inset-inline-start:0;white-space:nowrap;opacity:0;animation:entCycle 12s ease-in-out infinite}
 .ent-tags span:nth-child(2){animation-delay:4s}.ent-tags span:nth-child(3){animation-delay:8s}
 @keyframes entCycle{0%{opacity:0;transform:translateY(12px)}6%,28%{opacity:1;transform:translateY(0)}34%,100%{opacity:0;transform:translateY(-12px)}}
-.ent-panel{position:relative;flex:1;min-width:0;overflow-y:auto;overflow-x:hidden;background:#0E1526;display:flex;flex-direction:column;padding:clamp(76px,7.2vw,104px) clamp(24px,4.4vw,64px) 22px}
+.ent-panel{position:relative;flex:1;min-width:0;overflow-y:auto;overflow-x:hidden;background:#0E1526;display:flex;flex-direction:column;padding:clamp(76px,calc(7.2 * var(--vw)),104px) clamp(24px,calc(4.4 * var(--vw)),64px) 22px}
 .ent-glow{position:absolute;border-radius:50%;pointer-events:none;animation:entDrift 18s ease-in-out infinite alternate}
 .ent-glow.a{top:-160px;inset-inline-end:-120px;width:420px;height:420px;background:radial-gradient(circle,rgba(255,128,0,.24),rgba(255,128,0,0) 68%)}
 .ent-glow.b{bottom:-180px;inset-inline-start:-140px;width:460px;height:460px;background:radial-gradient(circle,rgba(255,128,0,.24),rgba(255,128,0,0) 68%);animation-duration:24s;animation-delay:-7s}
 @keyframes entDrift{from{transform:translate(0,0) scale(1)}to{transform:translate(-70px,56px) scale(1.2)}}
 .ent-mid{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;max-width:520px;width:100%;margin:0 auto}
-.ent-h1{margin:0;font-size:clamp(26px,2.5vw,36px);font-weight:800;line-height:1.15;color:#fff}
+.ent-h1{margin:0;font-size:clamp(26px,calc(2.5 * var(--vw)),36px);font-weight:800;line-height:1.15;color:#fff}
 .ent-sub{margin:0 0 12px;font-size:16px;font-weight:500;line-height:1.5;color:rgba(255,255,255,.78)}
 #ent-head{display:flex;flex-direction:column;gap:12px}
 .ent-rise{animation:entRise .9s cubic-bezier(.2,.8,.2,1) backwards}
@@ -3347,7 +3347,7 @@ html[dir=rtl] .ent-flip{display:inline-grid;transform:scaleX(-1)}
 #view-welcome .login-back-link{display:flex;align-items:center;gap:8px;align-self:flex-start;font-size:14px;font-weight:700;color:rgba(255,255,255,.84);margin:0;padding:6px 0;text-decoration:none}
 #view-welcome .login-back-link:hover{color:#FF8000}
 html[dir=rtl] #view-welcome .login-back-link svg{transform:scaleX(-1)}
-#view-welcome .login-card-title{font-size:clamp(24px,2.2vw,32px);font-weight:800;line-height:1.15;color:#fff;text-align:start;margin:0;text-shadow:none}
+#view-welcome .login-card-title{font-size:clamp(24px,calc(2.2 * var(--vw)),32px);font-weight:800;line-height:1.15;color:#fff;text-align:start;margin:0;text-shadow:none}
 .ent-fhead{display:flex;align-items:center;gap:16px;margin-bottom:4px}
 .ent-fsub{font-size:15px;font-weight:500;color:rgba(255,255,255,.78);margin-top:4px}
 .ent-ftile .ent-m-staff,.ent-ftile .ent-m-admin{position:relative;display:none}
@@ -3455,7 +3455,7 @@ body.ems-shell-on #pending-approvals-modal:not(.ahub-pane) .modal-container:not(
 body.ems-shell-on #backup-history-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen),
 body.ems-shell-on #finance-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen),
 body.ems-shell-on #ann-fx-modal:not(.ahub-pane) .modal-container:not(.modal-fullscreen) {
-  width: auto !important; max-width: min(1100px, 92vw) !important; height: auto !important; max-height: 86vh !important;
+  width: auto !important; max-width: min(1100px, calc(92 * var(--vw))) !important; height: auto !important; max-height: calc(86 * var(--vh)) !important;
   border-radius: 20px !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04) !important;
   margin: auto !important; top: auto !important; left: auto !important; position: relative !important;
   background: #fff !important;
@@ -4249,6 +4249,15 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
 html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) > .ring-card-count { grid-area:count !important; align-self:start !important; width:100% !important; }
 html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann-fx-modal *):not(#mgmt-summary-modal *):not(#admin-hub-modal *):not(#team-hub-modal *):not(#team-page-root *) > div:not([class]) { grid-area:foot !important; justify-self:center !important; align-self:end !important; width:100%; display:flex; flex-direction:column; align-items:center; gap:6px; }
 </style>
+<style id="ems-autofit">
+:root{--z:1;--vh:1vh;--dvh:1dvh;--vw:1vw}
+@media (min-width:1700px){:root{--z:1.15;--vh:calc(1vh/1.15);--dvh:calc(1dvh/1.15);--vw:calc(1vw/1.15)}html{zoom:1.15}}
+@media (min-width:1880px){:root{--z:1.25;--vh:calc(1vh/1.25);--dvh:calc(1dvh/1.25);--vw:calc(1vw/1.25)}html{zoom:1.25}}
+@media (min-width:2300px){:root{--z:1.5;--vh:calc(1vh/1.5);--dvh:calc(1dvh/1.5);--vw:calc(1vw/1.5)}html{zoom:1.5}}
+@media (min-width:3000px){:root{--z:2;--vh:calc(1vh/2);--dvh:calc(1dvh/2);--vw:calc(1vw/2)}html{zoom:2}}
+.container{max-width:1800px}
+</style>
+
 </head>
 <body>
 <div id="lang-switcher">
@@ -5056,7 +5065,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 <button id="announcement-admin-fab" class="admin-only-el announcement-admin-fab" style="display:none;" onclick="showSiteAnnouncementPopup()" data-i18n-attr="title:announcement_fab_title" title="Bilgilendirme Pop-up'ını Düzenle / Edit Information Pop-up">📢</button>
 <div id="site-announcement-popup" class="modal-overlay" onclick="if(event.target===this) closeSiteAnnouncementPopup();">
-  <div class="modal-container notranslate" translate="no" style="width:85vw; max-width:1640px; height:88vh; max-height:96vh; display:flex; flex-direction:column; position:relative; overflow:hidden;" onclick="event.stopPropagation()">
+  <div class="modal-container notranslate" translate="no" style="width:calc(85 * var(--vw)); max-width:1640px; height:calc(88 * var(--vh)); max-height:calc(96 * var(--vh)); display:flex; flex-direction:column; position:relative; overflow:hidden;" onclick="event.stopPropagation()">
     <div class="modal-header" style="flex-shrink:0;">
       <div class="modal-title">📢 <span id="ann-popup-title">Önemli Bilgilendirme</span></div>
       <div style="display:flex; align-items:center; gap:10px;">
@@ -5308,17 +5317,17 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
       <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">
         <span class="i18n-tr">Bu tarayıcıda otomatik olarak alınmış son 30 yedek burada listelenir. Bir veri kaybı fark ederseniz, kaybolmadan önceki bir yedeği seçip geri yükleyebilirsiniz. Bu işlem geri alınamaz.</span><span class="i18n-en">The last 30 automatic backups taken in this browser are listed here. If you notice data loss, pick a backup from before it happened and restore it. This action cannot be undone.</span><span class="i18n-ar">تُعرض هنا آخر 30 نسخة احتياطية تلقائية تم أخذها في هذا المتصفح. إذا لاحظت فقدان بيانات، اختر نسخة من قبل حدوثه واستعدها. لا يمكن التراجع عن هذا الإجراء.</span>
       </div>
-      <div id="backup-history-list" style="display:flex; flex-direction:column; gap:8px; max-height:40vh; overflow-y:auto; margin-bottom:24px;"></div>
+      <div id="backup-history-list" style="display:flex; flex-direction:column; gap:8px; max-height:calc(40 * var(--vh)); overflow-y:auto; margin-bottom:24px;"></div>
       <div style="font-size:13px; font-weight:900; color:var(--text); text-transform:uppercase; letter-spacing:.03em; margin-bottom:8px;">☁️ Bulut Yedekleri (Her Cihazdan Erişilebilir) / Cloud Backups (Accessible From Any Device)</div>
       <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">
         <span class="i18n-tr">Günde bir kez otomatik olarak buluta yazılır — tarayıcı değişse veya önbellek temizlense bile kaybolmaz.</span><span class="i18n-en">Automatically written to the cloud once per day — survives even if you switch browsers or clear your cache.</span><span class="i18n-ar">تُحفظ تلقائيًا في السحابة مرة يوميًا — ولا تضيع حتى لو غيّرت المتصفح أو مسحت ذاكرة التخزين المؤقت.</span>
       </div>
-      <div id="cloud-backup-history-list" style="display:flex; flex-direction:column; gap:8px; max-height:40vh; overflow-y:auto;"></div>
+      <div id="cloud-backup-history-list" style="display:flex; flex-direction:column; gap:8px; max-height:calc(40 * var(--vh)); overflow-y:auto;"></div>
     </div>
   </div>
 </div>
 <div id="user-management-modal" class="modal-overlay" onclick="closeUserManagementBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(980px, 96vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(980px, calc(96 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">👥 Kullanıcı Yönetimi / User Management</div>
       <div class="modal-close-group"></div>
@@ -5372,7 +5381,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 </div>
 <div id="force-password-change-modal" class="modal-overlay" onclick="closeForcePasswordChangeBg(event)">
-  <div class="modal-container" style="max-width:min(420px, 94vw);" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:min(420px, calc(94 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px;">
       <div class="modal-title" style="font-size:15px;">Şifreni Değiştir / Change Password</div>
       <span id="force-pw-close-btn" onclick="closeForcePasswordChangeModal()" style="cursor:pointer; font-size:18px; line-height:1; color:var(--muted); display:none; padding:4px;" title="Kapat / Close">✕</span>
@@ -5395,7 +5404,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 </div>
 <div id="section-report-picker-modal" class="modal-overlay" onclick="if(event.target===this) closeSectionReportPicker();">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1180px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1180px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">📑 <span data-i18n="nav_section_report">Bölüm Bazlı Rapor İndir / Download Section Report</span></div>
       <div class="modal-close-group">
@@ -5413,7 +5422,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 </div>
 <div id="dept-audit-modal" class="modal-overlay" onclick="closeDeptAuditModalBg(event)">
-  <div class="modal-container" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="dept-audit-modal-title">🏭 <span>Departman Denetimleri / Department Audits</span></div>
       <div class="modal-close-group">
@@ -5532,7 +5541,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
 #team-pw-modal-lock { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,var(--navy),var(--navy-d)); display: flex; align-items: center; justify-content: center; margin: -46px auto 14px; font-size: 24px; animation: teamPwPulse 2.2s ease infinite; border: 3px solid #fff; }
 #team-pw-modal-input:focus { outline: none; border-color: var(--gold) !important; box-shadow: 0 0 0 3px rgba(200,164,74,.18); }
 #team-pw-modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-#team-modal-form-content { background: white; padding: 22px; border-radius: 10px; width: 92%; max-width: 620px; max-height: 88vh; overflow-y: auto; }
+#team-modal-form-content { background: white; padding: 22px; border-radius: 10px; width: 92%; max-width: 620px; max-height: calc(88 * var(--vh)); overflow-y: auto; }
 #team-modal-form-content .t-form-group { margin-bottom: 11px; }
 #team-modal-form-content .t-form-group label { display: block; font-size: 10.5px; font-weight: bold; margin-bottom: 4px; color: var(--text); text-transform: uppercase; }
 #team-modal-form-content .t-form-group input, #team-modal-form-content .t-form-group select, #team-modal-form-content .t-form-group textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border-h); border-radius: 6px; font-size: 12px; outline: none; font-family: inherit; }
@@ -5566,7 +5575,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
 }
 </style>
 <div id="team-self-service-modal" class="modal-overlay" onclick="if(event.target===this) closeTeamSelfServiceView()">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:760px; max-height:88vh;" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:760px; max-height:calc(88 * var(--vh));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">🎯 <span data-i18n="team_self_title">Performans Kartım / My Performance Card</span></div>
       <div class="modal-close-group">
@@ -5584,7 +5593,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 </div>
 <div id="team-hub-modal" class="modal-overlay" onclick="closeTeamHubBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="qa-dept-overlay-header" style="flex-shrink:0;">
       <img data-dup="dup2" loading="lazy" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="qa-dept-overlay-logo" alt="NSCS" onclick="closeTeamHub(); goHome();" role="button" tabindex="0" style="cursor:pointer;">
       <div class="qa-dept-overlay-header-title" id="team-hub-title" data-i18n="team_page_header">PERSONEL KPI VE PERFORMANS GÖSTERGELERİ</div>
@@ -5852,7 +5861,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 </div>
 <div id="departments-hub-modal" class="modal-overlay" onclick="closeDepartmentsHubBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="departments-hub-title">🏭 <span data-i18n="nav_departments_hub">Departman Denetimleri</span></div>
       <div class="modal-close-group">
@@ -6019,7 +6028,7 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 </div>
 <div id="about-detail-modal" class="modal-overlay" onclick="if(event.target===this) closeAboutDetail();">
-  <div class="modal-container" style="max-width:min(900px, 97vw); max-height:90vh;" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:min(900px, calc(97 * var(--vw))); max-height:calc(90 * var(--vh));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="about-detail-title">…</div>
       <div class="modal-close-group">
@@ -6208,7 +6217,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
 .ug-row-t { flex: 1 1 240px; min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
 .ug-row-t small { display: block; color: var(--muted, #64748B); }
 .ug-dlg-ov { position: fixed; inset: 0; z-index: 30000; background: rgba(15,23,42,.55); display: flex; align-items: center; justify-content: center; padding: 16px; animation: ems-fadeIn .18s ease-out; }
-.ug-dlg { background: #fff; border-radius: 18px; width: 560px; max-width: 100%; max-height: calc(100vh - 32px); display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden; }
+.ug-dlg { background: #fff; border-radius: 18px; width: 560px; max-width: 100%; max-height: calc(calc(100 * var(--vh)) - 32px); display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden; }
 .ug-dlg.wide { width: 860px; }
 .ug-dlg-h { display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: linear-gradient(120deg, #1E2A3D, #16202E); color: #fff; }
 .ug-dlg-h h3 { margin: 0; font-size: 16px; font-weight: 900; flex: 1; overflow-wrap: anywhere; }
@@ -6245,7 +6254,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   .ug-cards { grid-template-columns: 1fr; }
   .ug-form, .ug-subgrid { grid-template-columns: 1fr; }
   .ug-dlg-ov { padding: 0; align-items: flex-end; }
-  .ug-dlg, .ug-dlg.wide { width: 100%; max-height: 94vh; border-radius: 18px 18px 0 0; }
+  .ug-dlg, .ug-dlg.wide { width: 100%; max-height: calc(94 * var(--vh)); border-radius: 18px 18px 0 0; }
   .ug-bar { grid-template-columns: minmax(96px, 130px) 1fr 28px; }
   .ug-dlg-f .ug-btn { flex: 1 1 auto; }
   .ug-bar-tools .ug-in { flex: 1 1 140px; }
@@ -6310,7 +6319,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="cert-fullpage-overlay" class="modal-overlay" onclick="if(event.target===this) { closeCertFullpage(); openCertHub(); }">
-  <div class="modal-container" style="max-width:380px; width:86vw; max-height:78vh; height:78vh; display:flex; flex-direction:column; padding:0; overflow:hidden;" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:380px; width:calc(86 * var(--vw)); max-height:calc(78 * var(--vh)); height:calc(78 * var(--vh)); display:flex; flex-direction:column; padding:0; overflow:hidden;" onclick="event.stopPropagation()">
     <div class="modal-header" style="flex:0 0 auto;">
       <div class="modal-title" id="cert-fullpage-title" style="font-size:14px; line-height:1.3;">…</div>
       <div class="modal-close-group">
@@ -6346,7 +6355,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="production-reports-modal" class="modal-overlay" onclick="closeProductionReportsBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1800px, 98vw); height:94vh;" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1800px, calc(98 * var(--vw))); height:calc(94 * var(--vh));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">🏭 <span data-i18n="nav_prod_reports_group">Üretim Raporları İndir</span></div>
       <div class="modal-close-group">
@@ -6443,7 +6452,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="departments-reports-modal" class="modal-overlay" onclick="closeDepartmentsReportsBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1100px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1100px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">📊 <span data-i18n="dept_reports_title">Departman Raporları / Department Reports</span></div>
       <div class="modal-close-group">
@@ -6471,7 +6480,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
 </div>
 <input type="file" id="main-dept-photo-file-input" accept="image/*" style="display:none;" onchange="handleMainDeptPhotoFileChange(event)">
 <div id="department-checklist-modal" class="modal-overlay" onclick="closeDepartmentChecklistBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1500px, 98vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1500px, calc(98 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="dept-checklist-title">Departman</div>
       <div class="modal-close-group">
@@ -6650,7 +6659,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
       </div>
     </div>
     <div class="modal-body" style="padding:0;">
-      <div style="position:relative; width:100%; aspect-ratio:16/9; max-height:62vh; background:#EEF0F4;">
+      <div style="position:relative; width:100%; aspect-ratio:16/9; max-height:calc(62 * var(--vh)); background:#EEF0F4;">
         <iframe id="factory-location-iframe" src="" title="NSCS Factory Location" width="100%" height="100%" style="border:0; display:block; position:absolute; inset:0;" loading="lazy"></iframe>
         <div id="factory-location-fallback" style="display:none; position:absolute; inset:0; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:#EEF0F4; text-align:center; padding:24px;">
           <span style="font-size:38px;">🗺️</span>
@@ -6675,7 +6684,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="prod-group-modal" class="modal-overlay" onclick="if(event.target===this) closeProdGroup();">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="prod-group-title">Üretim</div>
       <div class="modal-close-group">
@@ -6692,7 +6701,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="prod-category-detail-modal" class="modal-overlay" onclick="if(event.target===this) closeProdCategoryDetail();">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="prod-category-detail-title">Üretim Süreci</div>
       <div class="modal-close-group">
@@ -6725,7 +6734,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="chemical-consumption-hub-modal" class="modal-overlay" onclick="if(event.target===this) closeChemicalConsumptionHub();">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:760px; max-height:88vh;" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:760px; max-height:calc(88 * var(--vh));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">🧪 <span data-i18n="nav_chemical_consumption">Kimyasal Tüketim Raporu İndir / Download Chemical Consumption Report</span></div>
       <div class="modal-close-group">
@@ -6770,7 +6779,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
         <span id="chemical-inventory-count-label" data-i18n="chem_inventory_list_title">Tüm Kimyasal Envanteri / Full Chemical Inventory</span>
         <svg class="side-nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
-      <div id="chemical-inventory-list-wrap" class="open" style="display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow-y:auto;">
+      <div id="chemical-inventory-list-wrap" class="open" style="display:flex; flex-direction:column; gap:8px; max-height:calc(52 * var(--vh)); overflow-y:auto;">
         <div id="chemical-materials-list-container"></div>
       </div>
     </div>
@@ -6832,7 +6841,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
 .crp-alert h4{margin:0 0 6px;font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;}
 .crp-alert ul{margin:0;padding-inline-start:16px;max-height:130px;overflow:auto;}
 .crp-alert li{margin:2px 0;}
-.crp-table-wrap{max-height:62vh;overflow:auto;border-radius:12px;border:1px solid #EEF1F6;}
+.crp-table-wrap{max-height:calc(62 * var(--vh));overflow:auto;border-radius:12px;border:1px solid #EEF1F6;}
 .crp-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;}
 .crp-table th{position:sticky;top:0;z-index:1;background:var(--navy-bg);color:#fff;padding:9px 10px;text-align:start;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;white-space:nowrap;user-select:none;}
 .crp-table th.num,.crp-table td.num{text-align:end;}
@@ -6854,7 +6863,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
 @media (prefers-reduced-motion:reduce){.crp-hero,.crp-hero:before,.crp-hero:after,.crp-live i{animation:none}.crp-kpi{animation:none;opacity:1;transform:none}}
 </style>
 <div id="chemical-dept-report-modal" class="modal-overlay" onclick="if(event.target===this) closeChemicalDeptReport();">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:1280px; max-height:94vh;" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:1280px; max-height:calc(94 * var(--vh));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">📊 <span id="chemical-dept-report-title">Tüketim Raporu / Consumption Report</span></div>
       <div class="modal-close-group">
@@ -6964,7 +6973,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="chemical-material-detail-modal" class="modal-overlay" onclick="if(event.target===this) closeChemicalMaterialDetail();">
-  <div class="modal-container" style="max-width:min(1300px, 97vw); max-height:92vh;" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:min(1300px, calc(97 * var(--vw))); max-height:calc(92 * var(--vh));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="chemical-detail-title">🧪 …</div>
       <div class="modal-close-group">
@@ -6986,7 +6995,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-hub-modal" class="modal-overlay" onclick="closeDailyAuditHubBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">📅 <span data-i18n="nav_daily_audit">Günlük İç Denetimler / Daily Internal Audits</span></div>
       <div style="display:flex; align-items:center; gap:14px;">
@@ -7052,7 +7061,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-reports-modal" class="modal-overlay" onclick="closeDailyAuditReportsBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1100px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1100px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">📊 <span data-i18n="daily_audit_reports_title">İç Denetimler / Internal Audits</span></div>
       <div class="modal-close-group">
@@ -7090,7 +7099,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-dept-report-modal" class="modal-overlay" onclick="if(event.target===this) closeDailyAuditDeptReport()">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1100px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1100px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">📑 <span data-i18n="daily_audit_dept_btn">Bölüm Bazlı Rapor</span></div>
       <div class="modal-close-group">
@@ -7109,7 +7118,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-list-modal" class="modal-overlay" onclick="closeDailyAuditListBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="daily-audit-list-title">Departman</div>
       <div class="modal-close-group">
@@ -7146,7 +7155,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-form-modal" class="modal-overlay" onclick="closeDailyAuditFormBg(event)">
-  <div class="modal-container" style="max-width:min(1100px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:min(1100px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="daily-audit-form-title">📋 Yeni Denetim</div>
       <div style="display:flex; align-items:center; gap:14px;">
@@ -7220,7 +7229,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-detail-modal" class="modal-overlay" onclick="closeDailyAuditDetailBg(event)">
-  <div class="modal-container" style="max-width:min(1000px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:min(1000px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="daily-audit-detail-title">📋 Denetim Kaydı</div>
       <div class="modal-close-group">
@@ -7258,7 +7267,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-monthly-modal" class="modal-overlay" onclick="closeDailyAuditMonthlyBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">📆 <span data-i18n="daily_audit_monthly_title">Aylık İç Denetim Raporu / Monthly Internal Audit Report</span></div>
       <div class="modal-close-group">
@@ -7311,7 +7320,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="daily-audit-weekly-modal" class="modal-overlay" onclick="closeDailyAuditWeeklyBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:min(1300px, calc(97 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">🗓️ <span data-i18n="daily_audit_weekly_title">Haftalık İç Denetim Raporu / Weekly Internal Audit Report</span></div>
       <div class="modal-close-group">
@@ -7364,7 +7373,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="customer-dashboard-modal" class="modal-overlay" onclick="closeCustomerDashboardBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" onclick="event.stopPropagation()" style="max-width:min(1400px, 98vw);">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" onclick="event.stopPropagation()" style="max-width:min(1400px, calc(98 * var(--vw)));">
     <div class="modal-header">
       <div class="modal-title" id="customer-dash-title" data-i18n="cust_dash_title">Müşteri Panosu / Customer Dashboard</div>
       <div class="modal-close-group">
@@ -7509,7 +7518,7 @@ textarea.ug-in { width: 100%; resize: vertical; }
   </div>
 </div>
 <div id="link-finding-modal" class="modal-overlay" onclick="closeLinkFindingModalBg(event)">
-  <div class="modal-container" style="max-width:min(720px, 95vw);" onclick="event.stopPropagation()">
+  <div class="modal-container" style="max-width:min(720px, calc(95 * var(--vw)));" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">🔗 <span data-i18n="link_finding_title">Bulguyu Kritere Bağla / Link Finding to Criterion</span></div>
       <div class="modal-close-group">
@@ -28841,7 +28850,7 @@ function openDailyAuditAddQuestion(deptKey) {
   d.style.cssText = "position:fixed; inset:0; z-index:30000; background:rgba(15,23,42,.55); display:flex; align-items:center; justify-content:center; padding:12px;";
   d.onclick = e => { if (e.target === d) closeDailyAuditAddQuestion(); };
   const opts = DAILY_AUDIT_DEPARTMENTS.map(x => `<option value="${x.key}" ${x.key === deptKey ? "selected" : ""}>${x.icon} ${escHtml(dailyAuditDeptLabel(x))}</option>`).join("");
-  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:560px; max-height:92vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.35); padding:18px;">
+  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:560px; max-height:calc(92 * var(--vh)); overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.35); padding:18px;">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;"><h3 style="margin:0; font-size:17px; color:#1A3660;">➕ ${t3("Yeni Soru Ekle", "Add New Question", "ضيف سؤال جديد")}</h3><button type="button" onclick="closeDailyAuditAddQuestion()" style="border:none; background:#f1f5f9; border-radius:8px; width:34px; height:34px; font-size:18px; cursor:pointer;">✕</button></div>
     <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:4px;">${t3("Bölüm", "Section", "القسم")}</label>
     <select id="da-addq-dept" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font:inherit; font-size:14px; margin-bottom:12px;">${opts}</select>
@@ -43488,7 +43497,7 @@ function openAnnFixedEditor() {
     m.id = "ann-fx-modal";
     m.className = "modal-overlay";
     m.onclick = e => { if (e.target === m) closeAnnFixedEditor(); };
-    m.innerHTML = `<div class="modal-container" style="max-width:860px; width:94vw; max-height:90vh; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
+    m.innerHTML = `<div class="modal-container" style="max-width:860px; width:calc(94 * var(--vw)); max-height:calc(90 * var(--vh)); display:flex; flex-direction:column;" onclick="event.stopPropagation()">
       <div class="modal-header" style="flex-shrink:0;"><div class="modal-title">✏️ ${t3("Bilgilendirme Pop-up'ını Düzenle", "Edit Information Pop-up", "تعديل نافذة المعلومات")}</div><div class="modal-close-group"></div></div>
       <div id="ann-fx-info" class="annfx-info"></div>
       <div id="ann-fx-body" class="annfx-body"></div>
@@ -45792,7 +45801,7 @@ function _umCss() {
   const st = document.createElement("style");
   st.id = "um-css";
   st.textContent = `
-  .um-wrap{display:grid;grid-template-columns:300px 1fr;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface,#fff);height:min(66vh,680px);}
+  .um-wrap{display:grid;grid-template-columns:300px 1fr;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface,#fff);height:min(calc(66 * var(--vh)),680px);}
   .um-l{border-right:1.5px solid var(--border);background:#f8fafc;display:flex;flex-direction:column;min-height:0;}
   .um-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;font-size:11.5px;font-weight:700;}
   .um-tabs button{border:0;border-radius:99px;padding:4px 10px;background:#e8edf5;color:#475569;font-weight:700;font-size:11.5px;cursor:pointer;}
@@ -45834,7 +45843,7 @@ function _umCss() {
   .um-b.o{background:#fff;color:var(--navy);border:1.5px solid #cfd8e6;}
   .um-b:disabled{opacity:.45;cursor:default;}
   .um-back{display:none;border:0;background:none;font-weight:700;color:var(--navy);cursor:pointer;padding:8px 12px;font-size:13px;}
-  @media (max-width:760px){.um-wrap{grid-template-columns:1fr;height:auto;min-height:60vh;}.um-wrap .um-r{display:none;}.um-wrap.det .um-l{display:none;}.um-wrap.det .um-r{display:flex;}.um-back{display:block;}.um-bd{max-height:none;}.um-ls{max-height:60vh;}}`;
+  @media (max-width:760px){.um-wrap{grid-template-columns:1fr;height:auto;min-height:calc(60 * var(--vh));}.um-wrap .um-r{display:none;}.um-wrap.det .um-l{display:none;}.um-wrap.det .um-r{display:flex;}.um-back{display:block;}.um-bd{max-height:none;}.um-ls{max-height:calc(60 * var(--vh));}}`;
   document.head.appendChild(st);
 }
 const _umPhotoCache = {};
@@ -46979,7 +46988,7 @@ function openDeptAuditItemPhotoLightbox(recordId, itemId) {
   overlay.onclick = e => {
     if (e.target === overlay) overlay.remove();
   };
-  overlay.innerHTML = `\n    <div style="display:flex; justify-content:flex-end; gap:10px; width:min(94vw,900px); margin-bottom:10px;">\n      <button type="button" id="da-standalone-photo-dl" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("İndir", "Download", "تنزيل")}">\n        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>\n      </button>\n      <button type="button" onclick="document.getElementById('da-standalone-photo-viewer').remove()" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("Kapat", "Close", "إغلاق")}">\n        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>\n      </button>\n    </div>\n    <img loading="lazy" decoding="async" id="da-standalone-photo-img" src="${dataUrl}" style="max-width:94vw; max-height:80vh; object-fit:contain; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); background:#fff;" alt="">\n  `;
+  overlay.innerHTML = `\n    <div style="display:flex; justify-content:flex-end; gap:10px; width:min(calc(94 * var(--vw)),900px); margin-bottom:10px;">\n      <button type="button" id="da-standalone-photo-dl" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("İndir", "Download", "تنزيل")}">\n        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>\n      </button>\n      <button type="button" onclick="document.getElementById('da-standalone-photo-viewer').remove()" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("Kapat", "Close", "إغلاق")}">\n        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>\n      </button>\n    </div>\n    <img loading="lazy" decoding="async" id="da-standalone-photo-img" src="${dataUrl}" style="max-width:calc(94 * var(--vw)); max-height:calc(80 * var(--vh)); object-fit:contain; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); background:#fff;" alt="">\n  `;
   document.body.appendChild(overlay);
   document.getElementById("da-standalone-photo-dl").onclick = () => _downloadOfficeDocFile(safeName, dataUrl);
 }
@@ -47357,7 +47366,7 @@ function _emsImgLightbox(src) {
   if (!src) return;
   const ov = document.createElement("div");
   ov.style.cssText = "position:fixed; inset:0; z-index:200000; background:rgba(15,23,42,.85); display:flex; align-items:center; justify-content:center; padding:20px; cursor:zoom-out;";
-  ov.innerHTML = '<img src="' + src + '" style="max-width:96vw; max-height:92vh; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,.5); background:#fff;" alt="">';
+  ov.innerHTML = '<img src="' + src + '" style="max-width:calc(96 * var(--vw)); max-height:calc(92 * var(--vh)); border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,.5); background:#fff;" alt="">';
   ov.onclick = () => ov.remove();
   document.body.appendChild(ov);
 }
@@ -54947,7 +54956,7 @@ if (FIREBASE_ENABLED && fbAuth) {
 function _adminVerifyNotice(u) {
   if (document.getElementById("admin-verify-banner")) return;
   const b = document.createElement("div"); b.id = "admin-verify-banner";
-  b.style.cssText = "position:fixed; left:50%; transform:translateX(-50%); top:12px; z-index:99998; max-width:min(680px, calc(100vw - 24px)); background:#7C2D12; color:#fff; padding:14px 18px; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,.35); font-size:13.5px; line-height:1.5;";
+  b.style.cssText = "position:fixed; left:50%; transform:translateX(-50%); top:12px; z-index:99998; max-width:min(680px, calc(calc(100 * var(--vw)) - 24px)); background:#7C2D12; color:#fff; padding:14px 18px; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,.35); font-size:13.5px; line-height:1.5;";
   b.innerHTML = "<b>" + escHtml(t3("Yönetici e-postanız henüz doğrulanmamış görünüyor.", "Your admin e-mail does not look verified yet.", "بريد المسؤول بتاعك لسه شكله مش متأكد منه.")) + "</b><br>" + escHtml(t3("Doğrulanmadan veri kaydedemezsiniz. Doğrulama e-postası gönderip bağlantıya tıklayın, sonra çıkış yapıp tekrar girin.", "You cannot save data until it is verified. Send the verification e-mail, click the link, then sign out and sign in again.", "مش هتقدر تحفظ بيانات قبل التأكيد. ابعت إيميل التأكيد، اضغط على الرابط، وبعدين اخرج وادخل تاني.")) + '<div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"><button type="button" id="avb-send" style="background:#FF8000; color:#1b1b1b; border:0; border-radius:9px; padding:8px 14px; font-weight:800; cursor:pointer;">' + escHtml(t3("Doğrulama e-postası gönder", "Send verification e-mail", "ابعت إيميل التأكيد")) + '</button><button type="button" id="avb-out" style="background:#fff; color:#7C2D12; border:0; border-radius:9px; padding:8px 14px; font-weight:800; cursor:pointer;">' + escHtml(t3("Çıkış yap", "Sign out", "تسجيل خروج")) + '</button><button type="button" onclick="this.closest(\'#admin-verify-banner\').remove()" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,.5); border-radius:9px; padding:8px 12px; cursor:pointer;">✕</button></div>';
   document.body.appendChild(b);
   b.querySelector("#avb-send").onclick = () => { u.sendEmailVerification().then(() => showEmsToast(t3("📧 Doğrulama e-postası gönderildi; Gelen ve Spam klasörüne bakın.", "📧 Verification e-mail sent; check Inbox and Spam.", "📧 اتبعت إيميل التأكيد؛ بص على الوارد والسبام."), 8000)).catch(e => alert((e && e.message) || e)); };
@@ -63052,7 +63061,7 @@ function _showOfficeFilePreview(fileName, ext, loader) {
   if (boxEl) boxEl.style.maxWidth = "380px";
   document.getElementById("office-file-preview-modal").classList.add("open");
   if (typeof loader !== "function" || !_officeCanPreview(ext) || !renderEl) return;
-  if (boxEl) boxEl.style.maxWidth = "min(980px, 96vw)";
+  if (boxEl) boxEl.style.maxWidth = "min(980px, calc(96 * var(--vw)))";
   if (iconEl) iconEl.style.display = "none";
   if (noteEl) noteEl.textContent = t3("Önizleme hazırlanıyor…", "Preparing preview…", "بيجهّز المعاينة…");
   renderEl.style.display = "block";
@@ -63607,7 +63616,7 @@ function closeDocViewerBg(e) {
 }
 function openDocVideoViewer(doc) {
   document.getElementById("doc-viewer-title").innerText = "🎬 " + (doc.name || t3("Video", "Video", "فيديو"));
-  document.getElementById("doc-viewer-body").innerHTML = `\n    <video controls autoplay src="${doc.videoData}" style="width:100%; max-width:860px; max-height:75vh; border-radius:12px; background:#000;"></video>\n  `;
+  document.getElementById("doc-viewer-body").innerHTML = `\n    <video controls autoplay src="${doc.videoData}" style="width:100%; max-width:860px; max-height:calc(75 * var(--vh)); border-radius:12px; background:#000;"></video>\n  `;
   document.getElementById("doc-viewer-modal").classList.add("open");
   const dlBtn = document.getElementById("doc-viewer-download-btn");
   if (dlBtn) {
@@ -64630,7 +64639,7 @@ function openContactDirectory() {
   d.id = "contact-dir-dlg";
   d.style.cssText = "position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:100001; display:flex; align-items:center; justify-content:center; padding:16px;";
   d.onclick = e => { if (e.target === d) d.remove(); };
-  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:720px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 24px 60px rgba(0,0,0,.3);">
+  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:720px; max-height:calc(90 * var(--vh)); display:flex; flex-direction:column; box-shadow:0 24px 60px rgba(0,0,0,.3);">
     <div style="padding:18px 20px; border-bottom:1px solid #E2E8F0; display:flex; align-items:center; gap:10px;">
       <div style="flex:1;"><div style="font-size:17px; font-weight:900; color:#1A3660;">📇 ${t3("Kişi Rehberi", "Contact Directory", "دليل جهات الاتصال")}</div>
       <div style="font-size:12px; color:#64748B;">${t3("Sorumlu atarken ad seçilince e-posta otomatik gelir. Liste tüm bölümlerde ve iç denetim e-postalarında ortaktır.", "When an owner is picked, the e-mail fills in automatically. The list is shared by all modules and internal audit e-mails.", "لما تختار المسؤول البريد بيتملي تلقائي. القائمة مشتركة بين كل الأقسام.")}</div></div>
@@ -64953,7 +64962,7 @@ function _qSelRender() {
   if (!bar) {
     bar = document.createElement("div");
     bar.id = "q-sel-bar";
-    bar.style.cssText = "position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:99990; background:#1A3660; color:#fff; border-radius:14px; padding:10px 14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; box-shadow:0 14px 40px rgba(15,23,42,.35); max-width:calc(100vw - 32px);";
+    bar.style.cssText = "position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:99990; background:#1A3660; color:#fff; border-radius:14px; padding:10px 14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; box-shadow:0 14px 40px rgba(15,23,42,.35); max-width:calc(calc(100 * var(--vw)) - 32px);";
     document.body.appendChild(bar);
   }
   const owners = new Set(Array.from(_qSel).map(id => (_qOwnerOf(id) || {}).owner || ""));
@@ -66059,7 +66068,7 @@ function openInditexMatchDialog() {
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;"><input type="checkbox" class="inx-m-cb" data-i="${i}" ${p.score >= INX_MATCH_AUTO ? "checked" : ""} style="width:18px; height:18px;"><span style="background:${p.score >= INX_MATCH_AUTO ? "#16A34A" : "#D97706"}; color:#fff; border-radius:20px; padding:2px 10px; font-size:12px; font-weight:800;">%${Math.round(p.score * 100)}</span><span style="font-size:11px; color:var(--muted,#64748b); font-weight:700;">${p.score >= INX_MATCH_AUTO ? t3("Önerilen", "Suggested", "مقترح") : t3("Kontrol edin", "Please check", "راجع")} · 📎 ${_qPhotoFilledCount(p.holder)}</span></div>
     <div style="font-size:13px; font-weight:800; color:#0f172a;">Inditex #${p.inq.id}: <span style="font-weight:700;">${escHtml(rawLocalizedQuestionText(p.inq))}</span></div>
     <div style="font-size:12.5px; color:#334155; margin-top:5px;">✅ ${escHtml(_inxSrcLabel(p.src))} #${p.src.id}: ${escHtml(rawLocalizedQuestionText(p.src))}</div></label>`;
-  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:1000px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.35);">
+  d.innerHTML = `<div style="background:#fff; border-radius:16px; width:100%; max-width:1000px; max-height:calc(92 * var(--vh)); display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.35);">
     <div style="padding:14px 18px; border-bottom:1px solid #e2e8f0;"><div style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><h3 style="margin:0; font-size:17px; color:#1A3660;">🔎 ${t3("Onaylı sorularla karşılaştırma", "Comparison with approved questions", "المقارنة بالأسئلة المعتمدة")}</h3><button type="button" onclick="closeInditexMatchDialog()" style="border:none; background:#f1f5f9; border-radius:8px; width:34px; height:34px; font-size:18px; cursor:pointer;">✕</button></div>
     <div style="font-size:12.5px; color:#475569; margin-top:6px; line-height:1.5;">${t3(`Sitede onaylı ve kanıt fotoğraflı ${data.sources} soru var (müşteri soruları dahil). Tamamlanmamış ${data.inxOpen} Inditex sorusundan ${data.pairs.length} tanesi bunlarla eşleşiyor; ${nAuto} tanesi önerilen (%70 ve üstü). Seçilenlerin durumu Tamamlandı olur ve kanıt fotoğrafı kopyalanır. Sorular birleşmez, hiçbir fotoğraf silinmez.`, `The site has ${data.sources} approved questions with evidence photos (customer questions included). Of ${data.inxOpen} open Inditex questions, ${data.pairs.length} match them; ${nAuto} are suggested (70% and above). Selected ones become Completed and the evidence photo is copied. Questions are not merged and no photo is deleted.`, `في ${data.sources} سؤال معتمد بصور إثبات (بما فيها أسئلة العملاء). من ${data.inxOpen} سؤال مفتوح لإنديتكس، ${data.pairs.length} بيتطابقوا؛ ${nAuto} مقترحين (٧٠٪ فأكتر). المختارين بيبقوا مكتملين وصورة الإثبات بتتنسخ. الأسئلة ما بتتدمجش ومفيش صورة بتتمسح.`)}</div>
     ${data.pairs.length ? `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;"><button type="button" class="fx-btn" onclick="_inxMatchSel('auto')">${t3("Önerilenleri seç", "Select suggested", "اختار المقترح")}</button><button type="button" class="fx-btn" onclick="_inxMatchSel('all')">${t3("Tümünü seç", "Select all", "اختار الكل")}</button><button type="button" class="fx-btn" onclick="_inxMatchSel('none')">${t3("Hiçbirini seçme", "Select none", "ما تختارش حاجة")}</button></div>` : ""}</div>
@@ -66232,7 +66241,7 @@ function openAddFindingForm() {
   const lab = "display:block; font-size:11.5px; font-weight:800; color:var(--muted); margin:10px 0 5px; text-transform:uppercase; letter-spacing:.03em;";
   const today = _localISODate();
   const auditOpts = audits.map(a => `<option value="${escHtml(String(a.id))}">📅 ${a.date ? new Date(a.date).toLocaleDateString(_dLoc()) : "-"} — ${escHtml(biText(a.note || "").slice(0, 60))} (${a.findings.length})</option>`).join("") + `<option value="__new">➕ ${t3("Yeni denetim kaydı (bugün)", "New audit record (today)", "سجل تدقيق جديد (النهارده)")}</option>`;
-  ov.innerHTML = `<div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(640px, 96vw);">
+  ov.innerHTML = `<div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(640px, calc(96 * var(--vw)));">
     <div class="modal-header"><div class="modal-title">➕ ${t3("Bulgu Ekle", "Add Finding", "ضيف نتيجة")} — ${escHtml(cst ? cst.name : key)}</div>
       <div class="modal-close-group"><button class="modal-close" onclick="closeAddFindingForm()" title="Kapat / Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>
     <div class="modal-body">
@@ -67681,7 +67690,7 @@ function openDailyAuditPhotoLightbox(recordId, questionId) {
     overlay.onclick = e => {
       if (e.target === overlay) overlay.remove();
     };
-    overlay.innerHTML = `\n      <div style="display:flex; justify-content:flex-end; gap:10px; width:min(94vw,900px); margin-bottom:10px;">\n        <button type="button" id="daq-standalone-photo-dl" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("İndir", "Download", "تنزيل")}">\n          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>\n        </button>\n        <button type="button" onclick="document.getElementById('daq-standalone-photo-viewer').remove()" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("Kapat", "Close", "إغلاق")}">\n          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>\n        </button>\n      </div>\n      <img loading="lazy" decoding="async" id="daq-standalone-photo-img" src="${dataUrl}" style="max-width:94vw; max-height:80vh; object-fit:contain; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); background:#fff;" alt="">\n    `;
+    overlay.innerHTML = `\n      <div style="display:flex; justify-content:flex-end; gap:10px; width:min(calc(94 * var(--vw)),900px); margin-bottom:10px;">\n        <button type="button" id="daq-standalone-photo-dl" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("İndir", "Download", "تنزيل")}">\n          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>\n        </button>\n        <button type="button" onclick="document.getElementById('daq-standalone-photo-viewer').remove()" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:38px; height:38px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="${t3("Kapat", "Close", "إغلاق")}">\n          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>\n        </button>\n      </div>\n      <img loading="lazy" decoding="async" id="daq-standalone-photo-img" src="${dataUrl}" style="max-width:calc(94 * var(--vw)); max-height:calc(80 * var(--vh)); object-fit:contain; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); background:#fff;" alt="">\n    `;
     document.body.appendChild(overlay);
     document.getElementById("daq-standalone-photo-dl").onclick = () => _downloadOfficeDocFile(safeName, dataUrl);
   });
@@ -68617,7 +68626,7 @@ function _custMonthlyReportMaybe() {
   let done = ""; try { done = localStorage.getItem("ems_cust_report_month") || ""; } catch (e) {}
   if (done === _custMonthKey()) return;
   const el = document.createElement("div"); el.id = "cust-monthly-card";
-  el.style.cssText = "position:fixed; right:18px; top:80px; z-index:10040; max-width:min(340px, calc(100vw - 36px)); box-sizing:border-box; background:#fff; border:1.5px solid #1A3660; border-radius:14px; padding:14px 16px; box-shadow:0 10px 30px rgba(15,23,42,.25); font-family:inherit;";
+  el.style.cssText = "position:fixed; right:18px; top:80px; z-index:10040; max-width:min(340px, calc(calc(100 * var(--vw)) - 36px)); box-sizing:border-box; background:#fff; border:1.5px solid #1A3660; border-radius:14px; padding:14px 16px; box-shadow:0 10px 30px rgba(15,23,42,.25); font-family:inherit;";
   el.innerHTML = `<div style="font-size:13px; font-weight:900; color:#1A3660;">📄 ${escHtml(t3("Aylık Müşteri Durum Raporu", "Monthly Customer Status Report", "تقرير حالة العملاء الشهري"))}</div>
     <div style="font-size:12.5px; color:#475569; margin:6px 0 10px; line-height:1.5;">${escHtml(t3("Bu ayın raporu henüz hazırlanmadı. Tek tıkla PDF iner, e-posta taslağı açılır.", "This month's report is not prepared yet. One click downloads the PDF and opens an e-mail draft.", "تقرير الشهر ده لسه ما اتعملش. بضغطة واحدة بينزل PDF وبيفتح مسودة إيميل."))}</div>
     <div style="display:flex; flex-wrap:wrap; gap:8px;"><button type="button" onclick="custMonthlyReportRun()" style="background:#1A3660; color:#fff; border:0; border-radius:9px; padding:8px 12px; font-weight:800; font-size:12.5px; cursor:pointer;">${escHtml(t3("Hazırla ve e-postala", "Prepare and e-mail", "جهّز وابعت"))}</button><button type="button" onclick="custMonthlyReportLater(false)" style="background:#fff; color:#1A3660; border:1.5px solid #CBD5E1; border-radius:9px; padding:8px 12px; font-weight:700; font-size:12.5px; cursor:pointer;">${escHtml(t3("Sonra", "Later", "بعدين"))}</button><button type="button" onclick="custMonthlyReportLater(true)" style="background:#fff; color:#64748B; border:1.5px solid #E2E8F0; border-radius:9px; padding:8px 12px; font-weight:700; font-size:12.5px; cursor:pointer;">${escHtml(t3("Bu ay gösterme", "Skip this month", "متظهرش الشهر ده"))}</button></div>`;
@@ -71501,7 +71510,7 @@ function _fbkPanel(html) {
   if (!el) {
     el = document.createElement("div");
     el.id = "fbk-panel";
-    el.style.cssText = "position:fixed; inset-inline-end:24px; bottom:24px; z-index:99998; width:min(360px, calc(100vw - 32px)); background:#fff; border:1.5px solid var(--border); border-radius:16px; box-shadow:0 18px 40px rgba(15,36,71,.22); padding:16px 18px; font-size:13px; color:var(--text);";
+    el.style.cssText = "position:fixed; inset-inline-end:24px; bottom:24px; z-index:99998; width:min(360px, calc(calc(100 * var(--vw)) - 32px)); background:#fff; border:1.5px solid var(--border); border-radius:16px; box-shadow:0 18px 40px rgba(15,36,71,.22); padding:16px 18px; font-size:13px; color:var(--text);";
     document.body.appendChild(el);
   }
   if (html === null) { el.remove(); return; }
@@ -73154,7 +73163,7 @@ function _caModal() {
   el = document.createElement("div");
   el.id = "chem-audit-modal"; el.className = "modal-overlay";
   el.setAttribute("onclick", "if(event.target===this) closeChemAudit();");
-  el.innerHTML = '<div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:1360px; max-height:94vh;" onclick="event.stopPropagation()">' +
+  el.innerHTML = '<div class="modal-container modal-fullscreen" data-default-fullscreen="1" style="max-width:1360px; max-height:calc(94 * var(--vh));" onclick="event.stopPropagation()">' +
     '<div class="modal-header"><div class="modal-title">🕵️ <span id="ca-title"></span></div><div class="modal-close-group">' +
     '<button class="modal-close" onclick="closeChemAudit(); openChemicalConsumptionHub(false);" title="Geri / Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>' +
     '<button class="modal-close" onclick="closeChemAudit(); goHome();" title="Anasayfa / Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>' +
@@ -73195,7 +73204,7 @@ function _caTableHtml(rows, tot, daily) {
     td(_caFmt(r.opening)) + td(_caFmt(r.received, 1)) + td(_caFmt(r.dispatched, 1)) + td(_caFmt(r.returned, 1)) + td(_caFmt(r.consumed, 1), { b: 1 }) + '<td' + neg(r.closing).replace('style="', 'style="padding:8px 10px; border-top:1px solid #e4e7ee; text-align:end; font-variant-numeric:tabular-nums; ') + (neg(r.closing) ? "" : ' style="padding:8px 10px; border-top:1px solid #e4e7ee; text-align:end; font-weight:800; font-variant-numeric:tabular-nums;"') + ">" + _caFmt(r.closing) + "</td></tr>").join("");
   const totRow = '<tr style="background:#eaf0ff; font-weight:800;"><td colspan="4" style="padding:10px; border-top:2px solid #1d2a4d;">' + escHtml(daily ? t3("GÜN TOPLAMI", "DAY TOTAL", "إجمالي اليوم") : t3("AY TOPLAMI", "MONTH TOTAL", "إجمالي الشهر")) + " (" + rows.length + ")</td>" +
     [tot.opening, tot.received, tot.dispatched, tot.returned, tot.consumed, tot.closing].map(v => '<td style="padding:10px; border-top:2px solid #1d2a4d; text-align:end; font-variant-numeric:tabular-nums;">' + _caFmt(v) + "</td>").join("") + "</tr>";
-  return '<div style="max-height:56vh; overflow:auto; border:1px solid #e4e7ee; border-radius:10px; background:#fff;"><table style="width:100%; border-collapse:collapse; font-size:12.5px; min-width:900px;"><thead>' + head + "</thead><tbody>" + (rows.length ? body + totRow : '<tr><td colspan="10" style="padding:30px; text-align:center; color:#8a92a6;">' + escHtml(t3("Bu seçim için kayıt yok.", "No records for this selection.", "مفيش سجلات للاختيار ده.")) + "</td></tr>") + "</tbody></table></div>";
+  return '<div style="max-height:calc(56 * var(--vh)); overflow:auto; border:1px solid #e4e7ee; border-radius:10px; background:#fff;"><table style="width:100%; border-collapse:collapse; font-size:12.5px; min-width:900px;"><thead>' + head + "</thead><tbody>" + (rows.length ? body + totRow : '<tr><td colspan="10" style="padding:30px; text-align:center; color:#8a92a6;">' + escHtml(t3("Bu seçim için kayıt yok.", "No records for this selection.", "مفيش سجلات للاختيار ده.")) + "</td></tr>") + "</tbody></table></div>";
 }
 function _caKpiHtml(items) {
   return '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); background:linear-gradient(135deg,#1A3660,#0F2140); border-radius:14px; color:#fff; margin-bottom:14px; overflow:hidden;">' +
@@ -79356,7 +79365,7 @@ function _fxInit() {
 
 </script>
 <div id="document-library-modal" class="modal-overlay" onclick="closeDocumentLibraryBg(event)">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" onclick="event.stopPropagation()" style="max-width:min(1100px, 96vw);">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" onclick="event.stopPropagation()" style="max-width:min(1100px, calc(96 * var(--vw)));">
     <div class="modal-header">
       <div class="modal-title" id="doc-library-title"></div>
       <div class="modal-close-group">
@@ -79409,7 +79418,7 @@ function _fxInit() {
   </div>
 </div>
 <div id="pending-approvals-modal" class="modal-overlay" onclick="if (event.target === this) closePendingApprovalsModal();">
-  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" onclick="event.stopPropagation()" style="width:min(720px, 94vw); max-width:94vw;">
+  <div class="modal-container modal-fullscreen" data-default-fullscreen="1" onclick="event.stopPropagation()" style="width:min(720px, calc(94 * var(--vw))); max-width:calc(94 * var(--vw));">
     <div class="modal-header">
       <div class="modal-title">🔔 Onay Bekleyen Değişiklikler / Pending Approvals</div>
       <div class="modal-close-group"></div>
@@ -79424,7 +79433,7 @@ function _fxInit() {
   </div>
 </div>
 <div id="cert-photo-lightbox" class="modal-overlay" onclick="closeCertPhotoLightboxBg(event)">
-  <div id="cert-photo-lightbox-container" class="modal-container" onclick="event.stopPropagation()" style="width:min(640px, 94vw); max-width:94vw; background:transparent; box-shadow:none; transition:width 0.25s ease;">
+  <div id="cert-photo-lightbox-container" class="modal-container" onclick="event.stopPropagation()" style="width:min(640px, calc(94 * var(--vw))); max-width:calc(94 * var(--vw)); background:transparent; box-shadow:none; transition:width 0.25s ease;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <div id="cert-photo-lightbox-title" style="color:#fff; font-weight:800; font-size:14px;"></div>
       <div style="display:flex; gap:8px; flex-shrink:0;">
@@ -79436,11 +79445,11 @@ function _fxInit() {
         </button>
       </div>
     </div>
-    <img loading="lazy" decoding="async" id="cert-photo-lightbox-img" onerror="this.style.visibility='hidden'" style="display:block; max-width:94vw; max-height:82vh; object-fit:contain; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); background:#fff;" alt="">
+    <img loading="lazy" decoding="async" id="cert-photo-lightbox-img" onerror="this.style.visibility='hidden'" style="display:block; max-width:calc(94 * var(--vw)); max-height:calc(82 * var(--vh)); object-fit:contain; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); background:#fff;" alt="">
   </div>
 </div>
 <div id="doc-viewer-modal" class="modal-overlay" onclick="closeDocViewerBg(event)">
-  <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(980px, 96vw); width:96vw; max-height:92vh;">
+  <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(980px, calc(96 * var(--vw))); width:calc(96 * var(--vw)); max-height:calc(92 * var(--vh));">
     <div class="modal-header">
       <div class="modal-title" id="doc-viewer-title"></div>
       <div class="modal-close-group">
@@ -79458,13 +79467,13 @@ function _fxInit() {
         </button>
       </div>
     </div>
-    <div style="padding:20px; overflow-y:auto; max-height:calc(92vh - 64px); display:flex; flex-direction:column; align-items:center;">
+    <div style="padding:20px; overflow-y:auto; max-height:calc(calc(92 * var(--vh)) - 64px); display:flex; flex-direction:column; align-items:center;">
       <div id="doc-viewer-body" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
     </div>
   </div>
 </div>
 <div id="office-file-preview-modal" class="modal-overlay" onclick="if(event.target===this) closeOfficePreview()">
-  <div class="modal-container" id="office-preview-container" onclick="event.stopPropagation()" style="max-width:380px; width:92vw; max-height:92vh; display:flex; flex-direction:column; overflow-y:auto;">
+  <div class="modal-container" id="office-preview-container" onclick="event.stopPropagation()" style="max-width:380px; width:calc(92 * var(--vw)); max-height:calc(92 * var(--vh)); display:flex; flex-direction:column; overflow-y:auto;">
     <div class="modal-header">
       <div class="modal-title" id="office-preview-title"></div>
       <div class="modal-close-group">
@@ -79478,7 +79487,7 @@ function _fxInit() {
       <div id="office-preview-filename" style="font-weight:800; font-size:14px; color:var(--text); word-break:break-word; max-width:100%;"></div>
       <div id="office-preview-note" style="font-size:12px; color:var(--muted); line-height:1.5;"></div>
       <style>#office-preview-render::-webkit-scrollbar{width:13px;height:13px}#office-preview-render::-webkit-scrollbar-thumb{background:#8a94a6;border-radius:8px;border:2px solid #e6e9ef}#office-preview-render::-webkit-scrollbar-track{background:#e6e9ef;border-radius:8px}</style>
-      <div id="office-preview-render" style="display:none; width:100%; max-height:min(76vh, calc(100vh - 270px)); min-height:160px; flex-shrink:0; overflow:auto; scrollbar-width:auto; scrollbar-color:#8a94a6 #e6e9ef; background:#eef0f3; border-radius:10px; padding:10px; box-sizing:border-box; text-align:start;"></div>
+      <div id="office-preview-render" style="display:none; width:100%; max-height:min(calc(76 * var(--vh)), calc(calc(100 * var(--vh)) - 270px)); min-height:160px; flex-shrink:0; overflow:auto; scrollbar-width:auto; scrollbar-color:#8a94a6 #e6e9ef; background:#eef0f3; border-radius:10px; padding:10px; box-sizing:border-box; text-align:start;"></div>
       <button id="office-preview-download-btn" onclick="confirmOfficeDownload()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; background:var(--primary); color:#fff; border:none; border-radius:10px; padding:12px; font-size:13.5px; font-weight:800; cursor:pointer; margin-top:6px;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px;height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
         <span id="office-preview-download-label"></span>
@@ -80896,7 +80905,7 @@ html body:has(#global-filter-modal.open.org-theme) #ems-scroll-top#ems-scroll-to
 .om-foot{padding:11px 24px;background:#14532d;color:#d1fae5;font-size:12px;font-weight:800;text-align:center;letter-spacing:.3px}
 /* Alan penceresi */
 .omd{position:fixed;inset:0;z-index:30500;background:rgba(10,30,18,.62);display:flex;align-items:center;justify-content:center;padding:18px}
-.omd-box{width:min(1060px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:22px;box-shadow:0 30px 70px rgba(0,0,0,.4);display:flex;flex-direction:column}
+.omd-box{width:min(1060px,100%);max-height:calc(94 * var(--vh));overflow:auto;background:#fff;border-radius:22px;box-shadow:0 30px 70px rgba(0,0,0,.4);display:flex;flex-direction:column}
 .omd-head{display:flex;align-items:center;gap:14px;padding:16px 20px;color:#fff;background:linear-gradient(135deg,#0b3d20,#14532d 60%,#1d7a45);position:sticky;top:0;z-index:2}
 .omd-head.ex{background:linear-gradient(135deg,#78350f,#b45309)}
 .omd-no{min-width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:900;font-size:17px;flex:none}
@@ -80922,7 +80931,7 @@ html body:has(#global-filter-modal.open.org-theme) #ems-scroll-top#ems-scroll-to
 .omd-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 6px}.omd-meta div{padding:9px 12px;border-radius:12px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:12.5px;color:#14532d}.omd-meta b{display:block;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:#4d7c5f;margin-bottom:2px}
 .omd-nav{display:flex;justify-content:space-between;gap:8px;padding:12px 20px 16px;border-top:1px solid #e2e8f0}.omd-nav button{all:unset;cursor:pointer;padding:8px 16px;border-radius:99px;border:1px solid #bbf7d0;background:#fff;font-weight:800;font-size:12.5px;color:#14532d}.omd-nav button:hover{background:#f0fdf4}
 @media(max-width:1100px){.om-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:700px){.om-body{padding:18px 14px 6px}.om-hero{padding:16px}.om-ems{height:40px}.om-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 26px}.om-row{grid-template-columns:1fr}.omd{padding:0;align-items:flex-end}.omd-box{max-height:96vh;border-radius:22px 22px 0 0}.omd-main{grid-template-columns:1fr;padding:14px}.omd-meta{grid-template-columns:1fr}.omd-logo{display:none}}
+@media(max-width:700px){.om-body{padding:18px 14px 6px}.om-hero{padding:16px}.om-ems{height:40px}.om-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 26px}.om-row{grid-template-columns:1fr}.omd{padding:0;align-items:flex-end}.omd-box{max-height:calc(96 * var(--vh));border-radius:22px 22px 0 0}.omd-main{grid-template-columns:1fr;padding:14px}.omd-meta{grid-template-columns:1fr}.omd-logo{display:none}}
 </style>
 <script id="org-module">
 // GOTS logosu (kullanıcının verdiği görsel, 200 px) / GOTS logo (supplied by the user, 200 px)
@@ -81282,7 +81291,7 @@ function _orgDlgPhotoRefresh() {
 function orgPhotoZoom() {
   const cur = (_orgPh[_orgSel] || [])[_orgPhoto]; if (!cur) return;
   const z = document.createElement("div"); z.style.cssText = "position:fixed;inset:0;z-index:30600;background:rgba(0,0,0,.85);display:grid;place-items:center;padding:16px;cursor:zoom-out"; z.onclick = () => z.remove();
-  z.innerHTML = `<img src="${cur}" style="max-width:96vw;max-height:94vh;border-radius:12px">`; document.body.appendChild(z);
+  z.innerHTML = `<img src="${cur}" style="max-width:calc(96 * var(--vw));max-height:calc(94 * var(--vh));border-radius:12px">`; document.body.appendChild(z);
 }
 function orgPhotoAdd() { if (!roleGuard()) return; const f = document.getElementById("omd-file"); if (f) f.click(); }
 function orgPhotoPicked(inp) {
@@ -82230,7 +82239,7 @@ function _ugPhotoDel(kindKey, id, slot) {
 function _ugLightbox(src) {
   if (!src) return;
   const o = document.createElement("div"); o.className = "ug-dlg-ov"; o.setAttribute("data-ug-dlg", "1"); o.style.zIndex = 30100;
-  o.innerHTML = `<img src="${src}" alt="" style="max-width:94vw; max-height:90vh; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.5); background:#fff;">`;
+  o.innerHTML = `<img src="${src}" alt="" style="max-width:calc(94 * var(--vw)); max-height:calc(90 * var(--vh)); border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.5); background:#fff;">`;
   o.onclick = () => o.remove(); document.body.appendChild(o);
 }
 function _urgeRefreshAll(projId) {
@@ -83067,7 +83076,7 @@ async function vzDownloadXlsx() {
 .av-ok { background: #16A34A !important; color: #fff !important; border-color: #16A34A !important; }
 .av-no { background: #fff !important; color: #DC2626 !important; border-color: #DC2626 !important; }
 .av-send { background: #1A3660 !important; color: #fff !important; border-color: #1A3660 !important; }
-#av-alert-card { position: fixed; right: 18px; top: 80px; z-index: 10040; max-width: min(350px, calc(100vw - 36px)); box-sizing: border-box; background: #fff; border: 2px solid #DC2626; border-radius: 14px; padding: 14px 16px; box-shadow: 0 14px 34px rgba(15,23,42,.22); animation: avPop .35s ease; }
+#av-alert-card { position: fixed; right: 18px; top: 80px; z-index: 10040; max-width: min(350px, calc(calc(100 * var(--vw)) - 36px)); box-sizing: border-box; background: #fff; border: 2px solid #DC2626; border-radius: 14px; padding: 14px 16px; box-shadow: 0 14px 34px rgba(15,23,42,.22); animation: avPop .35s ease; }
 @keyframes avPop { from { transform: translateY(-10px); opacity: 0; } to { transform: none; opacity: 1; } }
 html[dir="rtl"] #av-alert-card { right: auto; left: 18px; }
 @media (max-width: 760px) { .av-kpis { grid-template-columns: 1fr; } }
@@ -83752,7 +83761,7 @@ html[dir="rtl"] .am-drawer { transform: translateX(-100%); }
 .am-photo p { font-size: 11.5px; color: var(--muted); margin: 6px 0 0; }
 #am-zoom { position: fixed; inset: 0; background: rgba(15,23,42,.9); z-index: 20410; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
 #am-zoom.on { display: flex; }
-#am-zoom img { max-width: 92vw; max-height: 92vh; object-fit: contain; border-radius: 8px; }
+#am-zoom img { max-width: calc(92 * var(--vw)); max-height: calc(92 * var(--vh)); object-fit: contain; border-radius: 8px; }
 @media (max-width: 760px) {
   .am-kpis { grid-template-columns: repeat(2, 1fr); }
   .am-meeting-grid { grid-template-columns: 1fr; }
@@ -85289,7 +85298,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-17 23:42";
+const EMS_BUILD = "2026-11-19 12:30";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
@@ -85313,7 +85322,7 @@ const EMS_BUILD = "2026-11-17 23:42";
     const bar = document.createElement("div");
     bar.id = "ems-update-bar";
     bar.className = "no-report";
-    bar.style.cssText = "position:fixed; top:12px; left:50%; transform:translateX(-50%); z-index:100002; background:#0E7490; color:#fff; border-radius:12px; padding:10px 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center; box-shadow:0 12px 30px rgba(15,23,42,.3); font:700 13.5px system-ui,Segoe UI,Arial,sans-serif; max-width:calc(100vw - 32px);";
+    bar.style.cssText = "position:fixed; top:12px; left:50%; transform:translateX(-50%); z-index:100002; background:#0E7490; color:#fff; border-radius:12px; padding:10px 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center; box-shadow:0 12px 30px rgba(15,23,42,.3); font:700 13.5px system-ui,Segoe UI,Arial,sans-serif; max-width:calc(calc(100 * var(--vw)) - 32px);";
     bar.innerHTML = "🔄 " + t("Sitenin yeni sürümü yayında", "A new version of the site is live", "فيه إصدار جديد من الموقع") + " (" + fmt(live) + ") <button type=\"button\" style=\"border:none; border-radius:9px; padding:7px 14px; font-weight:900; cursor:pointer; background:#fff; color:#0E7490;\">" + t("Yenile", "Reload", "تحديث") + "</button>";
     bar.querySelector("button").onclick = () => { location.replace(location.pathname + "?v=" + encodeURIComponent(live) + location.hash); };
     document.body.appendChild(bar);
@@ -85558,7 +85567,7 @@ html.ems-sade .kpi-grid > .kpi-card.kpi-card-ring:not(.kpi-top5):not(#site-annou
 /* Masaüstü sol menü: sayfa boyunda sabit, kendi içinde kayar; menü sayfayı uzatıp altta boşluk bırakmaz (kullanıcı isteği 01.11.2026). Gövdedeki overflow-x:hidden sticky'yi bozuyordu → clip. */
 @media (min-width: 901px) {
   body.ems-shell-on { overflow-x: clip !important; overflow-y: visible !important; }
-  #side-nav.side-nav { height: 100vh !important; height: 100dvh !important; max-height: 100vh !important; max-height: 100dvh !important; align-self: flex-start !important; }
+  #side-nav.side-nav { height: calc(100 * var(--vh)) !important; height: calc(100 * var(--dvh)) !important; max-height: calc(100 * var(--vh)) !important; max-height: calc(100 * var(--dvh)) !important; align-self: flex-start !important; }
 }
 /* Bölüm Bazlı Dashboard kartları: üstteki kartlarla aynı parlama (shine). Kart overflow:visible olduğundan şerit kendi sarmalayıcısında kırpılır. */
 .ring-dashboard-grid > .ring-card.sec-donut-card > .ems-shine-wrap { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; z-index: 6; }
