@@ -82618,6 +82618,196 @@ async function urgeDownloadPDF() {
 }
 
 </script>
+<style id="homepro-css">
+/* Ana sayfa profesyonel katman (19.11.2026): üst çubukta Mısır/Türkiye saati, karşılama + genel uyum göstergesi, ilk açılış animasyonları. Veri: calcMetrics ile aynı kaynaktan / Home pro layer: clocks, hero gauge, entrance animations */
+#ems-topbar .etb-clocks { display: flex; align-items: stretch; flex: none; margin-inline: 8px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #0B1A3A, #14306A); box-shadow: 0 6px 16px -8px rgba(11,26,58,.7); }
+#ems-topbar .hp-cl { display: flex; align-items: center; gap: 9px; padding: 5px 14px; color: #fff; }
+#ems-topbar .hp-cl + .hp-cl { border-inline-start: 1px solid rgba(255,255,255,.2); }
+.hp-fl { width: 28px; height: 19px; border-radius: 3px; box-shadow: 0 0 0 1px rgba(255,255,255,.3); flex: none; display: block; }
+.hp-cl small { display: block; font-size: 9.5px; letter-spacing: .12em; font-weight: 800; color: #A9BBDD; line-height: 1; white-space: nowrap; }
+.hp-tm { font-family: "JetBrains Mono", "DejaVu Sans Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 20px; font-weight: 700; letter-spacing: .05em; line-height: 1.15; text-shadow: 0 0 12px rgba(255,138,31,.5); direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.hp-tm i { font-style: normal; }
+.hp-tm .hp-c { color: #FF8A1F; animation: hpBlink 1s steps(1) infinite; }
+.hp-tm .hp-s { color: #FFB066; }
+@keyframes hpBlink { 50% { opacity: .25; } }
+@media (max-width: 1250px) { #ems-topbar .hp-cl small { display: none; } #ems-topbar .hp-cl { padding: 6px 10px; } }
+@media (max-width: 1000px) { #ems-topbar .etb-clocks { display: none; } }
+/* Karşılama kartı */
+.hp-hero { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; padding: 26px 34px; margin: 0 0 18px; border-radius: 18px; background: #fff; border: 1px solid #E3E8F1; box-shadow: 0 6px 22px rgba(15,33,64,.08); }
+.hp-hero:before { content: ""; position: absolute; inset-inline-end: -90px; top: -110px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(255,128,0,.16), transparent 70%); animation: hpFloat 10s ease-in-out infinite; pointer-events: none; }
+@keyframes hpFloat { 50% { transform: translate(-40px, 30px); } }
+.hp-hero h2 { font-size: 30px; font-weight: 800; letter-spacing: -.01em; color: #0F2140; position: relative; margin: 0; }
+.hp-hero p.hp-sub { margin: 8px 0 0; font-size: 15px; color: #475569; position: relative; }
+.hp-stack { margin-top: 18px; position: relative; max-width: 560px; }
+.hp-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: #E6EBF4; }
+.hp-bar i { display: block; height: 100%; width: 0; transition: width 1.4s cubic-bezier(.2,.8,.2,1); position: relative; }
+.hp-bar i:after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); background-size: 50% 100%; background-repeat: no-repeat; animation: hpSweep 3s infinite; }
+@keyframes hpSweep { from { background-position: -100% 0; } to { background-position: 220% 0; } }
+.hp-leg { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 10px; font-size: 13px; color: #334155; }
+.hp-leg span { display: inline-flex; align-items: center; gap: 7px; }
+.hp-leg b { font-size: 15px; color: #0F2140; }
+.hp-leg i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.hp-gauge { position: relative; width: 190px; height: 190px; flex: none; }
+.hp-gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.hp-gauge .hp-trk { fill: none; stroke: #E3E8F1; stroke-width: 15; }
+.hp-gauge .hp-arc { fill: none; stroke: url(#hpGrad); stroke-width: 15; stroke-linecap: round; transition: stroke-dashoffset 1.8s cubic-bezier(.2,.8,.2,1); }
+.hp-gauge .hp-gv { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.hp-gv b { font-size: 46px; font-weight: 800; line-height: 1; color: #0F2140; }
+.hp-gv b small { font-size: 22px; }
+.hp-gv b span { font-size: inherit; font-weight: inherit; margin: 0; color: inherit; max-width: none; }
+.hp-gv > span { font-size: 12px; font-weight: 700; margin-top: 6px; color: #475569; max-width: 120px; line-height: 1.2; }
+.hp-clkm { display: none; }
+@media (max-width: 1000px) {
+  .hp-clkm { display: flex; margin: 12px 0 0; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #0B1A3A, #14306A); position: relative; }
+  .hp-clkm .hp-cl { flex: 1; justify-content: center; padding: 8px 8px; color: #fff; display: flex; align-items: center; gap: 8px; }
+  .hp-clkm .hp-cl + .hp-cl { border-inline-start: 1px solid rgba(255,255,255,.2); }
+  .hp-clkm .hp-tm { font-size: 17px; }
+  .hp-clkm small { font-size: 8.5px; }
+}
+@media (max-width: 760px) { .hp-hero { grid-template-columns: 1fr; padding: 20px; } .hp-hero h2 { font-size: 23px; } .hp-gauge { width: 168px; height: 168px; justify-self: center; } .hp-gv b { font-size: 40px; } }
+/* İlk açılış animasyonları (veri yenilenince tekrarlanmaz: body.hp-anim 4 sn sonra kalkar) */
+@keyframes hpUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes hpPop { from { opacity: 0; transform: scale(.82) rotate(-30deg); } to { opacity: 1; transform: none; } }
+body.hp-anim #view-dashboard > .kpi-grid > .kpi-card, body.hp-anim .ring-dashboard-grid > * { animation: hpUp .7s both; }
+body.hp-anim #view-dashboard > .kpi-grid > .kpi-card:nth-child(2), body.hp-anim .ring-dashboard-grid > *:nth-child(2) { animation-delay: .07s; }
+body.hp-anim #view-dashboard > .kpi-grid > .kpi-card:nth-child(3), body.hp-anim .ring-dashboard-grid > *:nth-child(3) { animation-delay: .14s; }
+body.hp-anim #view-dashboard > .kpi-grid > .kpi-card:nth-child(4), body.hp-anim .ring-dashboard-grid > *:nth-child(4) { animation-delay: .21s; }
+body.hp-anim #view-dashboard > .kpi-grid > .kpi-card:nth-child(5), body.hp-anim .ring-dashboard-grid > *:nth-child(5) { animation-delay: .28s; }
+body.hp-anim .ring-dashboard-grid > *:nth-child(n+6) { animation-delay: .35s; }
+body.hp-anim .donut3, body.hp-anim .kpi-ring-mini svg { animation: hpPop 1s .15s cubic-bezier(.2,.8,.2,1) both; }
+/* ilerleme çubuklarında akan ışık (sürekli, hafif) */
+.kpi-card-bar-fill { position: relative; overflow: hidden; }
+.kpi-card-bar-fill:after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); background-size: 45% 100%; background-repeat: no-repeat; animation: hpSweep 3.2s infinite; }
+html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi-card-bar-fill:after, html.ems-sade .hp-tm .hp-c { animation: none; }
+@media (prefers-reduced-motion: reduce) { .hp-hero:before, .hp-bar i:after, .kpi-card-bar-fill:after, .hp-tm .hp-c, body.hp-anim * { animation: none !important; } .hp-bar i, .hp-gauge .hp-arc { transition: none; } }
+</style>
+<script id="homepro-module">
+(function () {
+  "use strict";
+  var FL_TR = '<svg class="hp-fl" viewBox="0 0 30 20"><rect width="30" height="20" fill="#E30A17"/><circle cx="11" cy="10" r="5" fill="#fff"/><circle cx="12.4" cy="10" r="4" fill="#E30A17"/><path d="M17.5 10l-3.2-1.1 2 2.6v-3l-2 2.6z" fill="#fff" transform="translate(1.8 0) scale(1.1) translate(-1.6 -1)"/></svg>';
+  var FL_EG = '<svg class="hp-fl" viewBox="0 0 30 20"><rect width="30" height="6.7" fill="#CE1126"/><rect y="6.7" width="30" height="6.7" fill="#fff"/><rect y="13.4" width="30" height="6.6" fill="#000"/><path d="M15 7.6c1.6 0 2.4 1 2.4 2.4s-.8 2.4-2.4 2.4-2.4-1-2.4-2.4S13.4 7.6 15 7.6z" fill="#C09300"/></svg>';
+  var T = function (a, b, c) { try { return t3(a, b, c); } catch (e) { return a; } };
+  function clockHtml() {
+    return '<div class="hp-cl">' + FL_EG + '<div><small>' + T("MISIR · KAHİRE", "EGYPT · CAIRO", "مصر · القاهرة") + '</small><div class="hp-tm" data-hp-clk="Africa/Cairo">--:--:--</div></div></div>' +
+           '<div class="hp-cl">' + FL_TR + '<div><small>' + T("TÜRKİYE · İSTANBUL", "TÜRKİYE · ISTANBUL", "تركيا · إسطنبول") + '</small><div class="hp-tm" data-hp-clk="Europe/Istanbul">--:--:--</div></div></div>';
+  }
+  var fmtCache = {};
+  function tick() {
+    var nodes = document.querySelectorAll("[data-hp-clk]");
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      var tz = el.getAttribute("data-hp-clk");
+      var f = fmtCache[tz] || (fmtCache[tz] = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }));
+      var p = f.format(new Date()).split(":");
+      var html = "<i>" + p[0] + '</i><i class="hp-c">:</i><i>' + p[1] + '</i><i class="hp-c">:</i><i class="hp-s">' + p[2] + "</i>";
+      if (el.__hp !== html) { el.__hp = html; el.innerHTML = html; }
+    });
+  }
+  function mountClocks() {
+    var bar = document.getElementById("ems-topbar");
+    if (bar && !bar.querySelector(".etb-clocks")) {
+      var w = document.createElement("div");
+      w.className = "etb-clocks";
+      w.setAttribute("aria-label", "Mısır ve Türkiye saati");
+      w.innerHTML = clockHtml();
+      var right = bar.querySelector("#etb-right");
+      bar.insertBefore(w, right || null);
+    }
+    tick();
+  }
+  function metrics() {
+    var tu = 0, cu = 0, mu = 0, xu = 0;
+    try {
+      tu = _uniqueQuestions().length;
+      auditQuestions.forEach(function (q) {
+        if (_isCustQ(q)) return;
+        var one = _qIsMergedDup(q) ? 0 : 1;
+        if (q.status === "compliant") cu += one; else if (q.status === "minor") mu += one; else if (q.status === "critical") xu += one;
+      });
+    } catch (e) {}
+    return { tu: tu, cu: cu, mu: mu, xu: xu };
+  }
+  var C = 2 * Math.PI * 80;
+  var shown = -1;
+  function ensureHero() {
+    var v = document.getElementById("view-dashboard");
+    if (!v) return null;
+    var h = document.getElementById("home-pro-hero");
+    if (h) return h;
+    h = document.createElement("div");
+    h.id = "home-pro-hero";
+    h.className = "hp-hero";
+    h.innerHTML = '<div><h2 id="hp-hi"></h2><p class="hp-sub" id="hp-sub"></p><div class="hp-clkm" id="hp-clkm">' + clockHtml() + '</div><div class="hp-stack"><div class="hp-bar"><i id="hp-b1" style="background:#10B981"></i><i id="hp-b2" style="background:#F59E0B"></i><i id="hp-b3" style="background:#EF4444"></i></div><div class="hp-leg" id="hp-leg"></div></div></div>' +
+      '<div class="hp-gauge"><svg viewBox="0 0 200 200"><defs><linearGradient id="hpGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA84D"/><stop offset="1" stop-color="#FF7A00"/></linearGradient></defs><circle class="hp-trk" cx="100" cy="100" r="80"/><circle class="hp-arc" id="hp-arc" cx="100" cy="100" r="80" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '"/></svg><div class="hp-gv"><b><span id="hp-pct">0</span><small>%</small></b><span id="hp-gl"></span></div></div>';
+    v.insertBefore(h, v.firstChild);
+    return h;
+  }
+  function esc(s) { try { return escHtml(s); } catch (e) { return String(s).replace(/[&<>"]/g, ""); } }
+  function texts(m) {
+    var nm = "";
+    try { nm = (typeof currentUserName === "string" ? currentUserName : "") || ""; } catch (e) {}
+    var anon = [ "Ziyaretçi", "Viewer", "مشاهد" ].indexOf(nm) !== -1;
+    var hi = document.getElementById("hp-hi");
+    if (hi) hi.textContent = T("Hoş geldiniz", "Welcome", "أهلاً بك") + (nm && !anon ? T(", ", ", ", "، ") + nm : "");
+    var sub = document.getElementById("hp-sub");
+    if (sub) sub.textContent = T("Uyum ve performans durumunuzu tek ekrandan takip edin.", "Track your compliance and performance on one screen.", "تابع حالة الالتزام والأداء من شاشة واحدة.");
+    var gl = document.getElementById("hp-gl");
+    if (gl) gl.textContent = T("Genel Uyum", "Overall Compliance", "الالتزام العام");
+    var leg = document.getElementById("hp-leg");
+    if (leg) leg.innerHTML = '<span><i style="background:#10B981"></i>' + T("Tamamlanan", "Completed", "مكتمل") + ' <b>' + m.cu + '</b></span><span><i style="background:#F59E0B"></i>' + T("Devam eden", "In progress", "قيد التنفيذ") + ' <b>' + m.mu + '</b></span><span><i style="background:#EF4444"></i>' + T("Başlanmayan", "Not started", "لسه ما بدأش") + ' <b>' + m.xu + '</b></span>';
+    document.querySelectorAll(".hp-cl small").forEach(function (s, i) {
+      s.textContent = (i % 2 === 0) ? T("MISIR · KAHİRE", "EGYPT · CAIRO", "مصر · القاهرة") : T("TÜRKİYE · İSTANBUL", "TÜRKİYE · ISTANBUL", "تركيا · إسطنبول");
+    });
+  }
+  function update() {
+    var h = ensureHero();
+    if (!h) return;
+    var m = metrics();
+    var pct = m.tu ? Math.round(m.cu / m.tu * 100) : 0;
+    texts(m);
+    var arc = document.getElementById("hp-arc");
+    if (arc) arc.style.strokeDashoffset = (C * (1 - pct / 100)).toFixed(1);
+    var b = [ "hp-b1", "hp-b2", "hp-b3" ], vals = [ m.cu, m.mu, m.xu ];
+    b.forEach(function (id, i) { var e = document.getElementById(id); if (e) e.style.width = (m.tu ? vals[i] / m.tu * 100 : 0) + "%"; });
+    var pe = document.getElementById("hp-pct");
+    if (pe) {
+      var from = shown < 0 ? 0 : shown, t0 = performance.now(), target = pct;
+      shown = pct;
+      (function step(t) {
+        var k = Math.min(1, (t - t0) / 1400), v = Math.round(from + (target - from) * (1 - Math.pow(1 - k, 3)));
+        pe.textContent = v;
+        if (k < 1 && shown === target) requestAnimationFrame(step);
+      })(t0);
+    }
+  }
+  // sitenin kendi hesabına bağlan: her veri yenilemesinde (bulut senkronu dahil) kartlarla birlikte güncellenir
+  function wrap(name) {
+    var o = window[name];
+    if (typeof o !== "function" || o.__hp) return;
+    var w = function () { var r = o.apply(this, arguments); try { update(); } catch (e) {} return r; };
+    w.__hp = true;
+    window[name] = w;
+  }
+  wrap("calcMetrics");
+  var sl = window.setLanguage;
+  if (typeof sl === "function" && !sl.__hp) {
+    var w2 = function () { var r = sl.apply(this, arguments); setTimeout(function () { try { update(); } catch (e) {} }, 60); return r; };
+    w2.__hp = true; window.setLanguage = w2;
+  }
+  function boot() {
+    document.body.classList.add("hp-anim");
+    setTimeout(function () { document.body.classList.remove("hp-anim"); }, 4200);
+    update();
+    mountClocks();
+    var tries = 0, iv = setInterval(function () { mountClocks(); if (++tries > 40 || document.querySelector("#ems-topbar .etb-clocks")) clearInterval(iv); }, 500);
+    setInterval(tick, 1000);
+    // giriş/çıkışta adın güncellenmesi için kısa aralıkla kontrol
+    setInterval(function () { try { var m = metrics(); texts(m); } catch (e) {} }, 5000);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+})();
+</script>
+
 <style id="visitor-css">
 /* ═══ ZİYARETÇİ KAYIT (27.10.2026) ═══ */
 #visitor-modal .qa-dept-overlay-inner { max-width: 1100px; padding-top: 28px; }
@@ -85298,7 +85488,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 14:26";
+const EMS_BUILD = "2026-11-19 14:57";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
