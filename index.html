@@ -45306,7 +45306,7 @@ function maybeWriteCloudDailySnapshot() {
     snapshot.aboutCardPhotos = aboutCardPhotos;
     // Özet (liste ekranı için) / Summary for the history list
     const _qs = Array.isArray(snapshot.auditQuestions) ? snapshot.auditQuestions : [];
-    const meta = { savedAt: snapshot.savedAt, qTotal: _qs.length, qCompliant: _qs.filter(q => q.status === "compliant").length };
+    const meta = Object.assign({ savedAt: snapshot.savedAt, qTotal: _qs.length, qCompliant: _qs.filter(q => q.status === "compliant").length }, (typeof window._hpMeta === "function" ? window._hpMeta() : {}));
     const json = JSON.stringify(snapshot);
     const col = fbDb.collection("ems_csr_snapshots");
     let writeP;
@@ -82635,12 +82635,29 @@ async function urgeDownloadPDF() {
 /* Analog saatler kaldırıldı: yerine üst çubukta dijital Mısır ve Türkiye saati var (kullanıcı kararı, 19.11.2026) */
 html .dept-banner > .dept-clocks, html.ems-sade .dept-banner > .dept-clocks, .dept-clocks { display: none !important; }
 /* Karşılama kartı */
-.hp-hero { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; padding: 26px 34px; margin: 0 0 18px; border-radius: 18px; background: #fff; border: 1px solid #E3E8F1; box-shadow: 0 6px 22px rgba(15,33,64,.08); }
+.hp-hero { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 430px) auto; gap: 28px; align-items: center; padding: 26px 34px; margin: 0 0 18px; border-radius: 18px; background: #fff; border: 1px solid #E3E8F1; box-shadow: 0 6px 22px rgba(15,33,64,.08); }
 .hp-hero:before { content: ""; position: absolute; inset-inline-end: -90px; top: -110px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(255,128,0,.16), transparent 70%); animation: hpFloat 10s ease-in-out infinite; pointer-events: none; }
 @keyframes hpFloat { 50% { transform: translate(-40px, 30px); } }
 .hp-hero h2 { font-size: 30px; font-weight: 800; letter-spacing: -.01em; color: #0F2140; position: relative; margin: 0; }
 .hp-hero p.hp-sub { margin: 8px 0 0; font-size: 15px; color: #475569; position: relative; }
 .hp-stack { margin-top: 18px; position: relative; max-width: 560px; }
+.hp-tr { position: relative; min-width: 0; }
+.hp-tr h4 { margin: 0 0 6px; font-size: 10.5px; letter-spacing: .13em; font-weight: 800; color: #64748B; display: flex; justify-content: space-between; gap: 8px; text-transform: uppercase; }
+.hp-tr h4 em { font-style: normal; letter-spacing: 0; font-weight: 800; }
+.hp-tr svg { width: 100%; height: auto; display: block; overflow: visible; }
+.hp-tr .hp-gl { stroke: #E6EBF4; }
+.hp-tr .hp-ln { fill: none; stroke: #FF7A00; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: var(--hl); stroke-dashoffset: var(--hl); transition: stroke-dashoffset 2.2s cubic-bezier(.3,.7,.2,1); }
+.hp-tr.on .hp-ln { stroke-dashoffset: 0; }
+.hp-tr .hp-ar { opacity: 0; transition: opacity 1.2s 1.4s; }
+.hp-tr.on .hp-ar { opacity: 1; }
+.hp-tr .hp-dt { fill: #fff; stroke: #FF7A00; stroke-width: 2.5; }
+.hp-tr .hp-pulse { fill: none; stroke: #FF7A00; animation: hpPulse 2s 2.4s infinite; }
+@keyframes hpPulse { 0% { r: 6; opacity: .8; } 100% { r: 18; opacity: 0; } }
+.hp-tr .hp-ax { fill: #64748B; font-size: 10px; }
+.hp-tr .hp-tip { position: absolute; pointer-events: none; background: #0F2140; color: #fff; border-radius: 8px; padding: 5px 9px; font-size: 12px; opacity: 0; transition: opacity .15s; white-space: nowrap; z-index: 2; }
+.hp-tr .hp-no { font-size: 12.5px; color: #64748B; padding: 22px 0; line-height: 1.5; }
+@media (max-width: 1250px) { .hp-hero { grid-template-columns: minmax(0, 1fr) auto; } .hp-tr { grid-column: 1 / -1; grid-row: 2; } }
+@media (max-width: 760px) { .hp-hero { grid-template-columns: 1fr; } .hp-tr { grid-row: auto; } }
 .hp-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: #E6EBF4; }
 .hp-bar i { display: block; height: 100%; width: 0; transition: width 1.4s cubic-bezier(.2,.8,.2,1); position: relative; }
 .hp-bar i:after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); background-size: 50% 100%; background-repeat: no-repeat; animation: hpSweep 3s infinite; }
@@ -82731,6 +82748,62 @@ html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi
   }
   var C = 2 * Math.PI * 80;
   var shown = -1;
+  // Gerçek geçmiş: bulut günlük yedeklerinin özeti (ems_csr_snapshots). Yedek yoksa ya da okunamazsa çizgi UYDURULMAZ.
+  // Real history from the daily cloud snapshots' summary; nothing is invented when it is missing or unreadable
+  window._hpMeta = function () { var m = metrics(); return { uT: m.tu, uC: m.cu, uM: m.mu, uX: m.xu }; };
+  var trendPts = null, trendTried = 0, trendLoading = false;
+  function todayId() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function loadTrend() {
+    if (trendLoading) return;
+    try { if (typeof FIREBASE_ENABLED === "undefined" || !FIREBASE_ENABLED || typeof fbDb === "undefined" || !fbDb) return; } catch (e) { return; }
+    try { if (!(typeof fbAuth !== "undefined" && fbAuth && fbAuth.currentUser)) return; } catch (e) { return; }
+    trendLoading = true; trendTried++;
+    fbDb.collection("ems_csr_snapshots").orderBy(firebase.firestore.FieldPath.documentId(), "desc").limit(45).get().then(function (snap) {
+      var pts = [];
+      snap.forEach(function (d) {
+        var s = d.data() || {};
+        var tot = s.uT != null ? s.uT : (s.qTotal || 0), cmp = s.uT != null ? (s.uC || 0) : (s.qCompliant || 0);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(d.id) && tot > 0) pts.push({ d: d.id, p: Math.round(cmp / tot * 1000) / 10 });
+      });
+      pts.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
+      trendPts = pts; trendLoading = false; drawTrend();
+    }).catch(function () { trendPts = []; trendLoading = false; drawTrend(); });
+  }
+  function lng() { var l = document.documentElement.lang || "tr"; return l === "ar" ? "ar-EG" : (l === "en" ? "en-GB" : "tr-TR"); }
+  function fmtD(id) { var p = id.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString(lng(), { day: "numeric", month: "short" }); }
+  function drawTrend() {
+    var box = document.getElementById("hp-tr"); if (!box) return;
+    var title = T("UYUM TRENDİ", "COMPLIANCE TREND", "اتجاه الالتزام");
+    var pts = (trendPts || []).slice();
+    var m = metrics(), liveP = m.tu ? Math.round(m.cu / m.tu * 1000) / 10 : null, td = todayId();
+    if (liveP != null && trendPts) { var ix = pts.findIndex(function (x) { return x.d === td; }); if (ix >= 0) pts[ix].p = liveP; else pts.push({ d: td, p: liveP }); }
+    if (pts.length < 2) {
+      box.className = "hp-tr";
+      box.innerHTML = "<h4>" + title + '</h4><div class="hp-no">' + (trendPts === null ? T("Yükleniyor…", "Loading…", "جاري التحميل…") : T("Trend için yeterli kayıt yok. Günlük yedekler birikince çizgi otomatik görünecek.", "Not enough records yet. The line appears automatically as daily backups accumulate.", "مفيش سجلات كفاية. الخط هيظهر لوحده مع تراكم النسخ اليومية.")) + "</div>";
+      return;
+    }
+    var W = 430, H = 118, pl = 30, pr = 10, pt = 10, pb = 20;
+    var vals = pts.map(function (x) { return x.p; }), lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    lo = Math.max(0, Math.floor(lo - 4)); hi = Math.min(100, Math.ceil(hi + 4)); if (hi - lo < 10) hi = Math.min(100, lo + 10);
+    var X = function (i) { return pl + i * (W - pl - pr) / (pts.length - 1); }, Y = function (v) { return pt + (H - pt - pb) * (1 - (v - lo) / (hi - lo)); };
+    var path = "M" + X(0).toFixed(1) + " " + Y(pts[0].p).toFixed(1);
+    for (var k = 1; k < pts.length; k++) { var cx = (X(k - 1) + X(k)) / 2; path += " C" + cx.toFixed(1) + " " + Y(pts[k - 1].p).toFixed(1) + " " + cx.toFixed(1) + " " + Y(pts[k].p).toFixed(1) + " " + X(k).toFixed(1) + " " + Y(pts[k].p).toFixed(1); }
+    var h = '<defs><linearGradient id="hpAg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF7A00" stop-opacity=".30"/><stop offset="1" stop-color="#FF7A00" stop-opacity="0"/></linearGradient></defs>';
+    for (var g = 0; g <= 2; g++) { var v = lo + (hi - lo) * g / 2, y = Y(v); h += '<line class="hp-gl" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y + '" y2="' + y + '"/><text class="hp-ax" x="' + (pl - 5) + '" y="' + (y + 3) + '" text-anchor="end">%' + Math.round(v) + "</text>"; }
+    h += '<path class="hp-ar" d="' + path + " L" + X(pts.length - 1) + " " + (H - pb) + " L" + X(0) + " " + (H - pb) + 'Z" fill="url(#hpAg)"/>';
+    h += '<path class="hp-ln" style="--hl:' + (W * 3) + '" d="' + path + '"/>';
+    var step = Math.max(1, Math.ceil(pts.length / 14));
+    pts.forEach(function (x, i) { if (i % step === 0 || i === pts.length - 1) h += '<circle class="hp-dt" cx="' + X(i).toFixed(1) + '" cy="' + Y(x.p).toFixed(1) + '" r="' + (i === pts.length - 1 ? 5 : 3) + '"/>'; });
+    h += '<circle class="hp-pulse" cx="' + X(pts.length - 1).toFixed(1) + '" cy="' + Y(pts[pts.length - 1].p).toFixed(1) + '" r="6"/>';
+    h += '<text class="hp-ax" x="' + pl + '" y="' + (H - 4) + '">' + fmtD(pts[0].d) + '</text><text class="hp-ax" x="' + (W - pr) + '" y="' + (H - 4) + '" text-anchor="end">' + fmtD(pts[pts.length - 1].d) + "</text>";
+    var diff = Math.round((pts[pts.length - 1].p - pts[0].p) * 10) / 10;
+    box.innerHTML = "<h4><span>" + title + '</span><em style="color:' + (diff >= 0 ? "#059669" : "#DC2626") + '">' + (diff >= 0 ? "▲ +" : "▼ ") + diff.toLocaleString(lng()) + " " + T("puan", "pts", "نقطة") + '</em></h4><svg viewBox="0 0 ' + W + " " + H + '">' + h + '</svg><div class="hp-tip" id="hp-tip"></div>';
+    var svg = box.querySelector("svg"), tip = box.querySelector("#hp-tip");
+    svg.addEventListener("mousemove", function (e) { var r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, i = Math.round((x - pl) / ((W - pl - pr) / (pts.length - 1))); i = Math.max(0, Math.min(pts.length - 1, i)); tip.style.opacity = 1; tip.style.left = Math.min(r.width - 100, X(i) * r.width / W + 6) + "px"; tip.style.top = "22px"; tip.innerHTML = "<b>" + fmtD(pts[i].d) + "</b> · %" + pts[i].p; });
+    svg.addEventListener("mouseleave", function () { tip.style.opacity = 0; });
+    box.className = "hp-tr";
+    requestAnimationFrame(function () { requestAnimationFrame(function () { box.classList.add("on"); }); });
+  }
   function ensureHero() {
     var v = document.getElementById("view-dashboard");
     if (!v) return null;
@@ -82740,6 +82813,7 @@ html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi
     h.id = "home-pro-hero";
     h.className = "hp-hero";
     h.innerHTML = '<div><h2 id="hp-hi"></h2><p class="hp-sub" id="hp-sub"></p><div class="hp-clkm" id="hp-clkm">' + clockHtml() + '</div><div class="hp-stack"><div class="hp-bar"><i id="hp-b1" style="background:#10B981"></i><i id="hp-b2" style="background:#F59E0B"></i><i id="hp-b3" style="background:#EF4444"></i></div><div class="hp-leg" id="hp-leg"></div></div></div>' +
+      '<div class="hp-tr" id="hp-tr"></div>' +
       '<div class="hp-gauge"><svg viewBox="0 0 200 200"><defs><linearGradient id="hpGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA84D"/><stop offset="1" stop-color="#FF7A00"/></linearGradient></defs><circle class="hp-trk" cx="100" cy="100" r="80"/><circle class="hp-arc" id="hp-arc" cx="100" cy="100" r="80" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '"/></svg><div class="hp-gv"><b><span id="hp-pct">0</span><small>%</small></b><span id="hp-gl"></span></div></div>';
     v.insertBefore(h, v.firstChild);
     return h;
@@ -82771,6 +82845,7 @@ html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi
     if (arc) arc.style.strokeDashoffset = (C * (1 - pct / 100)).toFixed(1);
     var b = [ "hp-b1", "hp-b2", "hp-b3" ], vals = [ m.cu, m.mu, m.xu ];
     b.forEach(function (id, i) { var e = document.getElementById(id); if (e) e.style.width = (m.tu ? vals[i] / m.tu * 100 : 0) + "%"; });
+    if (trendPts) { var sig = m.tu + "/" + m.cu + "/" + lng(); if (update.__sig !== sig) { update.__sig = sig; drawTrend(); } } else if (!(document.getElementById("hp-tr") || {}).innerHTML) drawTrend();
     var pe = document.getElementById("hp-pct");
     if (pe) {
       var from = shown < 0 ? 0 : shown, t0 = performance.now(), target = pct;
@@ -82801,6 +82876,8 @@ html.ems-sade .hp-hero:before, html.ems-sade .hp-bar i:after, html.ems-sade .kpi
     setTimeout(function () { document.body.classList.remove("hp-anim"); }, 4200);
     update();
     mountClocks();
+    var tv = setInterval(function () { loadTrend(); if (trendPts !== null || trendTried > 6) clearInterval(tv); }, 3000);
+    setInterval(function () { trendPts = null; trendLoading = false; loadTrend(); }, 15 * 60 * 1000);
     var tries = 0, iv = setInterval(function () { mountClocks(); if (++tries > 40 || document.querySelector("#ems-topbar .etb-clocks")) clearInterval(iv); }, 500);
     setInterval(tick, 1000);
     // giriş/çıkışta adın güncellenmesi için kısa aralıkla kontrol
@@ -85490,7 +85567,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 15:00";
+const EMS_BUILD = "2026-11-19 15:02";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
