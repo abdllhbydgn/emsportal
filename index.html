@@ -82979,6 +82979,17 @@ body.hp-pro #view-dashboard > .kpi-grid, body.hp-pro #view-dashboard #ring-dashb
 @media (max-width: 1200px) { .hpx-kp, .hpx-pw, .hpx-sc { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .hpx-kp, .hpx-pw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hpx-sc { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hpx-k { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px; } .hpx-k b { font-size: 26px; } .hpx-p .t .i { display: none; } .hpx-p .t .pc { font-size: 18px; } .hpx-ch { grid-template-columns: 1fr; } .hpx-m { flex-wrap: wrap; } }
 body.hp-anim .hpx-c { animation: hpUp .7s both; }
+/* Uyarı şeridi: onaylanan tasarım (kırmızı bant, zil, akan yazı, İncele). Veri sitenin kendi _fxRenderAlertStrip hesabından */
+body.hp-pro #fx-alert-strip { position: relative; overflow: hidden; gap: 14px; padding: 12px 18px; border-radius: 12px; margin-bottom: 14px; box-shadow: 0 2px 10px rgba(15,33,64,.06); }
+body.hp-pro #fx-alert-strip.fx-strip-alert { background: #FEE9E9; border: 1px solid #FBCACA; color: #B42318; }
+body.hp-pro #fx-alert-strip.fx-strip-alert:after { content: ""; position: absolute; top: 0; left: -40%; width: 30%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.65), transparent); animation: hpSweep2 4.2s infinite; pointer-events: none; }
+@keyframes hpSweep2 { to { left: 130%; } }
+body.hp-pro #fx-alert-strip.fx-strip-alert .fx-strip-title { font-size: 14px; text-transform: none; letter-spacing: 0; color: #B42318; display: inline-flex; align-items: center; gap: 6px; transform-origin: 50% 0; animation: hpBell 3s infinite; }
+@keyframes hpBell { 0%, 78%, 100% { transform: none; } 84% { transform: rotate(-14deg); } 90% { transform: rotate(14deg); } 95% { transform: rotate(-8deg); } }
+body.hp-pro #fx-alert-strip .hpx-go { margin-inline-start: auto; flex: none; position: relative; z-index: 1; color: #EA580C; font-weight: 800; font-size: 13.5px; cursor: pointer; white-space: nowrap; text-decoration: none; }
+body.hp-pro #fx-alert-strip .hpx-go:hover { text-decoration: underline; }
+body.hp-pro #fx-alert-strip .fx-ticker { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { body.hp-pro #fx-alert-strip.fx-strip-alert:after, body.hp-pro #fx-alert-strip.fx-strip-alert .fx-strip-title { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .hpx-bar i, .hpx-p .s i, .hpx-live i { animation: none; } .hpx-bar i, .hpx-s .ar { transition: none; } }
 </style>
 <script id="homepro-cards">
@@ -83169,6 +83180,28 @@ body.hp-anim .hpx-c { animation: hpUp .7s both; }
       });
     });
   }
+  // Uyarı şeridi: sitenin kendi çizimi bitince "İncele ›" bağlantısını ekle (yönetici için Yönetim Özeti)
+  function wrapStrip() {
+    var o = window._fxRenderAlertStrip;
+    if (typeof o !== "function" || o.__hp) return;
+    var w = function () {
+      var r = o.apply(this, arguments);
+      try {
+        var el = document.getElementById("fx-alert-strip");
+        if (el && el.style.display !== "none" && !el.querySelector(".hpx-go") && el.classList.contains("fx-strip-alert")) {
+          var a = document.createElement("a");
+          a.className = "hpx-go"; a.setAttribute("role", "button"); a.tabIndex = 0;
+          a.textContent = T("İncele", "Review", "اطّلع") + " ›";
+          var go = function (e) { e.stopPropagation(); try { if (typeof currentUserRole !== "undefined" && currentUserRole === "admin") openMgmtSummary(); else openCertHub(); } catch (x) {} };
+          a.addEventListener("click", go);
+          a.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(e); } });
+          el.appendChild(a);
+        }
+      } catch (e) {}
+      return r;
+    };
+    w.__hp = true; window._fxRenderAlertStrip = w;
+  }
   function modeBtn() {
     var h = document.getElementById("home-pro-hero"); if (!h) return;
     var b = h.querySelector(".hp-modebtn");
@@ -83186,6 +83219,7 @@ body.hp-anim .hpx-c { animation: hpUp .7s both; }
   var timer = null;
   function sched() { clearTimeout(timer); timer = setTimeout(build, 160); }
   function boot() {
+    wrapStrip();
     build();
     var v = document.getElementById("view-dashboard");
     if (v && window.MutationObserver) {
