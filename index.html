@@ -82950,6 +82950,25 @@ body.hp-pro #view-dashboard > .kpi-grid, body.hp-pro #view-dashboard #ring-dashb
 .hpx-m small { display: block; font-size: 12px; color: #64748B; font-weight: 600; line-height: 1.2; }
 .hpx-m b { font-size: 24px; font-weight: 800; line-height: 1.2; display: block; }
 .hpx-m em { display: block; font-style: normal; font-size: 11px; color: #64748B; margin-top: 2px; }
+.hpx-cd { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 14px; }
+.hpx-d { display: flex; align-items: center; gap: 14px; padding: 18px; }
+.hpx-d .i { width: 56px; height: 56px; border-radius: 50%; background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); display: grid; place-items: center; flex: none; }
+.hpx-d .i svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hpx-d small { display: block; font-size: 12px; color: #64748B; font-weight: 600; line-height: 1.25; }
+.hpx-d b { font-size: 26px; font-weight: 800; line-height: 1.2; display: block; }
+.hpx-d b u { font-size: 13px; text-decoration: none; color: #64748B; font-weight: 600; }
+.hpx-d .m { min-width: 0; flex: 1; }
+.hpx-d .tr { margin-inline-start: auto; text-align: end; font-size: 11px; color: #64748B; flex: none; max-width: 46%; }
+.hpx-d .tr svg { width: 112px; height: 40px; display: block; margin-inline-start: auto; overflow: visible; }
+.hpx-d .tr em { display: block; font-style: normal; font-weight: 800; margin-top: 2px; }
+.hpx-d .ln { fill: none; stroke: #2563EB; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 400; stroke-dashoffset: 400; animation: hpDraw 1.8s .4s ease forwards; }
+.hpx-d .fl { fill: #2563EB; opacity: .12; }
+@keyframes hpDraw { to { stroke-dashoffset: 0; } }
+.hpx-scale { height: 8px; border-radius: 99px; background: linear-gradient(90deg, #EF4444, #F59E0B, #10B981); position: relative; margin: 9px 0 3px; }
+.hpx-scale i { position: absolute; top: -5px; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 4px solid var(--c); inset-inline-start: 0; transition: inset-inline-start 1.8s cubic-bezier(.2,.8,.2,1); transform: translateX(-50%); }
+.hpx-d .sc2 { display: flex; justify-content: space-between; font-size: 11px; color: #64748B; }
+@media (max-width: 1200px) { .hpx-cd { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .hpx-d { flex-wrap: wrap; } .hpx-d .tr { max-width: none; width: 100%; text-align: start; } .hpx-d .tr svg { margin-inline-start: 0; width: 100%; } }
 .hpx-live { margin-inline-start: auto; font-size: 10.5px; font-weight: 800; letter-spacing: .1em; color: #059669; display: inline-flex; align-items: center; gap: 6px; }
 .hpx-live i { width: 8px; height: 8px; border-radius: 50%; background: #10B981; animation: hpLive 1.4s infinite; }
 @keyframes hpLive { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,.6); } 100% { box-shadow: 0 0 0 10px rgba(16,185,129,0); } }
@@ -83066,6 +83085,50 @@ body.hp-anim .hpx-c { animation: hpUp .7s both; }
       });
     });
   }
+  function spark(vals, id) {
+    if (vals.length < 2) return "";
+    var W = 112, H = 40, mx = Math.max.apply(null, vals), mn = Math.min.apply(null, vals), rg = (mx - mn) || 1;
+    var pts = vals.map(function (v, i) { return [ i * W / (vals.length - 1), H - 4 - (v - mn) / rg * (H - 10) ]; });
+    var d = "M" + pts.map(function (q) { return q[0].toFixed(1) + " " + q[1].toFixed(1); }).join(" L");
+    return '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none"><path class="fl" d="' + d + " L" + W + " " + H + ' L0 ' + H + 'Z"/><path class="ln" d="' + d + '"/></svg>';
+  }
+  function nfmt(n) { return Math.round(n).toLocaleString((document.documentElement.lang || "tr") === "ar" ? "ar-EG" : ((document.documentElement.lang || "tr") === "en" ? "en-GB" : "tr-TR")); }
+  function buildChemDesign() {
+    var first = document.getElementById("kpi-chem-print-stock"); if (!first) return;
+    var grid = first.parentElement, ser = [];
+    try { ser = _chemMonthlySeries("all") || []; } catch (e) { ser = []; }
+    if (!ser.length) return;
+    var vals = ser.map(function (r) { return Math.max(0, Number(r.consumed) || 0); });
+    var total = vals.reduce(function (a, b) { return a + b; }, 0);
+    var cur = vals[vals.length - 1], prev = vals.length > 1 ? vals[vals.length - 2] : 0;
+    var lng2 = (document.documentElement.lang || "tr") === "ar" ? "ar-EG" : ((document.documentElement.lang || "tr") === "en" ? "en-GB" : "tr-TR");
+    var mlabel = function (per) { var q = per.split("-"); return new Date(+q[0], +q[1] - 1, 1).toLocaleDateString(lng2, { month: "long", year: "numeric" }); };
+    var dp = prev > 0 ? Math.round((cur - prev) / prev * 1000) / 10 : null;
+    var dTxt = dp == null ? "" : (dp > 0 ? "+" : "") + dp.toLocaleString(lng2) + "% " + (dp > 0 ? "↑" : (dp < 0 ? "↓" : ""));
+    var dCol = dp == null ? "#64748B" : (dp > 0 ? "#DC2626" : "#059669");
+    var secPct = null, secTitle = "";
+    var sc = rows.sc && rows.sc.el ? rows.sc.el.querySelectorAll(".hpx-c") : [];
+    for (var i = 0; i < sc.length; i++) { var ti = (sc[i].querySelector("b") || {}).textContent || ""; if (/kimyasal|chemical|كيماو|كيميا/i.test(ti)) { secTitle = ti; secPct = parseFloat((sc[i].querySelector("text") || {}).textContent); break; } }
+    var stTxt = secPct == null ? "" : (secPct >= 80 ? T("Uygun", "Compliant", "مطابق") : (secPct >= 50 ? T("Geliştirilmeli", "Needs work", "محتاج تحسين") : T("Kritik", "Critical", "حرج")));
+    var stCol = secPct == null ? "#64748B" : (secPct >= 80 ? "#059669" : (secPct >= 50 ? "#D97706" : "#DC2626"));
+    var gen = document.getElementById("kpi-chem-general");
+    var r = ensureRow("cd", (rows.ch && rows.ch.el.isConnected) ? rows.ch.el : grid, "hpx-cd");
+    var drop = '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>', cal = '<path d="M5 5h14v15H5zM5 10h14M9 3v4M15 3v4"/>', shield = '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/>';
+    var html =
+      '<div class="hpx-c hpx-d" role="button" tabindex="0" data-k="g" style="--c:#2563EB"><div class="i"><svg viewBox="0 0 24 24">' + drop + '</svg></div><div class="m"><small>' + T("Toplam Tüketim", "Total Consumption", "إجمالي الاستهلاك") + '</small><b>' + nfmt(total) + ' <u>kg</u></b><small>' + mlabel(ser[0].period) + " – " + mlabel(ser[ser.length - 1].period) + '</small></div><div class="tr">' + spark(vals) + '<em style="color:#64748B">' + T("Aylık tüketim", "Monthly consumption", "الاستهلاك الشهري") + '</em></div></div>' +
+      '<div class="hpx-c hpx-d" role="button" tabindex="0" data-k="g" style="--c:#2563EB"><div class="i"><svg viewBox="0 0 24 24">' + cal + '</svg></div><div class="m"><small>' + (ser[ser.length - 1].period === new Date().getFullYear() + "-" + String(new Date().getMonth() + 1).padStart(2, "0") ? T("Bu Ay", "This Month", "هذا الشهر") : T("Son Dönem", "Latest Period", "آخر فترة")) + '</small><b>' + nfmt(cur) + ' <u>kg</u></b><small>' + mlabel(ser[ser.length - 1].period) + '</small></div><div class="tr">' + spark(vals) + (dTxt ? '<em style="color:' + dCol + '">' + dTxt + "</em>" + T("Geçen Aya Göre", "vs Last Month", "مقارنة بالشهر الماضي") : "") + '</div></div>' +
+      (secPct == null ? "" : '<div class="hpx-c hpx-d" role="button" tabindex="0" data-k="s" style="--c:' + stCol + '"><div class="i"><svg viewBox="0 0 24 24">' + shield + '</svg></div><div class="m"><small>' + T("Uyum Durumu", "Compliance Status", "حالة الالتزام") + '</small><b style="color:' + stCol + '">' + stTxt + '</b><div class="hpx-scale"><i data-l="' + Math.max(0, Math.min(100, secPct)) + '"></i></div><div class="sc2"><span>' + esc(secTitle) + '</span><span>%' + Math.round(secPct) + '</span></div></div></div>');
+    setRow(r, html, function (el) {
+      el.querySelectorAll(".hpx-c").forEach(function (c) {
+        var k = c.getAttribute("data-k"), run;
+        if (k === "s") { var sec = rows.sc && rows.sc.el ? Array.prototype.filter.call(rows.sc.el.querySelectorAll(".hpx-c"), function (x) { return /kimyasal|chemical|كيماو|كيميا/i.test((x.querySelector("b") || {}).textContent || ""); })[0] : null; run = function () { if (sec) sec.click(); }; }
+        else run = gen ? fire(gen) : function () {};
+        c.addEventListener("click", run);
+        c.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); run(); } });
+      });
+      requestAnimationFrame(function () { requestAnimationFrame(function () { el.querySelectorAll("[data-l]").forEach(function (e) { e.style.insetInlineStart = e.getAttribute("data-l") + "%"; }); }); });
+    });
+  }
   var CH = [ [ "kpi-chem-print-stock", "#7C3AED" ], [ "kpi-chem-print-report", "#A78BFA" ], [ "kpi-chem-dye-stock", "#0891B2" ], [ "kpi-chem-dye-report", "#22D3EE" ], [ "kpi-chem-general", "#1A3660" ] ];
   function buildChem() {
     var first = document.getElementById("kpi-chem-print-stock"); if (!first) return;
@@ -83097,7 +83160,7 @@ body.hp-anim .hpx-c { animation: hpUp .7s both; }
     document.body.classList.toggle("hp-pro", on());
     modeBtn();
     if (!on()) return;
-    try { buildKpi(); buildSections(); buildWip(); buildChem(); } catch (e) { console.warn("homepro-cards", e); document.body.classList.remove("hp-pro"); }
+    try { buildKpi(); buildSections(); buildWip(); buildChemDesign(); buildChem(); } catch (e) { console.warn("homepro-cards", e); document.body.classList.remove("hp-pro"); }
   }
   function apply() { document.body.classList.toggle("hp-pro", on()); if (on()) { Object.keys(rows).forEach(function (k) { rows[k].sig = ""; }); } build(); }
   var timer = null;
@@ -85797,7 +85860,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-19 15:19";
+const EMS_BUILD = "2026-11-19 15:25";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
