@@ -60443,13 +60443,29 @@ function _aboutFitBanner(defPos) {
   const img = document.getElementById("about-fullpage-photo-img");
   if (!b || !img || !img.naturalWidth || img.style.display === "none") return;
   const r = img.naturalWidth / img.naturalHeight;
-  if (r >= 2) {
+  let bg = document.getElementById("about-fullpage-photo-bg");
+  if (!bg) {
+    bg = document.createElement("div"); bg.id = "about-fullpage-photo-bg";
+    bg.style.cssText = "position:absolute; inset:-24px; background-size:cover; background-position:center; filter:blur(22px) brightness(.75); display:none;";
+    b.insertBefore(bg, img);
+  }
+  if (r >= 1.2) {
+    // Fotoğrafın tamamı görünür: kutu fotoğrafın oranına uyar; ekrana sığmayacak kadar yüksekse tamamı sığdırılır (arkası bulanık) /
+    // The whole photo is visible: the box follows the photo ratio; if too tall for the screen it is fitted in full (blurred backdrop)
     const w = b.clientWidth || b.parentElement.clientWidth || 800;
-    b.style.height = Math.round(Math.min(Math.max(w / r, 130), 560)) + "px";
+    const cap = Math.max(300, Math.round(window.innerHeight * 0.72));
+    let h = Math.max(w / r, 130), capped = false;
+    if (h > cap) { h = cap; capped = true; }
+    b.style.height = Math.round(h) + "px";
+    img.style.objectFit = capped ? "contain" : "cover";
     img.style.objectPosition = "center";
+    bg.style.backgroundImage = capped ? 'url("' + img.src + '")' : "none";
+    bg.style.display = capped ? "block" : "none";
   } else {
     b.style.height = "280px";
+    img.style.objectFit = "cover";
     img.style.objectPosition = defPos || img.dataset.pos || "center";
+    bg.style.display = "none";
   }
 }
 window.addEventListener("resize", () => { try { _aboutFitBanner(); } catch (e) {} });
@@ -86002,7 +86018,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-21 12:55";
+const EMS_BUILD = "2026-11-21 13:00";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
