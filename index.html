@@ -60332,9 +60332,10 @@ function renderAboutHubCardPhotos() {
     if (!box) return;
     // Sertifikalar kartı: eski "EMS CERTIFIED" görseli yerine NSCS rozeti (buluttaki fotoğrafa dokunulmaz) /
     // Certificates card: NSCS seal instead of the old "EMS CERTIFIED" picture (cloud photo is left untouched)
-    if (key === "certs") {
+    const _builtIn = { certs: [ "sertifikalar/kapak_nscs.jpg", "NSCS Certified" ], qa: [ "hakkimizda/kalite_guvence_kart.jpg", "NSCS Kalite Güvence" ] }[key];
+    if (_builtIn) {
       if (box.querySelector("img.about-card-photo")) return;
-      box.innerHTML = `<img decoding="async" class="about-card-photo" src="sertifikalar/kapak_nscs.jpg" style="width:100%; height:100%; object-fit:cover;" alt="NSCS Certified">`;
+      box.innerHTML = `<img decoding="async" class="about-card-photo" src="${_builtIn[0]}" style="width:100%; height:100%; object-fit:cover;" alt="${_builtIn[1]}">`;
       return;
     }
     if (!aboutCardPhotos[key + "_thumb"]) return;
@@ -86061,7 +86062,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-21 13:03";
+const EMS_BUILD = "2026-11-21 13:10";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
