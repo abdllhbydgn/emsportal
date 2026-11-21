@@ -28176,6 +28176,17 @@ async function _h2cRun(el, opts) {
     const o2 = Object.assign({}, opts);
     if (!o2.windowWidth) o2.windowWidth = Math.max(w + 40, window.innerWidth || 0);
     if (!o2.windowHeight) o2.windowHeight = Math.max(window.innerHeight || 0, 400);
+    // KALİTE: rapor netliği için çizim ölçeği yükseltilir (masaüstü 2x, telefon 1.5x); çok uzun raporlarda tarayıcının tuval sınırını
+    // aşmamak için ölçek içeriğin boyuna göre düşürülür (asla özgün ölçeğin altına inmez) /
+    // QUALITY: the draw scale is raised for sharp reports (desktop 2x, phone 1.5x); for very long reports it is lowered to stay
+    // within the browser canvas limits (never below the original scale)
+    try {
+      const base = o2.scale || 1, want = (window.innerWidth || 1024) <= 768 ? 1.5 : 2;
+      const chH = Math.max(clone.scrollHeight || 0, clone.offsetHeight || 0, 1);
+      let sc = Math.max(base, want);
+      sc = Math.min(sc, 15000 / chH, Math.sqrt(40e6 / (w * chH)));
+      o2.scale = Math.max(base, Math.round(sc * 100) / 100);
+    } catch (e) {}
     try { await _pdfShrinkImages(imgs, o2.scale || 2); } catch (e) {}
     const canvas = await html2canvas(clone, _h2cWithColorFix(o2));
     try {
@@ -28339,7 +28350,7 @@ function _pdfFitChunks(chunks, wrap, build, maxH) {
 }
 // PDF sayfa görüntüsü kalitesi: 0.72 okunaklı kalır ama dosya ~4 kat küçülür (eskiden 0.92 ile bir rapor 30 MB üstüne çıkıyordu) /
 // PDF page image quality: 0.72 stays readable but the file is ~4x smaller (a report used to exceed 30 MB at 0.92)
-const _PDF_JPEG_Q = .56;
+const _PDF_JPEG_Q = .8;
 // Rapor sayfası görüntüsündeki öğelerin PDF sayfasındaki konumu (mm). _pdfAddCanvasA4 fit:true düzeniyle aynı hesap /
 // Position (mm) of elements of a report page image on the PDF page; same maths as _pdfAddCanvasA4 with fit:true
 function _pdfRectsMm(wrap, canvas, selector) {
@@ -86063,7 +86074,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-21 14:28";
+const EMS_BUILD = "2026-11-21 15:42";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
