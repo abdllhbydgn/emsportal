@@ -4393,10 +4393,6 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
         <span class="nav-emoji">🏢</span>
         <span data-i18n="nav_about_us">Hakkımızda / About Us</span>
       </button>
-      <button class="side-nav-item visitor-allowed" onclick="try{ openDocumentLibrary('company'); }catch(e){ console.error('Şirket Profili açma hatası:', e); alert(t3('Hata: ', 'Error: ', 'خطأ: ') + e.message); }">
-        <span class="nav-emoji">🏢</span>
-        <span data-i18n="nav_company_profile">Şirket Profili / Company Profile</span>
-      </button>
       <button class="side-nav-item visitor-allowed" onclick="try{ openCertHub(); }catch(e){ console.error('Sertifikalar açma hatası:', e); alert(t3('Hata: ', 'Error: ', 'خطأ: ') + e.message); }">
         <span class="nav-emoji">🏅</span>
         <span data-i18n="nav_certificates">Sertifikalar / Certificates</span>
@@ -4749,12 +4745,6 @@ html.ems-sade .ring-card.sec-donut-card:not(#site-announcement-popup *):not(#ann
             <div class="visitor-home-card-icon">🏅</div>
             <div class="visitor-home-card-title" data-i18n="visitor_card_certs">Sertifikalar</div>
             <div class="visitor-home-card-sub" data-i18n="visitor_card_certs_sub">Akreditasyonlarımızı görüntüleyin</div>
-            <div class="visitor-home-card-arrow">→</div>
-          </div>
-          <div class="visitor-home-card" style="--card-c1:#14B8A6; --card-c2:#0F766E; animation-delay:.30s;" onclick="openCompanyProfile()">
-            <div class="visitor-home-card-icon">🏢</div>
-            <div class="visitor-home-card-title" data-i18n="visitor_card_profile">Şirket Profili</div>
-            <div class="visitor-home-card-sub" data-i18n="visitor_card_profile_sub">Kurumsal bilgi dosyamız</div>
             <div class="visitor-home-card-arrow">→</div>
           </div>
         </div>
@@ -60290,16 +60280,47 @@ function closeAboutHub() {
 function openAboutHubOrHome() {
   if (currentUserIsNamedAccount) openAboutHub(); else goHome();
 }
+// Kart fotoğrafı: 4:3'e yakınsa kutuyu doldurur; çok geniş/dik ise kesilmeden tamamı görünür (arkası bulanık dolgu) /
+// Card photo: fills the box when close to 4:3; very wide/tall photos are shown in full over a blurred backdrop
+function _aboutCardSetPhoto(box, dataUrl) {
+  const btn = box.querySelector("button");
+  box.innerHTML = "";
+  const bg = document.createElement("div");
+  bg.style.cssText = "position:absolute; inset:-20px; background-size:cover; background-position:center; filter:blur(18px) brightness(.72); display:none;";
+  const img = document.createElement("img");
+  img.className = "about-card-photo";
+  img.alt = "";
+  img.decoding = "async";
+  img.style.cssText = "width:100%; height:100%; object-fit:cover; position:relative;";
+  img.onload = () => {
+    const r = img.naturalWidth / (img.naturalHeight || 1);
+    if (r < 1.2 || r > 1.5) {
+      img.style.objectFit = "contain";
+      bg.style.backgroundImage = 'url("' + dataUrl + '")';
+      bg.style.display = "block";
+    }
+  };
+  img.src = dataUrl;
+  box.appendChild(bg);
+  box.appendChild(img);
+  if (btn) box.appendChild(btn);
+}
 function renderAboutHubCardPhotos() {
   [ "story", "chairman", "vision", "values", "sustainability", "qa", "certs" ].forEach(key => {
     const box = document.getElementById("about-card-photobox-" + key);
-    if (!box || !aboutCardPhotos[key + "_thumb"]) return;
+    if (!box) return;
+    // Sertifikalar kartı: eski "EMS CERTIFIED" görseli yerine NSCS rozeti (buluttaki fotoğrafa dokunulmaz) /
+    // Certificates card: NSCS seal instead of the old "EMS CERTIFIED" picture (cloud photo is left untouched)
+    if (key === "certs") {
+      if (box.querySelector("img.about-card-photo")) return;
+      box.innerHTML = `<img decoding="async" class="about-card-photo" src="sertifikalar/kapak_nscs.jpg" style="width:100%; height:100%; object-fit:cover;" alt="NSCS Certified">`;
+      return;
+    }
+    if (!aboutCardPhotos[key + "_thumb"]) return;
     if (box.querySelector("img.about-card-photo")) return;
     _loadDocFileData("aboutCard", key + "_thumb", "photo", dataUrl => {
       if (!dataUrl) return;
-      const btn = box.querySelector("button");
-      box.innerHTML = `<img loading="lazy" decoding="async" class="about-card-photo" src="${dataUrl}" style="width:100%; height:100%; object-fit:cover;" alt="">`;
-      if (btn) box.appendChild(btn);
+      _aboutCardSetPhoto(box, dataUrl);
     });
   });
 }
@@ -60333,9 +60354,7 @@ function _handleAboutCardPhotoFile(key, slot, file) {
       if (slot === "thumb") {
         const box = document.getElementById("about-card-photobox-" + key);
         if (box) {
-          const btn = box.querySelector("button");
-          box.innerHTML = `<img loading="lazy" decoding="async" class="about-card-photo" src="${dataUrl}" style="width:100%; height:100%; object-fit:cover;" alt="">`;
-          if (btn) box.appendChild(btn);
+          _aboutCardSetPhoto(box, dataUrl);
         }
         return;
       }
@@ -60394,15 +60413,20 @@ function renderAboutFullpage(key) {
   // Never show the previous section's photo: the icon shows until the new photo arrives
   img.style.display = "none";
   img.removeAttribute("src");
+  img.dataset.pos = data.defaultImgPosition || "";
+  const _bn = document.getElementById("about-fullpage-photo-banner");
+  if (_bn) _bn.style.height = "280px";
   fallbackIcon.style.display = "block";
   if (aboutCardPhotos[key + "_hero"]) {
     _loadDocFileData("aboutCard", key + "_hero", "photo", dataUrl => {
       if (_currentAboutDetailKey !== key) return;
       if (dataUrl) {
+        img.onload = () => _aboutFitBanner(data.defaultImgPosition);
         img.src = dataUrl;
         img.style.objectPosition = data.defaultImgPosition || "center";
         img.style.display = "block";
         fallbackIcon.style.display = "none";
+        if (img.complete) _aboutFitBanner(data.defaultImgPosition);
       }
     });
   } else {
@@ -60412,6 +60436,23 @@ function renderAboutFullpage(key) {
   }
   _appendSiteFooterClone(document.getElementById("about-fullpage-body"), closeAboutFullpage);
 }
+// Geniş (yatay) kapak fotoğrafı kesilmeden tam görünsün: kutu yüksekliği fotoğrafın oranına uyar /
+// A wide cover photo is shown in full: the banner height follows the photo ratio
+function _aboutFitBanner(defPos) {
+  const b = document.getElementById("about-fullpage-photo-banner");
+  const img = document.getElementById("about-fullpage-photo-img");
+  if (!b || !img || !img.naturalWidth || img.style.display === "none") return;
+  const r = img.naturalWidth / img.naturalHeight;
+  if (r >= 2) {
+    const w = b.clientWidth || b.parentElement.clientWidth || 800;
+    b.style.height = Math.round(Math.min(Math.max(w / r, 130), 560)) + "px";
+    img.style.objectPosition = "center";
+  } else {
+    b.style.height = "280px";
+    img.style.objectPosition = defPos || img.dataset.pos || "center";
+  }
+}
+window.addEventListener("resize", () => { try { _aboutFitBanner(); } catch (e) {} });
 function closeAboutDetail() {
   document.getElementById("about-detail-modal").classList.remove("open");
 }
@@ -70205,6 +70246,7 @@ const _AHUB_ICON = {
   menu: '<path d="M4 6h16M4 12h10M4 18h16"/><circle cx="19" cy="12" r="1.5"/>',
   file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 17l2-2 2 1.5 4-4"/>',
   history: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l4 2"/>',
+  building: '<rect x="4" y="3" width="11" height="18" rx="1.5"/><path d="M15 9h4a1 1 0 0 1 1 1v11H15M8 7h3M8 11h3M8 15h3M3 21h18"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'
 };
 const _ahubSvg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${_AHUB_ICON[k] || ""}</svg>`;
@@ -70243,6 +70285,7 @@ const ADMIN_HUB_ACTIONS = {
   custDash: () => adminHubGo("custDash"),
   track: () => adminHubGo("track"),
   advisorMeetings: () => openAdvisorMeetings(),
+  companyProfile: () => openCompanyProfile(),
   advances: () => openAvans('pending')
 };
 function adminHubRun(key, fromNav) {
@@ -70272,6 +70315,7 @@ const AHUB_TOOLS = {
   announcement: { id: "ann-fx-modal", close: () => closeAnnFixedEditor(), name: () => t3("Bilgilendirme Pop-up'ı", "Information Pop-up", "نافذة المعلومات") },
   backupHistory: { id: "backup-history-modal", close: () => closeBackupHistory(), name: () => t3("Yedekleme Geçmişi", "Backup History", "سجل النسخ الاحتياطي") },
   finance: { id: "finance-modal", close: () => closeFinance(), name: () => t3("Gelir & Gider", "Income & Expenses", "الإيرادات والمصروفات") },
+  companyProfile: { id: "company-profile-overlay", close: () => closeCompanyProfile(), name: () => t3("Şirket Profili", "Company Profile", "ملف الشركة") },
   advisorMeetings: { id: "advisor-meeting-modal", close: () => closeAdvisorMeetings(), name: () => t3("Danışman Toplantı Tutanakları", "Consultant Meeting Minutes", "محاضر اجتماعات الاستشاري") }
 };
 let _ahubTool = null;   // { key, el, timer }
@@ -70636,7 +70680,7 @@ function todoDelete(id) { const x = _todo.items.find(i => i.id === id); if (!x |
 const AHUB_MENU = [
   { sec: "cust", ic: "chart", sub: [ "Tüm müşterilerin durumu tek ekranda", "All customers at a glance", "حالة كل العملاء في شاشة واحدة" ], name: [ "Müşteriler", "Customers", "العملاء" ], items: [ "custDash", "track" ] },
   { sec: "users", ic: "shield", sub: [ "Kimin neyi görüp değiştirebileceği", "Who can see and change what", "مين يقدر يشوف ويعدّل" ], name: [ "Kullanıcılar & Yetki", "Users & Access", "المستخدمين والصلاحيات" ], items: [ "approvals", "users", "contacts" ] },
-  { sec: "content", ic: "palette", sub: [ "Yazıları, menüyü ve rapor bilgilerini kendiniz değiştirin — veriler etkilenmez", "Change texts, menu and report details yourself — data is not affected", "غيّر النصوص والقائمة وبيانات التقارير بنفسك" ], name: [ "Site İçeriği", "Site Content", "محتوى الموقع" ], items: [ "texts", "about", "menu", "report", "announcement", "design", "log" ] },
+  { sec: "content", ic: "palette", sub: [ "Yazıları, menüyü ve rapor bilgilerini kendiniz değiştirin — veriler etkilenmez", "Change texts, menu and report details yourself — data is not affected", "غيّر النصوص والقائمة وبيانات التقارير بنفسك" ], name: [ "Site İçeriği", "Site Content", "محتوى الموقع" ], items: [ "texts", "about", "companyProfile", "menu", "report", "announcement", "design", "log" ] },
   { sec: "data", ic: "database", sub: [ "Verilerinizi koruma ve geri yükleme", "Protect and restore your data", "احمي بياناتك واستعيدها" ], name: [ "Veri & Yedek", "Data & Backup", "البيانات والنسخ الاحتياطي" ], items: [ "dataLog", "backup", "fullBackup", "backupHistory", "restore" ] },
   { sec: "fin", ic: "chart", sub: [ "Takip ve paylaşım", "Tracking and sharing", "المتابعة والمشاركة" ], name: [ "Finans & Paylaşım", "Finance & Sharing", "المالية والمشاركة" ], items: [ "advances", "finance", "copyLink" ] },
   { sec: "meetings", ic: "file", sub: [ "Danışman ve toplantı tutanakları", "Consultant and meeting minutes", "محاضر الاستشاري والاجتماعات" ], name: [ "Toplantılar", "Meetings", "الاجتماعات" ], items: [ "advisorMeetings" ] }
@@ -70662,6 +70706,7 @@ const AHUB_ITEMS = {
   finance: { ic: "wallet", name: [ "Gelir & Gider", "Income & Expenses", "الإيرادات والمصروفات" ], sub: [ "Gelir ve gider takibi", "Track income and expenses", "متابعة الإيرادات والمصروفات" ] },
   copyLink: { ic: "link", name: [ "Bağlantıyı Kopyala", "Copy Link", "نسخ الرابط" ], sub: [ "Bu ekranın adresini paylaş", "Share this screen's link", "مشاركة رابط الشاشة دي" ] },
   advances: { ic: "wallet", name: [ "Avans Talepleri", "Advance Requests", "طلبات السلفة" ], sub: [ "Personelin avans talepleri: onayla, imzala, gönder", "Staff advance requests: approve, sign, send", "طلبات السلفة من الموظفين: وافق ووقّع وابعت" ] },
+  companyProfile: { ic: "building", name: [ "Şirket Profili", "Company Profile", "ملف الشركة" ], sub: [ "Tanıtım, organizasyon şeması, kurumsal sunum belgeleri", "Introduction, org chart and corporate presentation documents", "التعريف والهيكل التنظيمي والعرض المؤسسي" ] },
   advisorMeetings: { ic: "file", name: [ "Danışman Toplantı Tutanakları", "Consultant Meeting Minutes", "محاضر اجتماعات الاستشاري" ], sub: [ "Madde, karar ve termin takibi", "Item, decision and due-date tracking", "متابعة البنود والقرارات والمواعيد" ] }
 };
 // Simge: "n:<ad>" = kabuğun çizgi simgesi (sol menüdekiyle aynı set), yoksa merkezin kendi simgesi
@@ -85957,7 +86002,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-21 12:31";
+const EMS_BUILD = "2026-11-21 12:55";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
