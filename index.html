@@ -6082,6 +6082,27 @@ const EMS_SOCIAL = { linkedin: "https://www.linkedin.com/in/abdullahbaydogan/", 
   </div>
 </div>
 <div id="am-zoom" onclick="amCloseZoom()"><img id="am-zoomimg" alt=""></div>
+<style id="nscs-cert-css">
+#cert-hub-modal #certx-hero, #cert-hub-modal .certx-toolbar, #cert-hub-modal .qa-dept-overlay-inner > .admin-only-el { display:none !important; }
+.nsc-head { margin:6px 0 20px; } .nsc-head h2 { margin:0; font-size:26px; font-weight:900; color:var(--navy); } .nsc-head p { margin:4px 0 0; font-size:13px; color:var(--muted); }
+.nsc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:20px; }
+.nsc-card { all:unset; box-sizing:border-box; cursor:pointer; background:#fff; border-radius:16px; padding:12px; box-shadow:0 2px 10px rgba(15,27,51,.08); transition:transform .2s, box-shadow .2s, border-color .2s; display:flex; flex-direction:column; gap:10px; border:1.5px solid #e3e7ef; }
+.nsc-card:hover, .nsc-card:focus-visible { transform:translateY(-3px); box-shadow:0 10px 24px rgba(15,27,51,.16); border-color:#ff8000; }
+.nsc-fr { aspect-ratio:4/3; background:#f4f6fa; border-radius:10px; border:1px solid #d9deea; padding:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.nsc-fr img { max-width:100%; max-height:100%; object-fit:contain; box-shadow:0 3px 10px rgba(0,0,0,.18); border-radius:3px; }
+.nsc-nm { font-weight:800; font-size:13.5px; line-height:1.35; text-align:center; min-height:2.7em; display:flex; align-items:center; justify-content:center; padding:0 4px; color:#0f1b33; }
+#nsc-viewer { position:fixed; inset:0; z-index:21500; display:none; align-items:center; justify-content:center; background:rgba(8,15,30,.7); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); }
+#nsc-viewer.open { display:flex; }
+.nsc-panel { width:min(52vw,900px); height:min(62vh,640px); background:#fff; border-radius:18px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+.nsc-ph { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid #e3e7ef; font-weight:800; font-size:14px; color:#0f1b33; }
+.nsc-ph span { flex:1; }
+.nsc-x { all:unset; cursor:pointer; width:36px; height:36px; border-radius:50%; background:#0f1b33; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; flex:none; }
+.nsc-pb { flex:1; background:#f0f2f7; display:flex; align-items:center; justify-content:center; padding:14px; min-height:0; }
+.nsc-pb img { max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; box-shadow:0 4px 16px rgba(0,0,0,.2); }
+@media (max-width:900px) { .nsc-panel { width:80vw; } }
+@media (max-width:700px) { .nsc-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } .nsc-nm { font-size:12px; } .nsc-panel { width:94vw; height:70vh; } }
+</style>
+<div id="nsc-viewer" onclick="if(event.target===this) nscCertClose()"><div class="nsc-panel" role="dialog" aria-modal="true"><div class="nsc-ph"><span id="nsc-v-title"></span><button type="button" class="nsc-x" onclick="nscCertClose()" aria-label="Kapat / Close">✕</button></div><div class="nsc-pb"><img id="nsc-v-img" alt=""></div></div></div>
 <div id="certx-viewer" onclick="if(event.target===this) closeCertViewer()">
   <div class="certx-v-panel" role="dialog" aria-modal="true">
     <div class="certx-v-head">
@@ -60678,9 +60699,31 @@ function addCertFromHub() {
     renderCertHubGrid();
   }
 }
+// ===== Sertifikalarım: kişisel sertifikalar (çerçeve + ad; tıklayınca yarım ekran pencere) =====
+// Görüntüler sertifikalar/ klasöründedir (kimlik no, doğum tarihi, barkod ve QR gizlenmiştir). Buluttaki eski sertifika kayıtlarına dokunulmaz, yalnız gösterilmez.
+const NSCS_CERTS = [["iso9001ba", "ISO 9001:2015 Baş Denetçi (Lead Auditor)"], ["iso14001ba", "ISO 14001:2015 Baş Denetçi (Lead Auditor)"], ["iso45001ba", "ISO 45001:2018 Baş Denetçi (Lead Auditor)"], ["iso50001ba", "ISO 50001:2018 Baş Denetçi (Lead Auditor)"], ["iso9001kys", "ISO 9001:2015 KYS Kurulum ve Danışmanlığı Eğitimi"], ["kalitemuh", "Kalite Mühendisliği / Yöneticiliği"], ["passcert", "Integrated QMS Quality Engineering Certification (Passcert Euro)"], ["bci", "Better Cotton Chain of Custody – Vertically Integrated Mill"], ["itu", "Sürdürülebilirlik Yöneticiliği Sertifika Programı (İTÜ)"], ["onterbiye", "Tekstil Teknolojisi – Ön Terbiye İşlemleri Eğitimi"], ["onterbiyeci", "Tekstil Ön Terbiyecisi Eğitimi"], ["modelmakine", "Tekstil Model Makineci Eğitimi"], ["haslik", "Tekstilde Haslık ve Boyutsal Test Yöntemleri (İTKİB)"], ["psm1", "Professional Scrum Master I – PSM I (Scrum.org)"], ["yalindeger", "Yalın Değer Akışı Haritalama Eğitimi (Udemy)"], ["lcw_yalin", "LC Waikiki – Yalın Yönetim Bilgi Sertifikası"], ["lcw_egitmen", "LC Waikiki – Eğitmen Geliştirme Programı Uygulayıcı Sertifikası"], ["lcw_kocluk", "LC Waikiki – İş'te Koçluk Programı (ICF)"], ["lcw_gps", "LC Waikiki – Gelişim ve Performans Sistemi (GPS) Eğitimi"], ["lcw_tesekkur22", "LC Waikiki Kurumsal Akademi – Teşekkür Belgesi (Eğitmenlik)"], ["lcw_tesekkur21", "LC Waikiki Kurumsal Akademi – Teşekkür Belgesi (2021)"], ["uretimyon", "Üretim Yönetimi (İstanbul İşletme Enstitüsü)"], ["isletmeyon", "İşletme Yönetimi (İstanbul İşletme Enstitüsü)"]];
+function _nscsCertRender() {
+  const grid = document.getElementById("cert-hub-grid");
+  if (!grid) return;
+  grid.style.display = "block";
+  grid.innerHTML = `<div class="nsc-head"><h2>🏅 ${t3("Sertifikalar", "Certificates", "الشهادات")}</h2><p>${NSCS_CERTS.length} ${t3("sertifika", "certificates", "شهادة")}</p></div><div class="nsc-grid">` + NSCS_CERTS.map((c, i) => `<button type="button" class="nsc-card" onclick="nscCertOpen(${i})"><div class="nsc-fr"><img loading="lazy" decoding="async" src="sertifikalar/${c[0]}_t.jpg" alt="${escHtml(c[1])}"></div><div class="nsc-nm">${escHtml(c[1])}</div></button>`).join("") + `</div>`;
+}
+function nscCertOpen(i) {
+  const c = NSCS_CERTS[i]; if (!c) return;
+  document.getElementById("nsc-v-title").innerText = c[1];
+  document.getElementById("nsc-v-img").src = "sertifikalar/" + c[0] + ".jpg";
+  document.getElementById("nsc-v-img").alt = c[1];
+  document.getElementById("nsc-viewer").classList.add("open");
+}
+function nscCertClose() {
+  const v = document.getElementById("nsc-viewer"); if (v) v.classList.remove("open");
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") { const v = document.getElementById("nsc-viewer"); if (v && v.classList.contains("open")) { nscCertClose(); e.stopPropagation(); } } }, true);
 function renderCertHubGrid() {
   const grid = document.getElementById("cert-hub-grid");
   if (!grid) return;
+  _nscsCertRender();
+  return;
   try { _certxRenderHero(); } catch (e) {}
   const _certxList = certificatesData.filter(_certxVisible);
   if (!certificatesData.length && FIREBASE_ENABLED && typeof _cloudDocsLoaded === "object" && !_cloudDocsLoaded.certificates) {
@@ -86018,7 +86061,7 @@ function mtWeekMail() {
   document.addEventListener("visibilitychange", sync);
   setTimeout(sync, 800);
 })();
-const EMS_BUILD = "2026-11-21 13:00";
+const EMS_BUILD = "2026-11-21 13:03";
 (function () {
   const t = (tr, en, ar) => typeof t3 === "function" ? t3(tr, en, ar) : tr;
   // Sürüm saati İstanbul saatiyle (UTC+3, yaz/kış saati yok) yazılır; ekranda izleyenin yerel saatine çevrilir (Mısır'da kış saati UTC+2 olunca 1 saat fark oluşuyordu) /
